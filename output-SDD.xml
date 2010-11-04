@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Datasets xmlns="http://rs.tdwg.org/UBIF/2006/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://rs.tdwg.org/UBIF/2006/ SDD1.1/SDD.xsd">
+   <TechnicalMetadata created="2010-11-04T16:27:27-05:00">
+      <Generator name="Alex" version="1"/>
+   </TechnicalMetadata>
+   <Dataset xml:lang="en-us">
+      <Representation>
+         <Label>Transformation from biosemantics processor into SDD.</Label>
+         <Detail>Optional detail to be provided post-transformation.</Detail>
+      </Representation>
+      <Characters>
+         <CategoricalCharacter id="involucres">
+            <Representation>
+               <Label>involucres</Label>
+            </Representation>
+            <States>
+               <StateDefinition>
+                  <Representation>
+                     <Detail>Empty Representation.</Detail>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="calyculi">
+            <Representation>
+               <Label>calyculi</Label>
+            </Representation>
+            <States>
+               <StateDefinition>
+                  <Representation>
+                     <Detail>Empty Representation.</Detail>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="branches_arrangement">
+            <Representation>
+               <Label>branches arrangement</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="cluster">
+                  <Representation>
+                     <Label>cluster</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_shape">
+            <Representation>
+               <Label>leaves shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="bractlike">
+                  <Representation>
+                     <Label>bractlike</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="roots_type">
+            <Representation>
+               <Label>roots type</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="taproots">
+                  <Representation>
+                     <Label>taproots</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="roots_texture">
+            <Representation>
+               <Label>roots texture</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="fibrous">
+                  <Representation>
+                     <Label>fibrous</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="heads">
+            <Representation>
+               <Label>heads</Label>
+            </Representation>
+            <States>
+               <StateDefinition>
+                  <Representation>
+                     <Detail>Empty Representation.</Detail>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_arrangement">
+            <Representation>
+               <Label>leaves arrangement</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="clusters">
+                  <Representation>
+                     <Label>clusters</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_size">
+            <Representation>
+               <Label>leaves size</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="reduced">
+                  <Representation>
+                     <Label>reduced</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="pappi">
+            <Representation>
+               <Label>pappi</Label>
+            </Representation>
+            <States>
+               <StateDefinition>
+                  <Representation>
+                     <Detail>Empty Representation.</Detail>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="bristles_color">
+            <Representation>
+               <Label>bristles color</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="white">
+                  <Representation>
+                     <Label>white</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="bristles_atypical_color">
+            <Representation>
+               <Label>bristles atypical_color</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="tawny">
+                  <Representation>
+                     <Label>tawny</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="bristles_shape">
+            <Representation>
+               <Label>bristles shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="barbed">
+                  <Representation>
+                     <Label>barbed</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <QuantitativeCharacter id="bristles_count">
+            <Representation>
+               <Label>bristles count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="60" upper="80"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="bristles_atypical_count_higher">
+            <Representation>
+               <Label>bristles atypical_count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="80" upper="INF"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="Phyllaries_count">
+            <Representation>
+               <Label>Phyllaries count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="65" upper="85"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="Phyllaries_count">
+            <Representation>
+               <Label>Phyllaries count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="25" upper="35"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <CategoricalCharacter id="Phyllaries_shape">
+            <Representation>
+               <Label>Phyllaries shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="reflexed">
+                  <Representation>
+                     <Label>reflexed</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <QuantitativeCharacter id="phyllaries_count">
+            <Representation>
+               <Label>phyllaries count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="18" upper="70"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <CategoricalCharacter id="phyllaries_texture">
+            <Representation>
+               <Label>phyllaries texture</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="chartaceous">
+                  <Representation>
+                     <Label>chartaceous</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <QuantitativeCharacter id="series_count">
+            <Representation>
+               <Label>series count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="4" upper="7"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <CategoricalCharacter id="phyllaries_shape">
+            <Representation>
+               <Label>phyllaries shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="ovate|lanceolate|subulate">
+                  <Representation>
+                     <Label>ovate|lanceolate|subulate</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="phyllaries_shape">
+            <Representation>
+               <Label>phyllaries shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="lanceolate|oblong">
+                  <Representation>
+                     <Label>lanceolate|oblong</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_shape">
+            <Representation>
+               <Label>leaves shape</Label>
+               <Detail>
+                                                                    This character is being treated as categorical rather than quantitative, 
+                                                                    despite the fact that it describes a range of values.  However, since this range is non-numeric,
+                                                                    there is no facility for constructing a Plausible Range in SDD through 
+                                                                    the transformation process.  This is a placeholder solution.
+                                                                </Detail>
+            </Representation>
+            <States>
+               <StateDefinition id="">
+                  <Representation>
+                     <Label/>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_shape">
+            <Representation>
+               <Label>leaves shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="ovate">
+                  <Representation>
+                     <Label>ovate</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_shape">
+            <Representation>
+               <Label>leaves shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="lanceolate">
+                  <Representation>
+                     <Label>lanceolate</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_shape">
+            <Representation>
+               <Label>leaves shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="subulate">
+                  <Representation>
+                     <Label>subulate</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="leaves_shape">
+            <Representation>
+               <Label>leaves shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="round">
+                  <Representation>
+                     <Label>round</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <QuantitativeCharacter id="stamens_atypical_count">
+            <Representation>
+               <Label>stamens atypical_count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="2" upper="3"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="stamens_atypical_count">
+            <Representation>
+               <Label>stamens atypical_count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="7" upper="20"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="stamens_count">
+            <Representation>
+               <Label>stamens count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="3" upper="7"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="stamens_atypical_count">
+            <Representation>
+               <Label>stamens atypical_count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="20" upper="INF"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="stamens_atypical_count">
+            <Representation>
+               <Label>stamens atypical_count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="-INF" upper="INF"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="stamens_count">
+            <Representation>
+               <Label>stamens count</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="3" upper="7"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <CategoricalCharacter id="blades_shape">
+            <Representation>
+               <Label>blades shape</Label>
+               <Detail>
+                                                                    This character is being treated as categorical rather than quantitative, 
+                                                                    despite the fact that it describes a range of values.  However, since this range is non-numeric,
+                                                                    there is no facility for constructing a Plausible Range in SDD through 
+                                                                    the transformation process.  This is a placeholder solution.
+                                                                </Detail>
+            </Representation>
+            <States>
+               <StateDefinition id="">
+                  <Representation>
+                     <Label/>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="blades_shape">
+            <Representation>
+               <Label>blades shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="oblong">
+                  <Representation>
+                     <Label>oblong</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="blades_shape">
+            <Representation>
+               <Label>blades shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="elliptic">
+                  <Representation>
+                     <Label>elliptic</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="blades_shape">
+            <Representation>
+               <Label>blades shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="spatulate">
+                  <Representation>
+                     <Label>spatulate</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <QuantitativeCharacter id="blades_length">
+            <Representation>
+               <Label>blades length</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="11" upper="25"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="blades_width">
+            <Representation>
+               <Label>blades width</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="60" upper="75"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="blades_atypical_width">
+            <Representation>
+               <Label>blades atypical_width</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="75" upper="INF"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <QuantitativeCharacter id="blades_l_w_ratio">
+            <Representation>
+               <Label>blades l_w_ratio</Label>
+            </Representation>
+            <Assumptions>
+               <ValuesAreInteger>true</ValuesAreInteger>
+               <PlausibleRange lower="2" upper="4"/>
+            </Assumptions>
+         </QuantitativeCharacter>
+         <CategoricalCharacter id="phyllaries_shape">
+            <Representation>
+               <Label>phyllaries shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="appressed">
+                  <Representation>
+                     <Label>appressed</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="phyllaries_shape">
+            <Representation>
+               <Label>phyllaries shape</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="appressed">
+                  <Representation>
+                     <Label>appressed</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+         <CategoricalCharacter id="apecies_orientation">
+            <Representation>
+               <Label>apecies orientation</Label>
+            </Representation>
+            <States>
+               <StateDefinition id="spreading">
+                  <Representation>
+                     <Label>spreading</Label>
+                  </Representation>
+               </StateDefinition>
+            </States>
+         </CategoricalCharacter>
+      </Characters>
+      <CharacterTrees>
+         <CharacterTree id="relation_s1">
+            <Representation>involucres sometimes subtended by calyculi</Representation>
+         </CharacterTree>
+         <CharacterTree id="relation_s2">
+            <Representation>branches subtended by leaves</Representation>
+         </CharacterTree>
+         <CharacterTree id="relation_s4">
+            <Representation>heads subtended byleaves</Representation>
+         </CharacterTree>
+         <CharacterTree id="relation_s5">
+            <Representation>pappi consist ofbristles</Representation>
+         </CharacterTree>
+         <CharacterTree id="relation_s6">
+            <Representation>Phyllaries expresses constraint onPhyllaries</Representation>
+         </CharacterTree>
+         <CharacterTree id="relation_s7">
+            <Representation>phyllaries arranged inseries</Representation>
+         </CharacterTree>
+      </CharacterTrees>
+   </Dataset>
+</Datasets>
