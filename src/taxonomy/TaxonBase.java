@@ -17,10 +17,10 @@ import annotationSchema.jaxb.Structure;
  */
 public class TaxonBase implements ITaxon {
 
-	private String name;
-	private TaxonRank taxonRank;
-	private Map<Character, IState> charMap;
-	private Tree<Structure> structureTree;
+	protected String name;
+	protected TaxonRank taxonRank;
+	protected Map<Character, IState> charMap;
+	protected Tree<Structure> structureTree;
 	
 	/**
 	 * Create a new Taxon with a given rank.
