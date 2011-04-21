@@ -69,5 +69,15 @@ public class TestFilenameTaxonDao {
 		assertTrue(map.get("family").equals("asteraceae"));
 		assertTrue(map.get("tribe").equals("cynareae"));
 	}
+	
+	/**
+	 * Test method for {@link dao.FilenameTaxonDao#getFilenameOfFamilyDescription(String)}.
+	 */
+	@Test
+	public final void testGetFilenameOfFamilyDescription () {
+		String filename = dao.getFilenameOfFamilyDescription("asteraceae");
+		assertFalse(filename.isEmpty());
+		assertTrue(filename.equals("1.xml"));
+	}
 
 }

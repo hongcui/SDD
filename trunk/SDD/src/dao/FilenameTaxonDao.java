@@ -5,7 +5,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,6 +65,67 @@ public class FilenameTaxonDao {
 				result.put("species", rs.getString("species"));
 				result.put("subspecies", rs.getString("subspecies"));
 				result.put("variety", rs.getString("variety"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Get a list of filenames that match the name of a given taxon.
+	 * @param taxon The taxon level at which to match.
+	 * @param name The name for that taxon.
+	 * @return A list of all file names matching that taxon name.
+	 */
+	public List<String> getFileListByTaxonName(String taxon, String name) {
+		List<String> result = new ArrayList<String>();
+		ResultSet rs = null;
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement s = getConnection().createStatement();
+			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE "
+					+ taxon + " = '" + name +"';");
+			while(rs.next()) {
+				result.add(rs.getString("filename"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Get the filename for the family description of a taxon.
+	 * @param familyName
+	 * @return
+	 */
+	public String getFilenameOfFamilyDescription(String familyName) {
+		String result = "";
+		ResultSet rs = null;
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement s = getConnection().createStatement();
+			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE family = '" + familyName 
+					+"' and subfamily = '' and tribe = '' and subtribe = '' and genus = '' "
+					+"and subgenus = '' and section = '' and subsection = '' "
+					+"and species = '' and subspecies = '' and variety = '' ;");
+			while(rs.next()) {
+				result = rs.getString("filename");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
