@@ -60,7 +60,12 @@ public class Structure {
     @XmlID
     @XmlSchemaType(name = "ID")
     protected String id;
-    @XmlAttribute(name = "constraint_type")
+    @Override
+	public String toString() {
+		return "Structure [name=" + name + "]";
+	}
+
+	@XmlAttribute(name = "constraint_type")
     protected String constraintType;
     @XmlAttribute(name = "constraint_parent_organ")
     protected String constraintParentOrgan;

@@ -1,6 +1,7 @@
 package tree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,6 +38,15 @@ public class TreeNode<T> {
 	 */
 	public void addChild(TreeNode<T> child) {
 		this.children.add(child);
+	}
+	
+	/**
+	 * Add a collection of children to this node.
+	 * @param children
+	 */
+	public void addChildren(Collection<T> children) {
+		for(T child : children)
+			this.children.add(new TreeNode<T>(child));
 	}
 
 	/**
@@ -111,9 +121,10 @@ public class TreeNode<T> {
 	 */
 	@Override
 	public String toString() {
-		String s =  "TreeNode [element=" + element;
+		String s =  "TreeNode [element=" + element + "[children=";
 		for(TreeNode<T> child : children)
-			s += ("\n\t\t\t\t\t" + child);
+			s += ("\n\t" + child);
+		s += "]";
 		return s;
 	} 
 }

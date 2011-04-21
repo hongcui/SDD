@@ -65,7 +65,7 @@ public class TestTaxonHierarchy extends TestCase{
 		} catch (SubTaxonException e) {
 			e.printStackTrace();
 		}
-		ITaxon t = th.getHierarchy().contains(genus);
+		ITaxon t = th.getHierarchy().contains(genus).getElement();
 		assertTrue(t.equals(genus));
 		
 	}
@@ -85,7 +85,7 @@ public class TestTaxonHierarchy extends TestCase{
 		} catch (SubTaxonException e1) {
 			e1.printStackTrace();
 		}
-		ITaxon t = th.getHierarchy().contains(genus);
+		ITaxon t = th.getHierarchy().contains(genus).getElement();
 		assertTrue(t.equals(genus));
 		ITaxon species = new Species("testSpecies");
 		try {
