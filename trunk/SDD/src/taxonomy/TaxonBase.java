@@ -135,7 +135,7 @@ public class TaxonBase implements ITaxon {
 	public String toString() {
 		return this.getClass().getName() + "[name=" + name
 				+ ", taxonRank=" + taxonRank + ", charMap=" + charMap
-				+ ", structureTree=" + structureTree + "]";
+				+ ", \nstructureTree=" + structureTree + "]";
 	}
 	
 }

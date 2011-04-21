@@ -38,17 +38,17 @@ public class Tree<T> {
 	}
 	
 	/**
-	 * Looks for an element in this tree, and returns it if found.  Returns null otherwise.
+	 * Looks for an element in this tree, and returns it's node if found.  Returns null otherwise.
 	 * @param element The element to look for.
 	 * @return
 	 */
-	public T contains(T element) {
+	public TreeNode<T> contains(T element) {
 		Deque<TreeNode<T>> queue = new LinkedList<TreeNode<T>>();
 		queue.add(root);
 		while(!queue.isEmpty()) {
 			TreeNode<T> node = queue.poll();
 			if(node.getElement().equals(element))
-				return node.getElement();
+				return node;
 			for(TreeNode<T> child : node.getChildren())
 				queue.add(child);
 		}

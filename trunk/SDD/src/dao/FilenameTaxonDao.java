@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import taxonomy.TaxonRank;
+
 /**
  * DAO for filename-taxon database.
  * @author Alex
@@ -18,10 +20,24 @@ import java.util.Map;
 public class FilenameTaxonDao {
 	
 	private static DatabaseProperties props = new DatabaseProperties();
-	static final String URL = (String) props.get("url") + "toboston";
-	static final String USER = (String) props.get("user");
-	static final String PASSWORD = (String) props.get("password");
-	static final String DRIVER = (String) props.get("driver");
+	private static final String URL = (String) props.get("url") + "toboston";
+	private static final String USER = (String) props.get("user");
+	private static final String PASSWORD = (String) props.get("password");
+	private static final String DRIVER = (String) props.get("driver");
+	/**
+	 * Ordered list of taxon ranks.
+	 */
+	private List<String> taxonRank;
+	
+	/**
+	 * Create a new FilenameTaxonDao and add ranking list.
+	 */
+	public FilenameTaxonDao() {
+		taxonRank = new ArrayList<String>();
+		String[] list = new String[]{"family", "subfamily", "tribe", "subtribe", "genus", "subgenus", "section", "subsection", "species", "subspecies", "variety"};
+		for(String s : list)
+			taxonRank.add(s);
+	}
 
 	/**
 	 * Gets a new connection to the "toboston" MySQL database.
@@ -128,6 +144,42 @@ public class FilenameTaxonDao {
 				result = rs.getString("filename");
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Gets the filename for a taxon at a given rank with a given name, such that the file is the lowest level description
+	 * of the taxon at that level.
+	 * @param rank
+	 * @param name
+	 * @return
+	 */
+	public String getFilenameForDescription(TaxonRank rank, String name) {
+		String tRank = rank.toString().toLowerCase();
+		int indexOfRank = taxonRank.indexOf(tRank);
+		String whereClause = tRank + " = '" + name + "' ";
+		for(int i = indexOfRank + 1; i < taxonRank.size(); i++)
+			whereClause += "and " + taxonRank.get(i) + " = '' ";
+		String result = "";
+		ResultSet rs = null;
+		Connection conn = null;
+		try {
+			conn = getConnection();
+			Statement s = getConnection().createStatement();
+			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE " + whereClause + ";");
+			while(rs.next()) {
+				result = rs.getString("filename");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {

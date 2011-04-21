@@ -14,6 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import taxonomy.TaxonRank;
+
 import dao.FilenameTaxonDao;
 
 /**
@@ -78,6 +80,18 @@ public class TestFilenameTaxonDao {
 		String filename = dao.getFilenameOfFamilyDescription("asteraceae");
 		assertFalse(filename.isEmpty());
 		assertTrue(filename.equals("1.xml"));
+	}
+	
+	/**
+	 * Test method for {@link dao.FilenameTaxonDao#getFilenameForDescription(taxonomy.TaxonRank, String).
+	 */
+	@Test
+	public final void testGetFilenameForDescription () {
+		String filename = dao.getFilenameForDescription(TaxonRank.SPECIES, "arcticum");
+		assertFalse(filename.isEmpty());
+		assertTrue(filename.equals("932.xml"));
+		filename = dao.getFilenameForDescription(TaxonRank.SPECIES, "ludoviciana");
+		assertTrue(filename.equals("908.xml"));
 	}
 
 }
