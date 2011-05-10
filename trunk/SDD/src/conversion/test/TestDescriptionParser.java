@@ -25,7 +25,7 @@ public class TestDescriptionParser {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		parser = new DescriptionParser("ludoviciana", TaxonRank.SPECIES);
+		parser = new DescriptionParser("cirsium", TaxonRank.GENUS);
 	}
 
 	/**

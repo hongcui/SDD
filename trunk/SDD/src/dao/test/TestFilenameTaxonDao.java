@@ -90,8 +90,9 @@ public class TestFilenameTaxonDao {
 		String filename = dao.getFilenameForDescription(TaxonRank.SPECIES, "arcticum");
 		assertFalse(filename.isEmpty());
 		assertTrue(filename.equals("932.xml"));
-		filename = dao.getFilenameForDescription(TaxonRank.SPECIES, "ludoviciana");
-		assertTrue(filename.equals("908.xml"));
+		filename = dao.getFilenameForDescription(TaxonRank.GENUS, "cirsium");
+		System.out.println(filename);
+		
 	}
 
 }
