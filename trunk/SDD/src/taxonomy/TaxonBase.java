@@ -1,10 +1,12 @@
 package taxonomy;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import states.IState;
 import tree.Tree;
+import tree.TreeNode;
 import annotationSchema.jaxb.Character;
 import annotationSchema.jaxb.Structure;
 
@@ -19,7 +21,7 @@ public class TaxonBase implements ITaxon {
 
 	protected String name;
 	protected TaxonRank taxonRank;
-	protected Map<Character, IState> charMap;
+	protected Map<Structure, Map<Character, IState>> charMap;
 	protected Tree<Structure> structureTree;
 	
 	/**
@@ -28,7 +30,7 @@ public class TaxonBase implements ITaxon {
 	 */
 	public TaxonBase(TaxonRank rank) {
 		this.taxonRank = rank;
-		this.charMap = new TreeMap<Character, IState>();
+		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
 	}
 	
@@ -40,7 +42,7 @@ public class TaxonBase implements ITaxon {
 	public TaxonBase(TaxonRank rank, String name) {
 		this.taxonRank = rank;
 		this.name = name;
-		this.charMap = new TreeMap<Character, IState>();
+		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
 	}
 	
@@ -56,7 +58,7 @@ public class TaxonBase implements ITaxon {
 	 * @see taxonomy.ITaxon#getCharMap()
 	 */
 	@Override
-	public Map<Character, IState> getCharMap() {
+	public Map<Structure, Map<Character, IState>> getCharMap() {
 		return this.charMap;
 	}
 

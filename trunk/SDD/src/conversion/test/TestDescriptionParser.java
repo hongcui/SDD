@@ -40,9 +40,9 @@ public class TestDescriptionParser {
 	 */
 	@Test
 	public void testParseTaxon() {
-		ITaxon species = parser.parseTaxon();
-		assertFalse(species.getStructureTree().isEmpty());
-		System.out.println(species);
+		ITaxon taxon = parser.parseTaxon();
+		assertFalse(taxon.getStructureTree().isEmpty());
+		System.out.println(taxon);
 	}
 
 }
