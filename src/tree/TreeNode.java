@@ -13,7 +13,7 @@ import java.util.List;
 public class TreeNode<T> {
 
 	private T element;
-	
+	private TreeNode<T> parent;	
 	private List<TreeNode<T>> children;
 	
 	/**
@@ -37,6 +37,7 @@ public class TreeNode<T> {
 	 * @param child
 	 */
 	public void addChild(TreeNode<T> child) {
+		child.setParent(this);
 		this.children.add(child);
 	}
 	
@@ -45,8 +46,11 @@ public class TreeNode<T> {
 	 * @param children
 	 */
 	public void addChildren(Collection<T> children) {
-		for(T child : children)
-			this.children.add(new TreeNode<T>(child));
+		for(T child : children) {
+			TreeNode<T> treeNode = new TreeNode<T>(child);
+			treeNode.setParent(this);
+			this.children.add(treeNode);
+		}
 	}
 
 	/**
@@ -68,6 +72,14 @@ public class TreeNode<T> {
 	 */
 	public List<TreeNode<T>> getChildren() {
 		return children;
+	}
+
+	public TreeNode<T> getParent() {
+		return parent;
+	}
+
+	public void setParent(TreeNode<T> parent) {
+		this.parent = parent;
 	}
 
 	/* (non-Javadoc)

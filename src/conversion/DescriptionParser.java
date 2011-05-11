@@ -12,12 +12,12 @@ import javax.xml.bind.Unmarshaller;
 import taxonomy.ITaxon;
 import taxonomy.TaxonFactory;
 import taxonomy.TaxonRank;
-import tree.Tree;
 import tree.TreeNode;
 import annotationSchema.jaxb.Description;
 import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Statement;
 import annotationSchema.jaxb.Structure;
+import annotationSchema.jaxb.Treatment;
 import dao.FilenameTaxonDao;
 
 public class DescriptionParser {
@@ -52,7 +52,8 @@ public class DescriptionParser {
 			Unmarshaller unmarshaller = annotationContext.createUnmarshaller();
 			String filename = filenameTaxonDao.getFilenameForDescription(taxonRank, taxonName);
 			String path = props.getProperty("input.path") + filename;
-			Description description = (Description) unmarshaller.unmarshal(new File(path));
+			Treatment treatment = (Treatment) unmarshaller.unmarshal(new File(path));
+			Description description = treatment.getDescription();
 			List<Statement> statementList = description.getStatement();
 			buildStructureTree(taxon, statementList);
 		} catch(JAXBException e) {

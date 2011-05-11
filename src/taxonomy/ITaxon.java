@@ -26,7 +26,7 @@ public interface ITaxon {
 	 * Get the character-state map for this taxon.
 	 * @return
 	 */
-	public Map<annotationSchema.jaxb.Character, IState> getCharMap();
+	public Map<Structure, Map<annotationSchema.jaxb.Character, IState>> getCharMap();
 	
 	/**
 	 * @return The structure tree of this taxon.

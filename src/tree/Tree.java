@@ -1,7 +1,10 @@
 package tree;
 
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Tree<T> {
 	
@@ -53,6 +56,23 @@ public class Tree<T> {
 				queue.add(child);
 		}
 		return null;
+	}
+	
+	/**
+	 * Get a level-order (Breadth-first) iterator over this tree.
+	 * @return
+	 */
+	public Iterator<TreeNode<T>> iterator() {
+		List<TreeNode<T>> list = new ArrayList<TreeNode<T>>();
+		Deque<TreeNode<T>> queue = new LinkedList<TreeNode<T>>();
+		queue.add(root);
+		while(!queue.isEmpty()) {
+			TreeNode<T> node = queue.poll();
+			list.add(node);
+			for(TreeNode<T> child : node.getChildren())
+				queue.add(child);
+		}
+		return list.iterator();
 	}
 	
 	/**
