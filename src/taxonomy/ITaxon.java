@@ -3,10 +3,12 @@
  */
 package taxonomy;
 
+import java.util.List;
 import java.util.Map;
 
 import states.IState;
 import tree.Tree;
+import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
 
 /**
@@ -37,4 +39,22 @@ public interface ITaxon {
 	 * @return The rank of this taxon.
 	 */
 	public TaxonRank getTaxonRank();
+	
+	/**
+	 * Add a relation between structures to the list of relations for this taxon.
+	 * @param r The relation to add.
+	 */
+	public void addRelation(Relation r);
+	
+	/**
+	 * Gets the list of relations between structures for this taxon.
+	 * @return
+	 */
+	public List<Relation> getRelations();
+	
+	/**
+	 * Normalize the names of all the structures, relations and characters
+	 * of this taxon.
+	 */
+	public void normalizeAllNames();
 }
