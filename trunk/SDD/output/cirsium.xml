@@ -1,0 +1,41 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://cs.umb.edu/biosemantics/property/" > 
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/whole_organism">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/lobe"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/corolla"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/base"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/floret"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/chromosome"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/bristle"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/cypsela"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/stem"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/tooth"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/involucre"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/tip"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/leaf"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scale"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/face"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/attachment"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/corolla">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/lobe"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/throat"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/tube"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/bristle">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/cypsela">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/base">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/appendage"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/scale">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/attachment">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scar"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -325,4 +325,25 @@ public class Relation {
         this.inferenceMethod = value;
     }
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Relation [");
+		if (from != null)
+			builder.append("from=").append(from).append(", ");
+		if (modifier != null)
+			builder.append("modifier=").append(modifier).append(", ");
+		if (name != null)
+			builder.append("name=").append(name).append(", ");
+		builder.append("negation=").append(negation).append(", ");
+		if (symmetric != null)
+			builder.append("symmetric=").append(symmetric).append(", ");
+		if (to != null)
+			builder.append("to=").append(to).append(", ");
+		if (value != null)
+			builder.append("value=").append(value);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

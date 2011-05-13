@@ -113,6 +113,8 @@ public class DescriptionParser {
 					branches.add(branch);
 				}
 			}
+			else
+				taxon.addRelation(relation);
 		}
 		for(TreeNode<Structure> branch : branches)
 			taxon.getStructureTree().getRoot().addChild(branch);		

@@ -1,6 +1,8 @@
 package taxonomy;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -8,6 +10,7 @@ import states.IState;
 import tree.Tree;
 import tree.TreeNode;
 import annotationSchema.jaxb.Character;
+import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
 
 /**
@@ -23,6 +26,7 @@ public class TaxonBase implements ITaxon {
 	protected TaxonRank taxonRank;
 	protected Map<Structure, Map<Character, IState>> charMap;
 	protected Tree<Structure> structureTree;
+	protected List<Relation> relations;
 	
 	/**
 	 * Create a new Taxon with a given rank.
@@ -32,6 +36,7 @@ public class TaxonBase implements ITaxon {
 		this.taxonRank = rank;
 		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
+		this.relations = new ArrayList<Relation>();
 	}
 	
 	/**
@@ -44,6 +49,7 @@ public class TaxonBase implements ITaxon {
 		this.name = name;
 		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
+		this.relations = new ArrayList<Relation>();
 	}
 	
 	/* (non-Javadoc)
@@ -70,6 +76,57 @@ public class TaxonBase implements ITaxon {
 	@Override
 	public TaxonRank getTaxonRank() {
 		return this.taxonRank;
+	}
+	
+	/**
+	 * Adds a relation to the list of relations between structures for this taxon.
+	 * @param r The relation to add.
+	 */
+	@Override
+	public void addRelation(Relation r) {
+		this.relations.add(r);
+	}
+
+	/**
+	 * Return the list of relations between structures for this taxon.
+	 * @return
+	 */
+	@Override
+	public List<Relation> getRelations() {
+		return relations;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see taxonomy.ITaxon#normalizeAllNames()
+	 */
+	@Override
+	public void normalizeAllNames() {
+		normalizeRelationNames();
+		normalizeStructureNames();
+	}
+	
+	private void normalizeRelationNames() {
+		for(Relation r: this.relations) {
+			String normalized = normalizeString(r.getName());
+			r.setName(normalized);
+		}
+	}
+	
+	private void normalizeStructureNames() {
+		Iterator<TreeNode<Structure>> iter = this.structureTree.iterator();
+		while(iter.hasNext()) {
+			Structure s = iter.next().getElement();
+			String normalized = normalizeString(s.getName());
+			s.setName(normalized);
+		}
+	}
+
+	private String normalizeString(String name) {
+		String normalized = name.replace("{", "");
+		normalized = normalized.replace("}", "");
+		normalized = normalized.replace(" ", "_");
+		return normalized;
 	}
 
 	/* (non-Javadoc)

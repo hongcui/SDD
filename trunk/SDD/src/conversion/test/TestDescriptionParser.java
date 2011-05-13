@@ -3,13 +3,14 @@
  */
 package conversion.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import taxonomy.ITaxon;
+import taxonomy.TaxonHierarchy;
 import taxonomy.TaxonRank;
 import conversion.DescriptionParser;
 
@@ -43,6 +44,8 @@ public class TestDescriptionParser {
 		ITaxon taxon = parser.parseTaxon();
 		assertFalse(taxon.getStructureTree().isEmpty());
 		System.out.println(taxon);
+		System.out.println(taxon.getRelations());
+		TaxonHierarchy h = new TaxonHierarchy(taxon);
 	}
 
 }
