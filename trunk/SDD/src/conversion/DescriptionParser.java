@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import states.IState;
+import states.StateFactory;
 import taxonomy.ITaxon;
 import taxonomy.TaxonFactory;
 import taxonomy.TaxonRank;
@@ -98,12 +100,13 @@ public class DescriptionParser {
 	 * character-state map.
 	 * @param structure
 	 */
+	@SuppressWarnings("rawtypes")
 	private void processCharacters(Structure structure) {
 		List<annotationSchema.jaxb.Character> characters = structure.getCharacter();
 		for(annotationSchema.jaxb.Character c : characters) {
-			
+			IState state = StateFactory.getStateObject(c);
+			structure.addMapping(c.getName(), state);
 		}
-		
 	}
 
 	/**
@@ -118,9 +121,7 @@ public class DescriptionParser {
 		List<TreeNode<Structure>> branches = new ArrayList<TreeNode<Structure>>();
 		for(Relation relation : relations) {
 			Structure to = (Structure) relation.getTo().get(0);
-			int fromIndex = localStructPool.indexOf(to);
 			Structure from = (Structure) relation.getFrom().get(0);
-			int toIndex = localStructPool.indexOf(from);
 			TreeNode<Structure> inTree = taxon.getStructureTree().contains(to);
 			if(inTree != null && relation.getName().equals("part_of"))
 				inTree.addChild(new TreeNode<Structure>(from));
@@ -134,8 +135,15 @@ public class DescriptionParser {
 					branches.add(branch);
 				}
 			}
-			else
+			else {
 				taxon.addRelation(relation);
+				TreeNode<Structure> containsFrom = containsElement(branches, from);
+				if(containsFrom == null)
+					branches.add(new TreeNode<Structure>(from));
+				TreeNode<Structure> containsTo = containsElement(branches, to);
+				if(containsTo == null)
+					branches.add(new TreeNode<Structure>(to));
+			}
 		}
 		for(TreeNode<Structure> branch : branches)
 			taxon.getStructureTree().getRoot().addChild(branch);		

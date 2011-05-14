@@ -9,11 +9,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import states.IState;
+import states.RangeState;
 import taxonomy.ITaxon;
 import taxonomy.TaxonHierarchy;
 import tree.TreeNode;
-import annotationSchema.jaxb.Character;
+import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
 
 import com.hp.hpl.jena.rdf.model.Model;
@@ -47,6 +50,7 @@ public class RDFConverter {
 		Model taxonModel = ModelFactory.createDefaultModel();
 		Iterator<TreeNode<Structure>> structures = taxon.getStructureTree().iterator();
 		addStructuresToModel(taxonModel, structures);
+		addRelationsToModel(taxonModel, taxon.getRelations());
 		writeRDF(taxonModel, filename);
 	}
 
@@ -60,8 +64,6 @@ public class RDFConverter {
 		while(structures.hasNext()) {
 			TreeNode<Structure> node = structures.next();
 			Structure structure = node.getElement();
-			List<annotationSchema.jaxb.Character> characters = structure.getCharacter();
-			addCharactersToModel(taxonModel, characters);
 			Resource fromResource = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
 					.concat(structure.getName()));
 			Property property = new PropertyImpl(rdfProps.getProperty("prefix.property").concat("has_substructure"));
@@ -70,6 +72,7 @@ public class RDFConverter {
 						.concat(child.getElement().getName()));
 				taxonModel.add(fromResource, property, toResource);
 			}
+			addCharactersToModel(taxonModel, fromResource, structure.getCharStateMap());
 		}
 	}
 
@@ -78,12 +81,47 @@ public class RDFConverter {
 	 * @param taxonModel
 	 * @param characters
 	 */
-	private void addCharactersToModel(Model taxonModel,
-			List<Character> characters) {
-		for(annotationSchema.jaxb.Character c : characters) {
-			
+	@SuppressWarnings({ "rawtypes" })
+	private void addCharactersToModel(Model taxonModel, Resource subject,
+			Map<String, IState> map) {
+		for(String s : map.keySet()) {
+			IState state = map.get(s);
+			if(state instanceof RangeState) {	//break this into two char names
+				Property predicateFrom = 
+					new PropertyImpl(rdfProps.getProperty("prefix.character")
+							.concat(s.concat("_from")));
+				Property predicateTo = 
+					new PropertyImpl(rdfProps.getProperty("prefix.character")
+							.concat(s.concat("_to")));
+				taxonModel.add(subject, predicateFrom, 
+							taxonModel.createTypedLiteral(state.getMap().get("from value")));
+				taxonModel.add(subject, predicateTo,
+							taxonModel.createTypedLiteral(state.getMap().get("to value")));
+			}
+			else {
+				Property predicate = 
+					new PropertyImpl(rdfProps.getProperty("prefix.character").concat(s));
+				taxonModel.add(subject, predicate,
+						taxonModel.createTypedLiteral(state.getMap().get("value")));
+			}
 		}
-		
+	}
+	
+	/**
+	 * Adds all of the relations to the model.
+	 * @param taxonModel
+	 * @param relations
+	 */
+	private void addRelationsToModel(Model taxonModel, List<Relation> relations) {
+		for(Relation r : relations) {
+			Resource from = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
+					.concat(((Structure)r.getFrom().get(0)).getName()));
+			Resource to = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
+					.concat(((Structure)r.getTo().get(0)).getName()));
+			Property predicate = new PropertyImpl(rdfProps.getProperty("prefix.property")
+					.concat(r.getName()));
+			taxonModel.add(from, predicate, to);
+		}
 	}
 
 	/**
