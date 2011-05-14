@@ -46,7 +46,7 @@ public class TestFilenameTaxonDao {
 	@Test
 	public final void testGetConnection() {
 		try {
-			Connection conn = dao.getConnection();
+			Connection conn = dao.getConnection("toboston");
 			assertTrue(conn.isValid(30));
 			conn.close();
 			assertTrue(conn.isClosed());
