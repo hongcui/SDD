@@ -12,6 +12,7 @@ import tree.TreeNode;
 import annotationSchema.jaxb.Character;
 import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
+import dao.SingularPluralDao;
 
 /**
  * Base class for all Taxa.  Every taxa has a scientific name, a rank (Family, Genus, species etc.), 
@@ -27,6 +28,7 @@ public class TaxonBase implements ITaxon {
 	protected Map<Structure, Map<Character, IState>> charMap;
 	protected Tree<Structure> structureTree;
 	protected List<Relation> relations;
+	protected SingularPluralDao singularPluralDao;
 	
 	/**
 	 * Create a new Taxon with a given rank.
@@ -37,6 +39,7 @@ public class TaxonBase implements ITaxon {
 		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
 		this.relations = new ArrayList<Relation>();
+		this.singularPluralDao = new SingularPluralDao();
 	}
 	
 	/**
@@ -50,6 +53,7 @@ public class TaxonBase implements ITaxon {
 		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
 		this.relations = new ArrayList<Relation>();
+		this.singularPluralDao = new SingularPluralDao();
 	}
 	
 	/* (non-Javadoc)
@@ -106,6 +110,16 @@ public class TaxonBase implements ITaxon {
 		normalizeStructureNames();
 	}
 	
+	private void normalizeCharacterNames(List<annotationSchema.jaxb.Character> chars) {
+		for(Character c : chars) {
+			String normalized = normalizeString(c.getName());
+			List<String> singular = singularPluralDao.getSingularForPlural(normalized);
+			if(!singular.isEmpty())
+				normalized = singular.get(0);
+			c.setName(normalized);
+		}
+	}
+
 	private void normalizeRelationNames() {
 		for(Relation r: this.relations) {
 			String normalized = normalizeString(r.getName());
@@ -119,6 +133,7 @@ public class TaxonBase implements ITaxon {
 			Structure s = iter.next().getElement();
 			String normalized = normalizeString(s.getName());
 			s.setName(normalized);
+			normalizeCharacterNames(s.getCharacter());
 		}
 	}
 

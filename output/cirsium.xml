@@ -1,41 +1,155 @@
 <rdf:RDF
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:j.0="http://cs.umb.edu/biosemantics/property/" > 
+    xmlns:j.0="http://cs.umb.edu/biosemantics/property/"
+    xmlns:j.1="http://cs.umb.edu/biosemantics/character/" > 
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/pappus">
+    <j.0:in rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
+    <j.1:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">falling</j.1:orientation>
+    <j.1:duration rdf:datatype="http://www.w3.org/2001/XMLSchema#string">persistent</j.1:duration>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/tip">
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">elongate</j.1:shape>
+    <j.1:STRUCTURE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">style</j.1:STRUCTURE>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/receptacle">
+    <j.0:covered rdf:resource="http://cs.umb.edu/biosemantics/structure/scale"/>
+    <j.0:covered rdf:resource="http://cs.umb.edu/biosemantics/structure/bristle"/>
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">convex</j.1:shape>
+    <j.1:architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">epaleate</j.1:architecture>
+  </rdf:Description>
   <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/whole_organism">
+    <j.1:life_style rdf:datatype="http://www.w3.org/2001/XMLSchema#string">perennial</j.1:life_style>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/lobe"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/corolla"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/base"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/floret"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/chromosome"/>
-    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/bristle"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/middle"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/pappus"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/cypsela"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/bristle"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/stem"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/apex"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/tooth"/>
-    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/involucre"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/tip"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/involucre"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/array"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/rim"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/leaf"/>
+    <j.1:architecture_or_shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spiny</j.1:architecture_or_shape>
+    <j.1:size_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">400</j.1:size_to>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scale"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/face"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/receptacle"/>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/head"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/attachment"/>
+    <j.1:size_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">5</j.1:size_from>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/scar">
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">angled</j.1:shape>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/leaf">
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">lobed</j.1:shape>
+    <j.1:insertion_or_position rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cauline</j.1:insertion_or_position>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/bristle">
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">flattened</j.1:shape>
+    <j.1:count rdf:datatype="http://www.w3.org/2001/XMLSchema#string">many</j.1:count>
+    <j.1:architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">plumose</j.1:architecture>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
+    <j.1:o rdf:datatype="http://www.w3.org/2001/XMLSchema#string">coloration</j.1:o>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/stem">
+    <j.1:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">erect</j.1:orientation>
+    <j.1:architecture_or_shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">branched</j.1:architecture_or_shape>
+    <j.1:architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spiny-winged</j.1:architecture>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/apex">
+    <j.0:may_be_the_same rdf:resource="http://cs.umb.edu/biosemantics/structure/apex"/>
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">dentate</j.1:shape>
+    <j.1:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">erect</j.1:orientation>
+    <j.1:architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spineless</j.1:architecture>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/head">
+    <j.0:in rdf:resource="http://cs.umb.edu/biosemantics/structure/array"/>
+    <j.1:shape_or_architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">discoid</j.1:shape_or_architecture>
+    <j.1:insertion_or_position rdf:datatype="http://www.w3.org/2001/XMLSchema#string">terminal</j.1:insertion_or_position>
+    <j.1:arrangement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">singly</j.1:arrangement>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/tube">
+    <j.1:size rdf:datatype="http://www.w3.org/2001/XMLSchema#string">slender</j.1:size>
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bent</j.1:shape>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/middle">
+    <j.0:with rdf:resource="http://cs.umb.edu/biosemantics/structure/base"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/array">
+    <j.1:architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">corymbiform</j.1:architecture>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/scale">
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">flattened</j.1:shape>
+    <j.1:count rdf:datatype="http://www.w3.org/2001/XMLSchema#string">many</j.1:count>
+    <j.1:architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">plumose</j.1:architecture>
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">setiform</j.1:shape>
+    <j.1:o rdf:datatype="http://www.w3.org/2001/XMLSchema#string">coloration</j.1:o>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/attachment">
+    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scar"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/corolla">
+    <j.1:coloration rdf:datatype="http://www.w3.org/2001/XMLSchema#string">purple</j.1:coloration>
+    <j.1:arrangement rdf:datatype="http://www.w3.org/2001/XMLSchema#string">bilateral</j.1:arrangement>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/lobe"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/throat"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/tube"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/bristle">
-    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
-  </rdf:Description>
   <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/cypsela">
+    <j.0:with rdf:resource="http://cs.umb.edu/biosemantics/structure/rim"/>
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">compressed</j.1:shape>
+    <j.1:pubescence rdf:datatype="http://www.w3.org/2001/XMLSchema#string">glabrous</j.1:pubescence>
+    <j.1:architecture_or_shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ribbed</j.1:architecture_or_shape>
+    <j.1:architecture_or_relief rdf:datatype="http://www.w3.org/2001/XMLSchema#string">smooth</j.1:architecture_or_relief>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/appendage">
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">linear-oblong</j.1:shape>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/series">
+    <j.1:count_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">5</j.1:count_to>
+    <j.1:count_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3</j.1:count_from>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/lobe">
+    <j.1:arrangement_or_shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">linear</j.1:arrangement_or_shape>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/face">
+    <j.1:pubescence rdf:datatype="http://www.w3.org/2001/XMLSchema#string">gray-canescent</j.1:pubescence>
+    <j.1:coloration rdf:datatype="http://www.w3.org/2001/XMLSchema#string">green</j.1:coloration>
+    <j.1:architecture rdf:datatype="http://www.w3.org/2001/XMLSchema#string">eglandular</j.1:architecture>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/throat">
+    <j.1:size rdf:datatype="http://www.w3.org/2001/XMLSchema#string">expanded</j.1:size>
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cylindric</j.1:shape>
   </rdf:Description>
   <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/base">
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">short-tailed</j.1:shape>
+    <j.1:STRUCTURE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">anther</j.1:STRUCTURE>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/appendage"/>
+    <j.1:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">appressed</j.1:orientation>
   </rdf:Description>
-  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/scale">
-    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/floret">
+    <j.1:count_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">200</j.1:count_to>
+    <j.1:count_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25</j.1:count_from>
   </rdf:Description>
-  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/attachment">
-    <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scar"/>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/chromosome">
+    <j.1:count rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17</j.1:count>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/involucre">
+    <j.1:width_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">8</j.1:width_to>
+    <j.1:width_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">]1</j.1:width_from>
+    <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spheric</j.1:shape>
+    <j.1:length_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6</j.1:length_to>
+    <j.1:length_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">[1</j.1:length_from>
   </rdf:Description>
 </rdf:RDF>
