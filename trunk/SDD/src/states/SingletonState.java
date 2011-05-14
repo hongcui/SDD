@@ -46,10 +46,20 @@ public class SingletonState<T> implements IState<T> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see states.IState#getUnit()
+	 * @see states.IState#getFromUnit()
 	 */
-	public String getUnit() {
-		return unit;
+	@Override
+	public String getFromUnit() {
+		return this.unit;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see states.IState#toUnit()
+	 */
+	@Override
+	public String getToUnit() {
+		return this.unit;
 	}
 
 }
