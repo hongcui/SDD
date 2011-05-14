@@ -3,14 +3,24 @@
  */
 package states;
 
-import taxonomy.ITaxon;
+import java.util.Map;
 
 /**
  * All State objects will implement this base interface.
  * @author Alex
  *
  */
-public interface IState {
+public interface IState<T> {
 	
-	public ITaxon getTaxon();
+	/**
+	 * Get the value(s) of this state.
+	 * @return
+	 */
+	public Map<String, T> getMap();
+	
+	/**
+	 * Get the unit of the state, if any.
+	 * @return
+	 */
+	public String getUnit();
 }

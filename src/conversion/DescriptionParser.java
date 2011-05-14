@@ -44,7 +44,7 @@ public class DescriptionParser {
 	}
 	
 	/**
-	 * Parses the filename of the taxon.
+	 * Parses the file of the taxon.
 	 */
 	public ITaxon parseTaxon() {
 		ITaxon taxon = TaxonFactory.getTaxonObject(taxonRank, taxonName);
@@ -75,6 +75,7 @@ public class DescriptionParser {
 			for(Object o : statement.getRelationOrStructure()) {
 				if(o instanceof Structure) {
 					Structure structure = (Structure) o;
+					processCharacters(structure);
 					//the whole organism structure should come first
 					if(structure.getName().equals("whole_organism"))
 						taxon.getStructureTree().setRoot(new TreeNode<Structure>(structure));
@@ -92,6 +93,26 @@ public class DescriptionParser {
 		}
 	}
 
+	/**
+	 * Process each character into a map entry character->state for the structure's
+	 * character-state map.
+	 * @param structure
+	 */
+	private void processCharacters(Structure structure) {
+		List<annotationSchema.jaxb.Character> characters = structure.getCharacter();
+		for(annotationSchema.jaxb.Character c : characters) {
+			
+		}
+		
+	}
+
+	/**
+	 * Place structures into structure tree in a manner consistent
+	 * with the given relations between the structures.
+	 * @param taxon
+	 * @param localStructPool
+	 * @param relations
+	 */
 	private void placeStructuresAccordingToRelations(ITaxon taxon,
 			List<Structure> localStructPool, List<Relation> relations) {
 		List<TreeNode<Structure>> branches = new ArrayList<TreeNode<Structure>>();

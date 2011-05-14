@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,13 +16,10 @@ import taxonomy.TaxonRank;
  * @author Alex
  *
  */
-public class FilenameTaxonDao {
+public class FilenameTaxonDao extends BaseDao{
 	
-	private static DatabaseProperties props = new DatabaseProperties();
-	private static final String URL = (String) props.get("url") + "toboston";
-	private static final String USER = (String) props.get("user");
-	private static final String PASSWORD = (String) props.get("password");
-	private static final String DRIVER = (String) props.get("driver");
+	private String database = "toboston";
+	
 	/**
 	 * Ordered list of taxon ranks.
 	 */
@@ -38,23 +34,6 @@ public class FilenameTaxonDao {
 		for(String s : list)
 			taxonRank.add(s);
 	}
-
-	/**
-	 * Gets a new connection to the "toboston" MySQL database.
-	 * @return
-	 * @throws SQLException
-	 */
-	public Connection getConnection() throws SQLException {
-		Connection con = null;
-		try {
-			Class.forName(DRIVER);
-			con = DriverManager.getConnection(URL, USER, PASSWORD);
-		} catch (ClassNotFoundException e) {
-			System.out.println(e.getMessage());
-			System.exit(-1);
-		}
-		return con;
-	}
 	
 	/**
 	 * Gets a map of taxon level values for a given file.
@@ -66,8 +45,8 @@ public class FilenameTaxonDao {
 		ResultSet rs = null;
 		Connection conn = null;
 		try {
-			conn = getConnection();
-			Statement s = getConnection().createStatement();
+			conn = getConnection(database);
+			Statement s = conn.createStatement();
 			rs = s.executeQuery("SELECT * FROM fnav19_filename2taxon WHERE filename = '" + filename +"';");
 			while(rs.next()) {
 				result.put("family", rs.getString("family"));
@@ -105,8 +84,8 @@ public class FilenameTaxonDao {
 		ResultSet rs = null;
 		Connection conn = null;
 		try {
-			conn = getConnection();
-			Statement s = getConnection().createStatement();
+			conn = getConnection(database);
+			Statement s = conn.createStatement();
 			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE "
 					+ taxon + " = '" + name +"';");
 			while(rs.next()) {
@@ -134,8 +113,8 @@ public class FilenameTaxonDao {
 		ResultSet rs = null;
 		Connection conn = null;
 		try {
-			conn = getConnection();
-			Statement s = getConnection().createStatement();
+			conn = getConnection(database);
+			Statement s = conn.createStatement();
 			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE family = '" + familyName 
 					+"' and subfamily = '' and tribe = '' and subtribe = '' and genus = '' "
 					+"and subgenus = '' and section = '' and subsection = '' "
@@ -172,8 +151,8 @@ public class FilenameTaxonDao {
 		ResultSet rs = null;
 		Connection conn = null;
 		try {
-			conn = getConnection();
-			Statement s = getConnection().createStatement();
+			conn = getConnection(database);
+			Statement s = conn.createStatement();
 			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE " + whereClause + ";");
 			while(rs.next()) {
 				result = rs.getString("filename");

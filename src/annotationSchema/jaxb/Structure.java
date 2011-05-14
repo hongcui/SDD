@@ -10,6 +10,9 @@ package annotationSchema.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -19,6 +22,8 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import states.IState;
 
 
 /**
@@ -66,6 +71,9 @@ public class Structure {
     protected String constraintParentOrgan;
     @XmlAttribute(required = true)
     protected String name;
+    
+    @SuppressWarnings("rawtypes")
+	protected Map<String, IState> stateMap;
 
     /**
      * Gets the value of the character property.
@@ -215,6 +223,28 @@ public class Structure {
     public void setName(String value) {
         this.name = value;
     }
+
+	/**
+	 * @return the stateMap
+	 */
+	@SuppressWarnings("rawtypes")
+	public Map<String, IState> getCharStateMap() {
+		if(stateMap == null)
+			stateMap = new TreeMap<String, IState>();
+		return stateMap;
+	}
+	
+	/**
+	 * Convenience method for adding a mapping to the stateMap.
+	 * @param c Character name.
+	 * @param s State.
+	 */
+	@SuppressWarnings("rawtypes")
+	public void addMapping(String charName, IState state) {
+		if(stateMap == null)
+			stateMap = new TreeMap<String, IState>();
+		stateMap.put(charName, state);
+	}
 
 	@Override
 	public String toString() {
