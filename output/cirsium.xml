@@ -34,17 +34,19 @@
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/tip"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/involucre"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/array"/>
+    <j.1:size_to rdf:datatype="http://www.w3.org/2001/XMLSchema#double">400.0</j.1:size_to>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/series"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/rim"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/leaf"/>
+    <j.0:size_from_unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cm</j.0:size_from_unit>
     <j.1:architecture_or_shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spiny</j.1:architecture_or_shape>
-    <j.1:size_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">400</j.1:size_to>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/scale"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/face"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/receptacle"/>
+    <j.0:size_to_unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cm</j.0:size_to_unit>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/head"/>
     <j.0:has_substructure rdf:resource="http://cs.umb.edu/biosemantics/structure/attachment"/>
-    <j.1:size_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">5</j.1:size_from>
+    <j.1:size_from rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.0</j.1:size_from>
   </rdf:Description>
   <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/scar">
     <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">angled</j.1:shape>
@@ -146,10 +148,14 @@
     <j.1:count rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17</j.1:count>
   </rdf:Description>
   <rdf:Description rdf:about="http://cs.umb.edu/biosemantics/structure/involucre">
-    <j.1:width_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">8</j.1:width_to>
-    <j.1:width_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">]1</j.1:width_from>
+    <j.0:width_to_unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cm</j.0:width_to_unit>
+    <j.0:width_from_unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cm</j.0:width_from_unit>
+    <j.1:width_to rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.0</j.1:width_to>
+    <j.1:width_from rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.0</j.1:width_from>
     <j.1:shape rdf:datatype="http://www.w3.org/2001/XMLSchema#string">spheric</j.1:shape>
-    <j.1:length_to rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6</j.1:length_to>
-    <j.1:length_from rdf:datatype="http://www.w3.org/2001/XMLSchema#string">[1</j.1:length_from>
+    <j.0:length_to_unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cm</j.0:length_to_unit>
+    <j.0:length_from_unit rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cm</j.0:length_from_unit>
+    <j.1:length_to rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.0</j.1:length_to>
+    <j.1:length_from rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.0</j.1:length_from>
   </rdf:Description>
 </rdf:RDF>

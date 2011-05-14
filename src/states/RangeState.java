@@ -10,7 +10,7 @@ import java.util.Map;
 public class RangeState<T> implements IState<T> {
 	
 	private Map<String, T> map;
-	private String unit;
+	private String fromUnit, toUnit;
 	
 	/**
 	 * Create a new ranged state.
@@ -29,11 +29,12 @@ public class RangeState<T> implements IState<T> {
 	 * @param to
 	 * @param unit
 	 */
-	public RangeState(T from, T to, String unit) {
+	public RangeState(T from, T to, String fromUnit, String toUnit) {
 		this.map = new HashMap<String, T>();
 		this.map.put("from value", from);
 		this.map.put("to value", to);
-		this.unit = unit;
+		this.fromUnit = fromUnit;
+		this.toUnit = toUnit;
 	}
 
 	/*
@@ -47,11 +48,20 @@ public class RangeState<T> implements IState<T> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see states.IState#getUnit()
+	 * @see states.IState#getFromUnit()
 	 */
 	@Override
-	public String getUnit() {
-		return this.unit;
+	public String getFromUnit() {
+		return this.fromUnit;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see states.IState#toUnit()
+	 */
+	@Override
+	public String getToUnit() {
+		return this.toUnit;
 	}
 
 }

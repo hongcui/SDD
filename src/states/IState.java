@@ -19,8 +19,14 @@ public interface IState<T> {
 	public Map<String, T> getMap();
 	
 	/**
-	 * Get the unit of the state, if any.
+	 * Get the from unit of the state, if any.
 	 * @return
 	 */
-	public String getUnit();
+	public String getFromUnit();
+	
+	/**
+	 * Get the to unit of the state, if any.
+	 * @return
+	 */
+	public String getToUnit();
 }

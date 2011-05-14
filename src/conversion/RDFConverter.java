@@ -97,13 +97,35 @@ public class RDFConverter {
 							taxonModel.createTypedLiteral(state.getMap().get("from value")));
 				taxonModel.add(subject, predicateTo,
 							taxonModel.createTypedLiteral(state.getMap().get("to value")));
+				if(state.getFromUnit() != null) {
+					Property unitPredicate =
+						new PropertyImpl(rdfProps.getProperty("prefix.property")
+								.concat(s + "_from_unit"));
+					taxonModel.add(subject, unitPredicate,
+							taxonModel.createTypedLiteral(state.getFromUnit()));
+				}
+				if(state.getToUnit() != null) {
+					Property unitPredicate =
+						new PropertyImpl(rdfProps.getProperty("prefix.property")
+								.concat(s + "_to_unit"));
+					taxonModel.add(subject, unitPredicate,
+							taxonModel.createTypedLiteral(state.getToUnit()));
+				}
 			}
 			else {
 				Property predicate = 
 					new PropertyImpl(rdfProps.getProperty("prefix.character").concat(s));
 				taxonModel.add(subject, predicate,
 						taxonModel.createTypedLiteral(state.getMap().get("value")));
+				if(state.getFromUnit() != null) {
+					Property unitPredicate =
+						new PropertyImpl(rdfProps.getProperty("prefix.property")
+								.concat(s + "_unit"));
+					taxonModel.add(subject, unitPredicate,
+							taxonModel.createTypedLiteral(state.getFromUnit()));
+				}
 			}
+			
 		}
 	}
 	
