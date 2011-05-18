@@ -45,8 +45,8 @@ public class RDFConverter {
 	
 	/**
 	 * Convert a Taxon object into an RDF model.
-	 * @param taxon
-	 * @param filename
+	 * @param taxon Taxon for which RDF model should be generated.
+	 * @param filename Name of file to output RDF/XML to.
 	 */
 	public void taxonToRDF(ITaxon taxon, String filename) {
 		Model taxonModel = ModelFactory.createDefaultModel();
@@ -54,6 +54,19 @@ public class RDFConverter {
 		addStructuresToModel(taxonModel, structures);
 		addRelationsToModel(taxonModel, taxon.getRelations());
 		writeRDF(taxonModel, filename);
+	}
+	
+	/**
+	 * Create an RDF model for a given Taxon object.
+	 * @param taxon Taxon for which RDF model should be generated.
+	 * @return The corresponding RDF model.
+	 */
+	public Model taxonToRDF(ITaxon taxon) {
+		Model taxonModel = ModelFactory.createDefaultModel();
+		Iterator<TreeNode<Structure>> structures = taxon.getStructureTree().iterator();
+		addStructuresToModel(taxonModel, structures);
+		addRelationsToModel(taxonModel, taxon.getRelations());
+		return taxonModel;
 	}
 
 	/**
