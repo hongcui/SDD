@@ -29,4 +29,28 @@ public interface IState<T> {
 	 * @return
 	 */
 	public String getToUnit();
+	
+	/**
+	 * Adds a modifier to this state.
+	 * @param modifier
+	 */
+	public void addModifier(String modifier);
+	
+	/**
+	 * Get the modifier of this state, if any.
+	 * @return
+	 */
+	public String getModifier();
+	
+	/**
+	 * Add a constraint to this state.
+	 * @param constraint
+	 */
+	public void addConstraint(String constraint);
+	
+	/**
+	 * Return the constraint on this state, if any.
+	 * @return
+	 */
+	public String getConstraint();
 }

@@ -58,9 +58,13 @@ public class DescriptionParser {
 			Description description = treatment.getDescription();
 			List<Statement> statementList = description.getStatement();
 			buildStructureTree(taxon, statementList);
+			for(Statement statement : statementList) {
+				taxon.addStatementTextEntry(statement.getId(), statement.getText());
+			}
 		} catch(JAXBException e) {
 			e.printStackTrace();
 		}
+		taxon.normalizeAllNames();
 		return taxon;
 	}
 	
@@ -96,7 +100,7 @@ public class DescriptionParser {
 	}
 
 	/**
-	 * Process each character into a map entry character->state for the structure's
+	 * Process each character into a map entry character name->state for the structure's
 	 * character-state map.
 	 * @param structure
 	 */
@@ -106,6 +110,9 @@ public class DescriptionParser {
 		for(annotationSchema.jaxb.Character c : characters) {
 			IState state = StateFactory.getStateObject(c);
 			structure.addMapping(c.getName(), state);
+			String modifier = c.getModifier();
+			if(modifier != null)
+				structure.addModifierToCharName(c.getName(), modifier);
 		}
 	}
 

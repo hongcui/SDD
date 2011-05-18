@@ -76,6 +76,8 @@ public class Structure {
     @SuppressWarnings("rawtypes")
     @XmlTransient
 	protected Map<String, IState> stateMap;
+    @XmlTransient
+    protected Map<String, String> modifierMap;
 
     /**
      * Gets the value of the character property.
@@ -246,6 +248,27 @@ public class Structure {
 		if(stateMap == null)
 			stateMap = new TreeMap<String, IState>();
 		stateMap.put(charName, state);
+	}
+
+	/**
+	 * Return a map from character names to modifiers.
+	 * @return the modifierMap
+	 */
+	public Map<String, String> getModifierMap() {
+		if(modifierMap == null)
+			modifierMap = new TreeMap<String, String>();
+		return modifierMap;
+	}
+	
+	/**
+	 * Adds a new mapping from character name to modifier
+	 * @param charName
+	 * @param modifier
+	 */
+	public void addModifierToCharName(String charName, String modifier) {
+		if(this.modifierMap == null)
+			modifierMap = new TreeMap<String, String>();
+		modifierMap.put(charName, modifier);
 	}
 
 	@Override

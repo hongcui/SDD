@@ -28,6 +28,7 @@ public class TaxonBase implements ITaxon {
 	protected Map<Structure, Map<Character, IState>> charMap;
 	protected Tree<Structure> structureTree;
 	protected List<Relation> relations;
+	protected Map<String, String> statementTextMap;
 	protected SingularPluralDao singularPluralDao;
 	
 	/**
@@ -40,6 +41,7 @@ public class TaxonBase implements ITaxon {
 		this.structureTree = new Tree<Structure>();
 		this.relations = new ArrayList<Relation>();
 		this.singularPluralDao = new SingularPluralDao();
+		this.statementTextMap = new TreeMap<String, String>();
 	}
 	
 	/**
@@ -54,6 +56,7 @@ public class TaxonBase implements ITaxon {
 		this.structureTree = new Tree<Structure>();
 		this.relations = new ArrayList<Relation>();
 		this.singularPluralDao = new SingularPluralDao();
+		this.statementTextMap = new TreeMap<String, String>();
 	}
 	
 	/* (non-Javadoc)
@@ -110,6 +113,24 @@ public class TaxonBase implements ITaxon {
 		normalizeStructureNames();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see taxonomy.ITaxon#getStatementTextMap()
+	 */
+	@Override
+	public Map<String, String> getStatementTextMap() {
+		return this.statementTextMap;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see taxonomy.ITaxon#addStatementTextEntry(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void addStatementTextEntry(String statementId, String text) {
+		this.statementTextMap.put(statementId, text);
+	}
+	
 	private void normalizeCharacterNames(List<annotationSchema.jaxb.Character> chars) {
 		for(Character c : chars) {
 			String normalized = normalizeString(c.getName());
@@ -134,7 +155,28 @@ public class TaxonBase implements ITaxon {
 			String normalized = normalizeString(s.getName());
 			s.setName(normalized);
 			normalizeCharacterNames(s.getCharacter());
+			normalizeCharacterNameMaps(s.getCharStateMap(), s.getModifierMap());
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void normalizeCharacterNameMaps(Map<String, IState> charStateMap,
+			Map<String, String> modifierMap) {
+		for(String s : charStateMap.keySet()) {
+			String normalized = normalizeString(s);
+			List<String> singular = singularPluralDao.getSingularForPlural(normalized);
+			if(!singular.isEmpty())
+				normalized = singular.get(0);
+			s = normalized;
+		}
+		for(String s : modifierMap.keySet()) {
+			String normalized = normalizeString(s);
+			List<String> singular = singularPluralDao.getSingularForPlural(normalized);
+			if(!singular.isEmpty())
+				normalized = singular.get(0);
+			s = normalized;
+		}
+		
 	}
 
 	private String normalizeString(String name) {

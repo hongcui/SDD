@@ -19,9 +19,11 @@ import tree.TreeNode;
 import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
 
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
@@ -78,8 +80,9 @@ public class RDFConverter {
 
 	/**
 	 * Add all of the characters of a structure to an RDF model.
-	 * @param taxonModel
-	 * @param characters
+	 * @param taxonModel Model to add relations to.
+	 * @param subject The structure to add characters of
+	 * @param map Map from character name to state
 	 */
 	@SuppressWarnings({ "rawtypes" })
 	private void addCharactersToModel(Model taxonModel, Resource subject,
@@ -93,10 +96,18 @@ public class RDFConverter {
 				Property predicateTo = 
 					new PropertyImpl(rdfProps.getProperty("prefix.character")
 							.concat(s.concat("_to")));
-				taxonModel.add(subject, predicateFrom, 
-							taxonModel.createTypedLiteral(state.getMap().get("from value")));
-				taxonModel.add(subject, predicateTo,
-							taxonModel.createTypedLiteral(state.getMap().get("to value")));
+				Literal stateObjectFrom = taxonModel.createTypedLiteral(state.getMap().get("from value"));
+				taxonModel.add(subject, predicateFrom, stateObjectFrom);
+				Literal stateObjectTo = taxonModel.createTypedLiteral(state.getMap().get("to value"));
+				taxonModel.add(subject, predicateTo,stateObjectTo);
+				if(state.getModifier() != null) {
+					addModifier(taxonModel, subject, predicateFrom, state);
+					addModifier(taxonModel, subject, predicateTo, state);
+				}
+				if(state.getConstraint() != null) {
+					addConstraint(taxonModel, subject, predicateFrom, state);
+					addConstraint(taxonModel, subject, predicateTo, state);
+				}
 				if(state.getFromUnit() != null) {
 					Property unitPredicate =
 						new PropertyImpl(rdfProps.getProperty("prefix.property")
@@ -117,6 +128,10 @@ public class RDFConverter {
 					new PropertyImpl(rdfProps.getProperty("prefix.character").concat(s));
 				taxonModel.add(subject, predicate,
 						taxonModel.createTypedLiteral(state.getMap().get("value")));
+				if(state.getModifier() != null)
+					addModifier(taxonModel, subject, predicate, state);
+				if(state.getConstraint() != null)
+					addConstraint(taxonModel, subject, predicate, state);
 				if(state.getFromUnit() != null) {
 					Property unitPredicate =
 						new PropertyImpl(rdfProps.getProperty("prefix.property")
@@ -128,7 +143,39 @@ public class RDFConverter {
 			
 		}
 	}
-	
+
+	/**
+	 * Attach a constraint predicate (referring to a particular character property)
+	 * to a structure/resource.
+	 * @param taxonModel
+	 * @param subject
+	 * @param predicate
+	 * @param state
+	 */
+	private void addConstraint(Model taxonModel, Resource subject, Property predicate,
+			IState state) {
+		String s = predicate.getURI();
+		Property constraintPredicate = new PropertyImpl(s.concat("/constraint"));
+		Literal constraint = taxonModel.createTypedLiteral(state.getConstraint());
+		taxonModel.add(subject, constraintPredicate, constraint);
+	}
+
+	/**
+	 * Attach a modifier property (referring to a particular character property)
+	 * to a structure/resource.
+	 * @param taxonModel
+	 * @param subject
+	 * @param predicate
+	 * @param state
+	 */
+	private void addModifier(Model taxonModel, Resource subject, Property predicate,
+			IState state) {
+		String s = predicate.getURI();
+		Property modifierPredicate = new PropertyImpl(s.concat("/modifier"));
+		Literal modifier = taxonModel.createTypedLiteral(state.getModifier());
+		taxonModel.add(subject, modifierPredicate, modifier);		
+	}
+
 	/**
 	 * Adds all of the relations to the model.
 	 * @param taxonModel
