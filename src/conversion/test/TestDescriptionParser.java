@@ -5,6 +5,8 @@ package conversion.test;
 
 import static org.junit.Assert.assertFalse;
 
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,13 +22,13 @@ import conversion.DescriptionParser;
  */
 public class TestDescriptionParser {
 
-	DescriptionParser parser;
+	private DescriptionParser parser = new DescriptionParser("cirsium", TaxonRank.GENUS);
+	private ITaxon taxon = parser.parseTaxon();
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
-		parser = new DescriptionParser("cirsium", TaxonRank.GENUS);
 	}
 
 	/**
@@ -41,11 +43,17 @@ public class TestDescriptionParser {
 	 */
 	@Test
 	public void testParseTaxon() {
-		ITaxon taxon = parser.parseTaxon();
 		assertFalse(taxon.getStructureTree().isEmpty());
 		System.out.println(taxon);
 		System.out.println(taxon.getRelations());
 		TaxonHierarchy h = new TaxonHierarchy(taxon);
+	}
+	
+	@Test
+	public void testGetTextMap() {
+		Map<String, String> map = taxon.getStatementTextMap();
+		assertFalse(map.isEmpty());
+		System.out.println(map.toString());
 	}
 
 }

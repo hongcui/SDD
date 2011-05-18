@@ -63,7 +63,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "character")
 public class Character {
 
-    @XmlAttribute(name = "char_type")
+	@XmlAttribute(name = "char_type")
     protected String charType;
     @XmlAttribute
     protected String modifier;
@@ -593,5 +593,60 @@ public class Character {
     public void setId(String value) {
         this.id = value;
     }
+    
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Character [");
+		if (charType != null)
+			builder.append("charType=").append(charType).append(", ");
+		if (modifier != null)
+			builder.append("modifier=").append(modifier).append(", ");
+		if (colorModifier != null)
+			builder.append("colorModifier=").append(colorModifier).append(", ");
+		if (degreeModifier != null)
+			builder.append("degreeModifier=").append(degreeModifier)
+					.append(", ");
+		if (frequencyModifier != null)
+			builder.append("frequencyModifier=").append(frequencyModifier)
+					.append(", ");
+		if (from != null)
+			builder.append("from=").append(from).append(", ");
+		if (fromInclusive != null)
+			builder.append("fromInclusive=").append(fromInclusive).append(", ");
+		if (name != null)
+			builder.append("name=").append(name).append(", ");
+		if (qualityModifier != null)
+			builder.append("qualityModifier=").append(qualityModifier)
+					.append(", ");
+		if (to != null)
+			builder.append("to=").append(to).append(", ");
+		if (toInclusive != null)
+			builder.append("toInclusive=").append(toInclusive).append(", ");
+		if (fromUnit != null)
+			builder.append("fromUnit=").append(fromUnit).append(", ");
+		if (toUnit != null)
+			builder.append("toUnit=").append(toUnit).append(", ");
+		if (unit != null)
+			builder.append("unit=").append(unit).append(", ");
+		if (upperRestricted != null)
+			builder.append("upperRestricted=").append(upperRestricted)
+					.append(", ");
+		if (value != null)
+			builder.append("value=").append(value).append(", ");
+		if (negation != null)
+			builder.append("negation=").append(negation).append(", ");
+		if (constraint != null)
+			builder.append("constraint=").append(constraint).append(", ");
+		if (constraintid != null)
+			builder.append("constraintid=").append(constraintid).append(", ");
+		if (id != null)
+			builder.append("id=").append(id);
+		builder.append("]");
+		return builder.toString();
+	}
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 public class SingletonState<T> implements IState<T> {
 	
 	private Map<String, T> map;
-	private String unit;
+	private String unit, modifier, constraint;
 	
 	/**
 	 * Create a new state with given value.
@@ -60,6 +60,26 @@ public class SingletonState<T> implements IState<T> {
 	@Override
 	public String getToUnit() {
 		return this.unit;
+	}
+
+	@Override
+	public void addModifier(String modifier) {
+		this.modifier = modifier;
+	}
+
+	@Override
+	public String getModifier() {
+		return this.modifier;
+	}
+
+	@Override
+	public void addConstraint(String constraint) {
+		this.constraint = constraint;
+	}
+
+	@Override
+	public String getConstraint() {
+		return this.constraint;
 	}
 
 }

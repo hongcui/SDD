@@ -57,4 +57,17 @@ public interface ITaxon {
 	 * of this taxon.
 	 */
 	public void normalizeAllNames();
+	
+	/**
+	 * Returns a map from statement ids to the text contained therein.
+	 * @return
+	 */
+	public Map<String, String> getStatementTextMap();
+	
+	/**
+	 * Adds a statementId->text entry to the map for this taxon.
+	 * @param statementId
+	 * @param text
+	 */
+	public void addStatementTextEntry(String statementId, String text);
 }

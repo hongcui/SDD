@@ -22,10 +22,17 @@ public class StateFactory {
 					from = -1.0;
 					to = -1.0;
 				}
-				return new RangeState<Double>(from, to,	c.getFromUnit(), c.getToUnit());
+				RangeState<Double> rangeState = new RangeState<Double>(from, to,
+						c.getFromUnit(), c.getToUnit());
+				rangeState.addModifier(c.getModifier());
+				rangeState.addConstraint(c.getConstraint());
+				return rangeState;
 			}
 			else {
-				return new RangeState<String>(c.getFrom(), c.getTo());
+				RangeState<String> rangeState = new RangeState<String>(c.getFrom(), c.getTo());
+				rangeState.addModifier(c.getModifier());
+				rangeState.addConstraint(c.getConstraint());
+				return rangeState;
 			}
 		}
 		else {
@@ -38,10 +45,16 @@ public class StateFactory {
 					System.out.println("Bad number:" + e.getMessage() + " in Character: " + c.toString());
 					value = -1.0;
 				}
-				return new SingletonState<Double>(value, c.getUnit());
+				SingletonState<Double> singletonState = new SingletonState<Double>(value, c.getUnit());
+				singletonState.addModifier(c.getModifier());
+				singletonState.addConstraint(c.getConstraint());
+				return singletonState;
+			} else {
+				SingletonState<String> singletonState = new SingletonState<String>(c.getValue());
+				singletonState.addModifier(c.getModifier());
+				singletonState.addConstraint(c.getConstraint());
+				return singletonState;
 			}
-			else
-				return new SingletonState<String>(c.getValue());
 		}
 	}
 }

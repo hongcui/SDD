@@ -10,7 +10,7 @@ import java.util.Map;
 public class RangeState<T> implements IState<T> {
 	
 	private Map<String, T> map;
-	private String fromUnit, toUnit;
+	private String fromUnit, toUnit, modifier, constraint;
 	
 	/**
 	 * Create a new ranged state.
@@ -62,6 +62,26 @@ public class RangeState<T> implements IState<T> {
 	@Override
 	public String getToUnit() {
 		return this.toUnit;
+	}
+
+	@Override
+	public void addModifier(String modifier) {
+		this.modifier = modifier;
+	}
+
+	@Override
+	public String getModifier() {
+		return this.modifier;
+	}
+
+	@Override
+	public void addConstraint(String constraint) {
+		this.constraint = constraint;
+	}
+
+	@Override
+	public String getConstraint() {
+		return this.constraint;
 	}
 
 }
