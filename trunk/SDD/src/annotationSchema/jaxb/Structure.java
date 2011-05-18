@@ -78,6 +78,8 @@ public class Structure {
 	protected Map<String, IState> stateMap;
     @XmlTransient
     protected Map<String, String> modifierMap;
+    @XmlTransient
+    protected String statementId;
 
     /**
      * Gets the value of the character property.
@@ -243,7 +245,7 @@ public class Structure {
 	 * @param c Character name.
 	 * @param s State.
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void addMapping(String charName, IState state) {
 		if(stateMap == null)
 			stateMap = new TreeMap<String, IState>();
@@ -269,6 +271,20 @@ public class Structure {
 		if(this.modifierMap == null)
 			modifierMap = new TreeMap<String, String>();
 		modifierMap.put(charName, modifier);
+	}
+
+	/**
+	 * @return the statementId
+	 */
+	public String getStatementId() {
+		return statementId;
+	}
+
+	/**
+	 * @param statementId the statementId to set
+	 */
+	public void setStatementId(String statementId) {
+		this.statementId = statementId;
 	}
 
 	@Override

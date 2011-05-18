@@ -81,6 +81,7 @@ public class DescriptionParser {
 			for(Object o : statement.getRelationOrStructure()) {
 				if(o instanceof Structure) {
 					Structure structure = (Structure) o;
+					structure.setStatementId(statement.getId());
 					processCharacters(structure);
 					//the whole organism structure should come first
 					if(structure.getName().equals("whole_organism"))
