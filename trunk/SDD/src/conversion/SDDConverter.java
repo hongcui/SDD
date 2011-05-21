@@ -2,23 +2,29 @@ package conversion;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import sdd.ConceptMarkup;
 import sdd.Dataset;
 import sdd.Datasets;
+import sdd.DetailText;
 import sdd.DocumentGenerator;
-import sdd.FreeFormTextData;
-import sdd.LongStringL;
+import sdd.LabelText;
+import sdd.MarkupText;
 import sdd.NaturalLanguageDescription;
 import sdd.NaturalLanguageDescriptionSet;
 import sdd.NaturalLanguageMarkup;
 import sdd.ObjectFactory;
+import sdd.Representation;
 import sdd.TechnicalMetadata;
+import states.IState;
 import taxonomy.ITaxon;
 import tree.TreeNode;
 import util.XMLGregorianCalendarConverter;
@@ -74,8 +80,28 @@ public class SDDConverter {
 	 */
 	private void addDataset(Datasets root, ITaxon taxon) {
 		Dataset dataset = sddFactory.createDataset();
+		dataset.setLang("en-us");
+		addRepresentationToDataset(dataset, taxon);
 		addNaturalLanguageDescriptions(dataset, taxon);
 		root.getDataset().add(dataset);
+	}
+
+	/**
+	 * Add a represenation element to a Dataset.
+	 * @param dataset
+	 * @param taxon
+	 */
+	private void addRepresentationToDataset(Dataset dataset, ITaxon taxon) {
+		Representation rep = sddFactory.createRepresentation();
+		LabelText labelText = sddFactory.createLabelText();
+		String taxonRank = taxon.getTaxonRank().toString();
+		String label = "The " + taxonRank + " " + taxon.getName();
+		labelText.setValue(label);
+		DetailText detailText = sddFactory.createDetailText();
+		detailText.setValue("Generated from Hong's mark-up of FNA document");
+		rep.getRepresentationGroup().add(labelText);
+		rep.getRepresentationGroup().add(detailText);
+		dataset.setRepresentation(rep);
 	}
 
 	/**
@@ -84,24 +110,70 @@ public class SDDConverter {
 	 * @param taxon
 	 */
 	private void addNaturalLanguageDescriptions(Dataset dataset, ITaxon taxon) {
-		NaturalLanguageDescriptionSet descriptionSet = sddFactory.createNaturalLanguageDescriptionSet();
-		NaturalLanguageDescription description = sddFactory.createNaturalLanguageDescription();
-		//TODO: give the description some representation with a label and detail
-		
+		NaturalLanguageDescriptionSet descriptionSet = sddFactory.createNaturalLanguageDescriptionSet();		
+		Map<String, NaturalLanguageDescription> statementIdToDescription = 
+			new HashMap<String, NaturalLanguageDescription>();
+		for(String id : taxon.getStatementTextMap().keySet()) {
+			NaturalLanguageDescription description = sddFactory.createNaturalLanguageDescription();
+			NaturalLanguageMarkup data = sddFactory.createNaturalLanguageMarkup();
+			MarkupText markupText = sddFactory.createMarkupText();
+			markupText.setValue(taxon.getStatementTextMap().get(id));
+			data.getMarkupGroup().add(markupText);
+			description.setNaturalLanguageData(data);
+			addRepresentationToDescription(description, taxon);
+			statementIdToDescription.put(id, description);
+		}
 		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();
 		while(iter.hasNext()) {
-			NaturalLanguageMarkup data = sddFactory.createNaturalLanguageMarkup();
 			TreeNode<Structure> node = iter.next();
 			Structure structure = node.getElement();
-			FreeFormTextData textData = sddFactory.createFreeFormTextData();
-			LongStringL string = sddFactory.createLongStringL();
-			string.setValue(structure.getText());
-			textData.getContent().add(string);
-			data.getMarkupGroup().add(textData);
-			description.setNaturalLanguageData(data);
+			NaturalLanguageDescription description = 
+				statementIdToDescription.get(structure.getStatementId());
+			addConceptToNaturalLanguageDescription(
+					description.getNaturalLanguageData(), node);
 		}
-		descriptionSet.getNaturalLanguageDescription().add(description);
+		descriptionSet.getNaturalLanguageDescription().addAll(statementIdToDescription.values());
 		dataset.setNaturalLanguageDescriptions(descriptionSet);
+	}
+
+	/**
+	 * Adds a ConceptMarkup element to a piece of NaturalLanguageMarkup/data.
+	 * @param data
+	 * @param node
+	 */
+	private void addConceptToNaturalLanguageDescription(
+			NaturalLanguageMarkup data, TreeNode<Structure> node) {
+		Structure structure = node.getElement();
+		ConceptMarkup concept = sddFactory.createConceptMarkup();
+		concept.setRef(structure.getName());
+		for(String charName : structure.getCharStateMap().keySet()) {
+			addCharacterToConcept(concept, 
+					charName, structure.getCharStateMap().get(charName));
+		}
+		data.getMarkupGroup().add(concept);
+	}
+
+	private void addCharacterToConcept(ConceptMarkup concept, String charName,
+			IState state) {
+		
+		
+	}
+
+	/**
+	 * Add a representation element to a natural language description.
+	 * @param description
+	 * @param taxon
+	 */
+	private void addRepresentationToDescription(
+			NaturalLanguageDescription description, ITaxon taxon) {
+		Representation rep = sddFactory.createRepresentation();
+		LabelText labelText = sddFactory.createLabelText();
+		labelText.setValue("placeholder");
+		DetailText detailText = sddFactory.createDetailText();
+		detailText.setValue("placeholder");
+		rep.getRepresentationGroup().add(labelText);
+		rep.getRepresentationGroup().add(detailText);
+		description.setRepresentation(rep);
 	}
 
 	/**
