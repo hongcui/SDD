@@ -7,10 +7,14 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 
+import sdd.AbstractCharacterMarkup;
+import sdd.CategoricalMarkup;
 import sdd.ConceptMarkup;
 import sdd.Dataset;
 import sdd.Datasets;
@@ -22,11 +26,16 @@ import sdd.NaturalLanguageDescription;
 import sdd.NaturalLanguageDescriptionSet;
 import sdd.NaturalLanguageMarkup;
 import sdd.ObjectFactory;
+import sdd.QuantitativeMarkup;
 import sdd.Representation;
+import sdd.StateMarkup;
 import sdd.TechnicalMetadata;
+import sdd.ValueMarkup;
 import states.IState;
+import states.RangeState;
 import taxonomy.ITaxon;
 import tree.TreeNode;
+import util.TypeUtil;
 import util.XMLGregorianCalendarConverter;
 import annotationSchema.jaxb.Structure;
 
@@ -155,7 +164,85 @@ public class SDDConverter {
 
 	private void addCharacterToConcept(ConceptMarkup concept, String charName,
 			IState state) {
+		if(state instanceof RangeState) {
+			if(TypeUtil.isNumeric(state.getMap().get("from value"))) {
+				QuantitativeMarkup qFrom = sddFactory.createQuantitativeMarkup();
+				qFrom.setLabel(charName.concat("_from"));
+				ValueMarkup vFrom = sddFactory.createValueMarkup();
+				vFrom.setValue((Double)state.getMap().get("from value"));
+				JAXBElement<ValueMarkup> eleFrom =
+					new JAXBElement<ValueMarkup>(new QName("ValueMarkup"), ValueMarkup.class, vFrom);
+				qFrom.getStatusOrModifierOrMeasure().add(eleFrom);
+				QuantitativeMarkup qTo = sddFactory.createQuantitativeMarkup();
+				qTo.setLabel(charName.concat("_to"));
+				ValueMarkup vTo = sddFactory.createValueMarkup();
+				vTo.setValue((Double)state.getMap().get("to value"));
+				JAXBElement<ValueMarkup> eleTo =
+					new JAXBElement<ValueMarkup>(new QName("ValueMarkup"), ValueMarkup.class, vTo);
+				qTo.getStatusOrModifierOrMeasure().add(eleTo);
+				if(state.getModifier() != null) {
+					addModifierToCharacterMarkup(qFrom, state);
+					addModifierToCharacterMarkup(qTo, state);
+				}
+				concept.getMarkupGroup().add(qFrom);
+				concept.getMarkupGroup().add(qTo);
+			}
+			else {
+				CategoricalMarkup cFrom = sddFactory.createCategoricalMarkup();
+				cFrom.setLabel(charName.concat("_from"));
+				StateMarkup stateFrom = sddFactory.createStateMarkup();
+				stateFrom.setLabel(state.getMap().get("from value").toString());
+				JAXBElement<StateMarkup> eleFrom =
+					new JAXBElement<StateMarkup>(new QName("StateMarkup"), StateMarkup.class, stateFrom);
+				cFrom.getStatusOrModifierOrState().add(eleFrom);
+				CategoricalMarkup cTo = sddFactory.createCategoricalMarkup();
+				cTo.setLabel(charName.concat("_to"));
+				StateMarkup stateTo = sddFactory.createStateMarkup();
+				stateTo.setLabel(state.getMap().get("to value").toString());
+				JAXBElement<StateMarkup> eleTo =
+					new JAXBElement<StateMarkup>(new QName("StateMarkup"), StateMarkup.class, stateTo);
+				cTo.getStatusOrModifierOrState().add(eleTo);
+				if (state.getModifier() != null) {
+					addModifierToCharacterMarkup(cFrom, state);
+					addModifierToCharacterMarkup(cTo, state);
+				}
+				concept.getMarkupGroup().add(cFrom);
+				concept.getMarkupGroup().add(cTo);
+			}
+		} else {
+			if(TypeUtil.isNumeric(state.getMap().get("value"))) {
+				QuantitativeMarkup qm = sddFactory.createQuantitativeMarkup();
+				qm.setLabel(charName);
+				ValueMarkup value = sddFactory.createValueMarkup();
+				value.setValue((Double)state.getMap().get("value"));
+				JAXBElement<ValueMarkup> ele = 
+					new JAXBElement<ValueMarkup>(new QName("ValueMarkup"), ValueMarkup.class, value);
+				qm.getStatusOrModifierOrMeasure().add(ele);
+				if(state.getModifier() != null) {
+					addModifierToCharacterMarkup(qm, state);
+				}
+				concept.getMarkupGroup().add(qm);
+			}
+			else {
+				CategoricalMarkup cm = sddFactory.createCategoricalMarkup();
+				cm.setLabel(charName);
+				StateMarkup stateVal = sddFactory.createStateMarkup();
+				stateVal.setLabel(state.getMap().get(("value")).toString());
+				JAXBElement<StateMarkup> ele =
+					new JAXBElement<StateMarkup>(new QName("StateMarkup"), StateMarkup.class, stateVal);
+				cm.getStatusOrModifierOrState().add(ele);
+				if(state.getModifier() != null) {
+					addModifierToCharacterMarkup(cm, state);
+				}
+				concept.getMarkupGroup().add(cm);
+			}
+		}
 		
+	}
+
+	private void addModifierToCharacterMarkup(AbstractCharacterMarkup cFrom,
+			IState state) {
+		// TODO Auto-generated method stub
 		
 	}
 
