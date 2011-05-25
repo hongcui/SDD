@@ -293,6 +293,8 @@ public class Structure {
 		builder.append("Structure [");
 		if (name != null)
 			builder.append("name=").append(name);
+		if(id != null)
+			builder.append(",id=").append(id);
 		builder.append("]");
 		return builder.toString();
 	}
