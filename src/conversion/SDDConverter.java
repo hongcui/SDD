@@ -3,8 +3,10 @@ package conversion;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -15,9 +17,12 @@ import javax.xml.namespace.QName;
 
 import sdd.AbstractCharacterMarkup;
 import sdd.CategoricalMarkup;
+import sdd.CharacterSet;
 import sdd.ConceptMarkup;
 import sdd.Dataset;
 import sdd.Datasets;
+import sdd.DescriptiveConcept;
+import sdd.DescriptiveConceptSet;
 import sdd.DetailText;
 import sdd.DocumentGenerator;
 import sdd.LabelText;
@@ -91,8 +96,40 @@ public class SDDConverter {
 		Dataset dataset = sddFactory.createDataset();
 		dataset.setLang("en-us");
 		addRepresentationToDataset(dataset, taxon);
+		addDescriptiveConceptsToDataset(dataset, taxon);
+		addCharacterSetToDataset(dataset, taxon);
 		addNaturalLanguageDescriptions(dataset, taxon);
 		root.getDataset().add(dataset);
+	}
+
+	private void addCharacterSetToDataset(Dataset dataset, ITaxon taxon) {
+		CharacterSet charSet = sddFactory.createCharacterSet();
+	}
+
+	/**
+	 * Adds a set of descriptive concepts (based on structures from annotation schema)
+	 * to a dataset.
+	 * @param dataset
+	 * @param taxon
+	 */
+	private void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon) {
+		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
+		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();
+		Map<String, DescriptiveConcept> dcsToAdd = new HashMap<String, DescriptiveConcept>();
+		System.out.print(taxon.getStructureTree().toString());
+		while(iter.hasNext()) {
+			Structure s = iter.next().getElement();
+			DescriptiveConcept dc = sddFactory.createDescriptiveConcept();
+			dc.setId(s.getId());
+			Representation rep = sddFactory.createRepresentation();
+			LabelText labelText = sddFactory.createLabelText();
+			labelText.setValue(s.getName());
+			rep.getRepresentationGroup().add(labelText);
+			dc.setRepresentation(rep);
+			dcsToAdd.put(s.getId(), dc);
+		}
+		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
+		dataset.setDescriptiveConcepts(dcSet);
 	}
 
 	/**

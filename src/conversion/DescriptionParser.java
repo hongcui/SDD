@@ -154,7 +154,12 @@ public class DescriptionParser {
 			}
 		}
 		for(TreeNode<Structure> branch : branches)
-			taxon.getStructureTree().getRoot().addChild(branch);		
+			taxon.getStructureTree().getRoot().addChild(branch);	
+		for(Structure s : localStructPool) {
+			TreeNode<Structure> inTree = taxon.getStructureTree().contains(s);
+			if(inTree == null)
+				taxon.getStructureTree().getRoot().addChild(new TreeNode<Structure>(s));
+		}
 	}
 	
 	/**
