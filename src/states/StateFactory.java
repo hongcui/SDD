@@ -1,5 +1,7 @@
 package states;
 
+import annotationSchema.jaxb.Structure;
+
 /**
  * Factory that produces state objects, depending on data gotten 
  * from a Character.
@@ -26,12 +28,16 @@ public class StateFactory {
 						c.getFromUnit(), c.getToUnit());
 				rangeState.addModifier(c.getModifier());
 				rangeState.addConstraint(c.getConstraint());
+				if(!c.getConstraintid().isEmpty())
+					rangeState.addConstraintId((Structure) c.getConstraintid().get(0));
 				return rangeState;
 			}
 			else {
 				RangeState<String> rangeState = new RangeState<String>(c.getFrom(), c.getTo());
 				rangeState.addModifier(c.getModifier());
 				rangeState.addConstraint(c.getConstraint());
+				if(!c.getConstraintid().isEmpty())
+					rangeState.addConstraintId((Structure) c.getConstraintid().get(0));
 				return rangeState;
 			}
 		}
@@ -48,11 +54,15 @@ public class StateFactory {
 				SingletonState<Double> singletonState = new SingletonState<Double>(value, c.getUnit());
 				singletonState.addModifier(c.getModifier());
 				singletonState.addConstraint(c.getConstraint());
+				if(!c.getConstraintid().isEmpty())
+					singletonState.addConstraintId((Structure) c.getConstraintid().get(0));
 				return singletonState;
 			} else {
 				SingletonState<String> singletonState = new SingletonState<String>(c.getValue());
 				singletonState.addModifier(c.getModifier());
 				singletonState.addConstraint(c.getConstraint());
+				if(!c.getConstraintid().isEmpty())
+					singletonState.addConstraintId((Structure) c.getConstraintid().get(0));
 				return singletonState;
 			}
 		}

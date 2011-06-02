@@ -5,6 +5,8 @@ package states;
 
 import java.util.Map;
 
+import annotationSchema.jaxb.Structure;
+
 /**
  * All State objects will implement this base interface.
  * @author Alex
@@ -49,8 +51,20 @@ public interface IState<T> {
 	public void addConstraint(String constraint);
 	
 	/**
+	 * Add a constraintid (a Structure) to this state.
+	 * @param struct
+	 */
+	public void addConstraintId(Structure struct);
+	
+	/**
 	 * Return the constraint on this state, if any.
 	 * @return
 	 */
 	public String getConstraint();
+	
+	/**
+	 * Return the constraint id on this state, if any.
+	 * @return Structure to which the constraint id refers. 
+	 */
+	public Structure getConstraintId();
 }

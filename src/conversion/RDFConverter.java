@@ -23,10 +23,13 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
+import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
+import com.hp.hpl.jena.rdf.model.impl.ReifiedStatementImpl;
+import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 
 /**
  * Conversion class for marshalling descriptions of taxon hierarchies into an RDF document.
@@ -110,16 +113,18 @@ public class RDFConverter {
 					new PropertyImpl(rdfProps.getProperty("prefix.character")
 							.concat(s.concat("_to")));
 				Literal stateObjectFrom = taxonModel.createTypedLiteral(state.getMap().get("from value"));
-				taxonModel.add(subject, predicateFrom, stateObjectFrom);
+				Statement stmtFrom = new StatementImpl(subject, predicateFrom, stateObjectFrom);
+				taxonModel.add(stmtFrom);
 				Literal stateObjectTo = taxonModel.createTypedLiteral(state.getMap().get("to value"));
-				taxonModel.add(subject, predicateTo,stateObjectTo);
+				Statement stmtTo = new StatementImpl(subject, predicateTo, stateObjectTo);
+				taxonModel.add(stmtTo);
 				if(state.getModifier() != null) {
-					addModifier(taxonModel, subject, predicateFrom, state);
-					addModifier(taxonModel, subject, predicateTo, state);
+					addModifier(taxonModel, stmtFrom, state);
+					addModifier(taxonModel, stmtTo, state);
 				}
 				if(state.getConstraint() != null) {
-					addConstraint(taxonModel, subject, predicateFrom, state);
-					addConstraint(taxonModel, subject, predicateTo, state);
+					addConstraint(taxonModel, stmtFrom, state);
+					addConstraint(taxonModel, stmtTo, state);
 				}
 				if(state.getFromUnit() != null) {
 					Property unitPredicate =
@@ -139,12 +144,13 @@ public class RDFConverter {
 			else {
 				Property predicate = 
 					new PropertyImpl(rdfProps.getProperty("prefix.character").concat(s));
-				taxonModel.add(subject, predicate,
+				Statement stmt = new StatementImpl(subject, predicate,
 						taxonModel.createTypedLiteral(state.getMap().get("value")));
+				taxonModel.add(stmt);
 				if(state.getModifier() != null)
-					addModifier(taxonModel, subject, predicate, state);
+					addModifier(taxonModel, stmt, state);
 				if(state.getConstraint() != null)
-					addConstraint(taxonModel, subject, predicate, state);
+					addConstraint(taxonModel, stmt, state);
 				if(state.getFromUnit() != null) {
 					Property unitPredicate =
 						new PropertyImpl(rdfProps.getProperty("prefix.property")
@@ -158,35 +164,56 @@ public class RDFConverter {
 	}
 
 	/**
-	 * Attach a constraint predicate (referring to a particular character property)
-	 * to a structure/resource.
+	 * We're viewing constraints as reified statments.  If a constraint id referring to another structure is present,
+	 * we reify the reified statment, as well
 	 * @param taxonModel
-	 * @param subject
-	 * @param predicate
+	 * @param statement The statement to reify.
 	 * @param state
 	 */
-	private void addConstraint(Model taxonModel, Resource subject, Property predicate,
-			IState state) {
-		String s = predicate.getURI();
-		Property constraintPredicate = new PropertyImpl(s.concat("/constraint"));
+	private void addConstraint(Model taxonModel, Statement statement, IState state) {
+		Property constraintPredicate = new PropertyImpl(rdfProps.getProperty("prefix.constraint"));
 		Literal constraint = taxonModel.createTypedLiteral(state.getConstraint());
-		taxonModel.add(subject, constraintPredicate, constraint);
+		ReifiedStatement reifStmt = taxonModel.createReifiedStatement(
+				rdfProps.getProperty("prefix.reified").
+					concat(statement.getSubject().getLocalName()).
+					concat("_"+statement.getPredicate().getLocalName()), statement);
+		Statement stmt1 = new StatementImpl(reifStmt, constraintPredicate, constraint);
+		Structure constraintId = state.getConstraintId();
+
+		ReifiedStatement reifStmtAgain = taxonModel.createReifiedStatement(
+				rdfProps.getProperty("prefix.reified").
+				concat(reifStmt.getLocalName()).concat("_double_reified"), stmt1);
+		Property constrainedBy = new PropertyImpl(rdfProps.getProperty("prefix.constrained_by"));
+		Resource cId = taxonModel.createResource(rdfProps.getProperty("prefix.structure").concat(constraintId.getName()));
+		taxonModel.add(reifStmtAgain, constrainedBy, cId);
+		
+		if(constraintId.getConstraintType() != null) {
+			Property typeProp = new PropertyImpl(rdfProps.getProperty("prefix.constraint_type"));
+			Literal constraintType = taxonModel.createTypedLiteral(constraintId.getConstraintType());
+			taxonModel.add(cId, typeProp, constraintType);
+		}
+		taxonModel.remove(stmt1);
+		taxonModel.remove(statement);
+		
 	}
 
 	/**
-	 * Attach a modifier property (referring to a particular character property)
-	 * to a structure/resource.
+	 * Attach a modifier to the RDF model.  This means making a reified statement, for which 'modifier' is the predicate
+	 * and the value of modifier is the object.
 	 * @param taxonModel
-	 * @param subject
-	 * @param predicate
+	 * @param statement The statement to reify.
 	 * @param state
 	 */
-	private void addModifier(Model taxonModel, Resource subject, Property predicate,
-			IState state) {
-		String s = predicate.getURI();
-		Property modifierPredicate = new PropertyImpl(s.concat("/modifier"));
+	private void addModifier(Model taxonModel, Statement statement,	IState state) {
+		Property modifierPredicate = new PropertyImpl(rdfProps.getProperty("prefix.modifier"));
 		Literal modifier = taxonModel.createTypedLiteral(state.getModifier());
-		taxonModel.add(subject, modifierPredicate, modifier);		
+		taxonModel.add(taxonModel.createReifiedStatement(
+				rdfProps.getProperty("prefix.reified").
+					concat(statement.getSubject().getLocalName()).
+					concat("_"+statement.getPredicate().getLocalName()), statement),
+				modifierPredicate,
+				modifier);	
+		taxonModel.remove(statement);
 	}
 
 	/**

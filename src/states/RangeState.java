@@ -3,6 +3,8 @@ package states;
 import java.util.HashMap;
 import java.util.Map;
 
+import annotationSchema.jaxb.Structure;
+
 /**
  * @author Alex
  *
@@ -11,6 +13,7 @@ public class RangeState<T> implements IState<T> {
 	
 	private Map<String, T> map;
 	private String fromUnit, toUnit, modifier, constraint;
+	private Structure constraintId;
 	
 	/**
 	 * Create a new ranged state.
@@ -78,10 +81,20 @@ public class RangeState<T> implements IState<T> {
 	public void addConstraint(String constraint) {
 		this.constraint = constraint;
 	}
+	
+	@Override
+	public void addConstraintId(Structure constraintId) {
+		this.constraintId = constraintId;
+	}
 
 	@Override
 	public String getConstraint() {
 		return this.constraint;
+	}
+	
+	@Override
+	public Structure getConstraintId() {
+		return this.constraintId;
 	}
 
 }
