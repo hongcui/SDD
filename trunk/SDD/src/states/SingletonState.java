@@ -3,6 +3,8 @@ package states;
 import java.util.HashMap;
 import java.util.Map;
 
+import annotationSchema.jaxb.Structure;
+
 /**
  * Single valued state of a given type.
  * @author Alex
@@ -13,6 +15,7 @@ public class SingletonState<T> implements IState<T> {
 	
 	private Map<String, T> map;
 	private String unit, modifier, constraint;
+	private Structure constraintId;
 	
 	/**
 	 * Create a new state with given value.
@@ -76,10 +79,20 @@ public class SingletonState<T> implements IState<T> {
 	public void addConstraint(String constraint) {
 		this.constraint = constraint;
 	}
+	
+	@Override
+	public void addConstraintId(Structure constraintId) {
+		this.constraintId = constraintId;
+	}
 
 	@Override
 	public String getConstraint() {
 		return this.constraint;
+	}
+	
+	@Override
+	public Structure getConstraintId() {
+		return this.constraintId;
 	}
 
 }
