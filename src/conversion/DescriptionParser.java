@@ -76,27 +76,37 @@ public class DescriptionParser {
 	private void buildStructureTree(ITaxon taxon, List<Statement> statements) {
 		
 		for(Statement statement : statements) {
-			List<Structure> localStructPool = new ArrayList<Structure>();
-			List<Relation> relations = new ArrayList<Relation>();
-			for(Object o : statement.getRelationOrStructure()) {
-				if(o instanceof Structure) {
-					Structure structure = (Structure) o;
-					structure.setStatementId(statement.getId());
-					processCharacters(structure);
-					//the whole organism structure should come first
-					if(structure.getName().equals("whole_organism"))
-						taxon.getStructureTree().setRoot(new TreeNode<Structure>(structure));
-					else
-						localStructPool.add(structure);
-				}
-				else {	//RELATIONS
-					relations.add((Relation) o);
-				}
-			}	//end relation/structure list
-			if(relations.isEmpty())
-				taxon.getStructureTree().getRoot().addChildren(localStructPool);
-			else
-				placeStructuresAccordingToRelations(taxon, localStructPool, relations);
+			if (!statement.getRelationOrStructure().isEmpty()) {
+				List<Structure> localStructPool = new ArrayList<Structure>();
+				List<Relation> relations = new ArrayList<Relation>();
+				for (Object o : statement.getRelationOrStructure()) {
+					if (o instanceof Structure) {
+						Structure structure = (Structure) o;
+						structure.setStatementId(statement.getId());
+						processCharacters(structure);
+						//the whole organism structure should come first
+						if (structure.getName().equals("whole_organism"))
+							taxon.getStructureTree().setRoot(
+									new TreeNode<Structure>(structure));
+						else
+							localStructPool.add(structure);
+					} else { //RELATIONS
+						relations.add((Relation) o);
+					}
+				} //end relation/structure list
+				if (relations.isEmpty())
+					try {
+						taxon.getStructureTree().getRoot()
+								.addChildren(localStructPool);
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.out.println(taxon.getStructureTree().getRoot());
+						System.out.println(localStructPool.toString());
+					}
+				else
+					placeStructuresAccordingToRelations(taxon, localStructPool,
+							relations);
+			}
 		}
 	}
 
@@ -128,29 +138,34 @@ public class DescriptionParser {
 			List<Structure> localStructPool, List<Relation> relations) {
 		List<TreeNode<Structure>> branches = new ArrayList<TreeNode<Structure>>();
 		for(Relation relation : relations) {
-			Structure to = (Structure) relation.getTo().get(0);
-			Structure from = (Structure) relation.getFrom().get(0);
-			TreeNode<Structure> inTree = taxon.getStructureTree().contains(to);
-			if(inTree != null && relation.getName().equals("part_of"))
-				inTree.addChild(new TreeNode<Structure>(from));
-			else if(relation.getName().equals("part_of")){
-				TreeNode<Structure> branch = containsElement(branches, to);
-				if(branch != null)
-					branch.addChild(new TreeNode<Structure>(from));
-				else {
-					branch = new TreeNode<Structure>(to);
-					branch.addChild(new TreeNode<Structure>(from));
-					branches.add(branch);
+			try {
+				Structure to = (Structure) relation.getTo().get(0);
+				Structure from = (Structure) relation.getFrom().get(0);
+				TreeNode<Structure> inTree = taxon.getStructureTree().contains(to);
+				if(inTree != null && relation.getName().equals("part_of"))
+					inTree.addChild(new TreeNode<Structure>(from));
+				else if(relation.getName().equals("part_of")){
+					TreeNode<Structure> branch = containsElement(branches, to);
+					if(branch != null)
+						branch.addChild(new TreeNode<Structure>(from));
+					else {
+						branch = new TreeNode<Structure>(to);
+						branch.addChild(new TreeNode<Structure>(from));
+						branches.add(branch);
+					}
 				}
-			}
-			else {
-				taxon.addRelation(relation);
-				TreeNode<Structure> containsFrom = containsElement(branches, from);
-				if(containsFrom == null)
-					branches.add(new TreeNode<Structure>(from));
-				TreeNode<Structure> containsTo = containsElement(branches, to);
-				if(containsTo == null)
-					branches.add(new TreeNode<Structure>(to));
+				else {
+					taxon.addRelation(relation);
+					TreeNode<Structure> containsFrom = containsElement(branches, from);
+					if(containsFrom == null)
+						branches.add(new TreeNode<Structure>(from));
+					TreeNode<Structure> containsTo = containsElement(branches, to);
+					if(containsTo == null)
+						branches.add(new TreeNode<Structure>(to));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println(relation.toString());
 			}
 		}
 		for(TreeNode<Structure> branch : branches)

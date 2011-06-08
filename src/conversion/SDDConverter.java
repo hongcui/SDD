@@ -3,10 +3,8 @@ package conversion;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -15,6 +13,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
+import sdd.AbstractCharacterDefinition;
 import sdd.AbstractCharacterMarkup;
 import sdd.CategoricalMarkup;
 import sdd.CharacterSet;
@@ -38,6 +37,7 @@ import sdd.TechnicalMetadata;
 import sdd.ValueMarkup;
 import states.IState;
 import states.RangeState;
+import states.SingletonState;
 import taxonomy.ITaxon;
 import tree.TreeNode;
 import util.TypeUtil;
@@ -97,13 +97,7 @@ public class SDDConverter {
 		dataset.setLang("en-us");
 		addRepresentationToDataset(dataset, taxon);
 		addDescriptiveConceptsToDataset(dataset, taxon);
-		addCharacterSetToDataset(dataset, taxon);
-		addNaturalLanguageDescriptions(dataset, taxon);
 		root.getDataset().add(dataset);
-	}
-
-	private void addCharacterSetToDataset(Dataset dataset, ITaxon taxon) {
-		CharacterSet charSet = sddFactory.createCharacterSet();
 	}
 
 	/**
@@ -114,6 +108,7 @@ public class SDDConverter {
 	 */
 	private void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon) {
 		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
+		CharacterSet characterSet = sddFactory.createCharacterSet();
 		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();
 		Map<String, DescriptiveConcept> dcsToAdd = new HashMap<String, DescriptiveConcept>();
 		System.out.print(taxon.getStructureTree().toString());
@@ -127,9 +122,40 @@ public class SDDConverter {
 			rep.getRepresentationGroup().add(labelText);
 			dc.setRepresentation(rep);
 			dcsToAdd.put(s.getId(), dc);
+			addCharactersToCharacterSet(characterSet, s.getCharStateMap());
 		}
 		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
 		dataset.setDescriptiveConcepts(dcSet);
+		dataset.setCharacters(characterSet);
+	}
+
+	private void addCharactersToCharacterSet(CharacterSet characterSet,
+			Map<String, IState> charStateMap) {
+		for(String s : charStateMap.keySet()) {
+			AbstractCharacterDefinition character = null;
+			IState state = charStateMap.get(s);
+			if(state instanceof SingletonState) {
+				Representation rep = sddFactory.createRepresentation();
+				LabelText labelText = sddFactory.createLabelText();
+				labelText.setValue(s);
+				rep.getRepresentationGroup().add(labelText);
+				
+				if(state.getMap().get("value") instanceof String) {
+					character = sddFactory.createCategoricalCharacter();
+				}
+				else {
+					character = sddFactory.createQuantitativeCharacter();
+				}
+				character.setRepresentation(rep);
+			}
+			else {
+				
+			}
+			if(!characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().contains(character))
+				characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().add(character);
+		}
+		
+		
 	}
 
 	/**
@@ -154,6 +180,7 @@ public class SDDConverter {
 	 * Add a set of natural language descriptions to a dataset.
 	 * @param dataset
 	 * @param taxon
+	 * @deprecated 
 	 */
 	private void addNaturalLanguageDescriptions(Dataset dataset, ITaxon taxon) {
 		NaturalLanguageDescriptionSet descriptionSet = sddFactory.createNaturalLanguageDescriptionSet();		
@@ -166,7 +193,7 @@ public class SDDConverter {
 			markupText.setValue(taxon.getStatementTextMap().get(id));
 			data.getMarkupGroup().add(markupText);
 			description.setNaturalLanguageData(data);
-			addRepresentationToDescription(description, taxon);
+			addRepresentationToNaturalLanguageDescription(description, taxon);
 			statementIdToDescription.put(id, description);
 		}
 		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();
@@ -186,6 +213,7 @@ public class SDDConverter {
 	 * Adds a ConceptMarkup element to a piece of NaturalLanguageMarkup/data.
 	 * @param data
 	 * @param node
+	 * @deprecated
 	 */
 	private void addConceptToNaturalLanguageDescription(
 			NaturalLanguageMarkup data, TreeNode<Structure> node) {
@@ -199,6 +227,13 @@ public class SDDConverter {
 		data.getMarkupGroup().add(concept);
 	}
 
+	/**
+	 * 
+	 * @param concept
+	 * @param charName
+	 * @param state
+	 * @deprecated
+	 */
 	private void addCharacterToConcept(ConceptMarkup concept, String charName,
 			IState state) {
 		if(state instanceof RangeState) {
@@ -287,8 +322,9 @@ public class SDDConverter {
 	 * Add a representation element to a natural language description.
 	 * @param description
 	 * @param taxon
+	 * @deprecated
 	 */
-	private void addRepresentationToDescription(
+	private void addRepresentationToNaturalLanguageDescription(
 			NaturalLanguageDescription description, ITaxon taxon) {
 		Representation rep = sddFactory.createRepresentation();
 		LabelText labelText = sddFactory.createLabelText();

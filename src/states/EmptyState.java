@@ -5,63 +5,30 @@ import java.util.Map;
 
 import annotationSchema.jaxb.Structure;
 
-/**
- * @author Alex
- *
- */
-public class RangeState<T> implements IState<T> {
+public class EmptyState<T> implements IState<T> {
 	
 	private Map<String, T> map;
 	private String fromUnit, toUnit, modifier, constraint;
 	private Structure constraintId;
 	
-	/**
-	 * Create a new ranged state.
-	 * @param from
-	 * @param to
-	 */
-	public RangeState(T from, T to) {
+	public EmptyState() {
 		this.map = new HashMap<String, T>();
-		this.map.put("from value", from);
-		this.map.put("to value", to);
-	}
-	
-	/**
-	 * Create a new ranged state with a given unit.
-	 * @param from
-	 * @param to
-	 * @param unit
-	 */
-	public RangeState(T from, T to, String fromUnit, String toUnit) {
-		this.map = new HashMap<String, T>();
-		this.map.put("from value", from);
-		this.map.put("to value", to);
-		this.fromUnit = fromUnit;
-		this.toUnit = toUnit;
+		this.map.put("from value", (T) "");
+		this.map.put("to value", (T) "");
+		this.fromUnit = "";
+		this.toUnit = "";
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see states.IState#getMap()
-	 */
 	@Override
 	public Map<String, T> getMap() {
 		return this.map;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see states.IState#getFromUnit()
-	 */
 	@Override
 	public String getFromUnit() {
 		return this.fromUnit;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see states.IState#toUnit()
-	 */
 	@Override
 	public String getToUnit() {
 		return this.toUnit;
@@ -69,7 +36,8 @@ public class RangeState<T> implements IState<T> {
 
 	@Override
 	public void addModifier(String modifier) {
-		this.modifier = modifier;
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -79,22 +47,25 @@ public class RangeState<T> implements IState<T> {
 
 	@Override
 	public void addConstraint(String constraint) {
-		this.constraint = constraint;
+		// TODO Auto-generated method stub
+		
 	}
-	
+
 	@Override
-	public void addConstraintId(Structure constraintId) {
-		this.constraintId = constraintId;
+	public void addConstraintId(Structure struct) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public String getConstraint() {
 		return this.constraint;
 	}
-	
+
 	@Override
 	public Structure getConstraintId() {
-		return this.constraintId;
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	@Override
@@ -108,9 +79,9 @@ public class RangeState<T> implements IState<T> {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RangeState [");
+		builder.append("EmptyState [");
 		if (map != null)
-			builder.append("map=").append(map.toString()).append(", ");
+			builder.append("map=").append(map).append(", ");
 		if (fromUnit != null)
 			builder.append("fromUnit=").append(fromUnit).append(", ");
 		if (toUnit != null)
@@ -120,10 +91,9 @@ public class RangeState<T> implements IState<T> {
 		if (constraint != null)
 			builder.append("constraint=").append(constraint).append(", ");
 		if (constraintId != null)
-			builder.append("constraintId=").append(constraintId.getName());
+			builder.append("constraintId=").append(constraintId);
 		builder.append("]");
 		return builder.toString();
 	}
-	
 
 }

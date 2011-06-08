@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -15,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import taxonomy.TaxonRank;
-
 import dao.FilenameTaxonDao;
 
 /**
@@ -83,7 +83,7 @@ public class TestFilenameTaxonDao {
 	}
 	
 	/**
-	 * Test method for {@link dao.FilenameTaxonDao#getFilenameForDescription(taxonomy.TaxonRank, String).
+	 * Test method for {@link dao.FilenameTaxonDao#getFilenameForDescription(taxonomy.TaxonRank, String)}.
 	 */
 	@Test
 	public final void testGetFilenameForDescription () {
@@ -93,6 +93,15 @@ public class TestFilenameTaxonDao {
 		filename = dao.getFilenameForDescription(TaxonRank.GENUS, "cirsium");
 		System.out.println(filename);
 		
+	}
+	
+	/**
+	 * Test method for {@link dao.FilenameTaxonDao#getFilenamesForManyDescriptions(taxonomy.TaxonRank, String, taxonomy.TaxonRank)}.
+	 */
+	@Test
+	public final void testGetFilenamesForManyDescriptions() {
+		List<String> list = dao.getFilenamesForManyDescriptions(TaxonRank.GENUS, "cirsium", TaxonRank.SPECIES);
+		System.out.println(list.toString());
 	}
 
 }
