@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -168,5 +169,41 @@ public class FilenameTaxonDao extends BaseDao{
 			}
 		}
 		return result;
+	}
+	
+	/**
+	 * Get filenames for descriptions within a taxonomical range.
+	 * @param topLevel
+	 * @param topName
+	 * @param bottomLevel
+	 * @return
+	 */
+	public List<String> getFilenamesForManyDescriptions(TaxonRank topLevel, String topName, TaxonRank bottomLevel) {
+		List<String> filenames = new LinkedList<String>();
+		String topRank = topLevel.toString().toLowerCase();
+		String bottomRank = bottomLevel.toString().toLowerCase();
+		int stopIndex = taxonRank.indexOf(bottomRank) + 1; 	//highest rank index at which value is empty
+		String whereClause = topRank + " = \'" + topName + "\' ";
+		for(int i = stopIndex; i < taxonRank.size(); i++)
+			whereClause += "and " + taxonRank.get(i) + " = \'\' ";
+		ResultSet rs = null;
+		Connection conn = null;
+		try {
+			conn = getConnection(database);
+			Statement s = conn.createStatement();
+			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE " +  whereClause);
+			while(rs.next()) {
+				filenames.add(rs.getString("filename"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return filenames;
 	}
 }

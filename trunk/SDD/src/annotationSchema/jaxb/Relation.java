@@ -342,6 +342,8 @@ public class Relation {
 			builder.append("to=").append(to).append(", ");
 		if (value != null)
 			builder.append("value=").append(value);
+		if (id != null)
+			builder.append("id=").append(id);
 		builder.append("]");
 		return builder.toString();
 	}

@@ -94,5 +94,35 @@ public class SingletonState<T> implements IState<T> {
 	public Structure getConstraintId() {
 		return this.constraintId;
 	}
+	
+	@Override
+	public IState<T> promote() {
+		RangeState<T> promoted = new RangeState<T>(this.map.get("value"), this.map.get("value"), this.unit, this.unit);
+		promoted.addConstraint(constraint);
+		promoted.addConstraintId(constraintId);
+		promoted.addModifier(modifier);
+		return promoted;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SingletonState [");
+		if (map != null)
+			builder.append("map=").append(map.toString()).append(", ");
+		if (unit != null)
+			builder.append("unit=").append(unit).append(", ");
+		if (modifier != null)
+			builder.append("modifier=").append(modifier).append(", ");
+		if (constraint != null)
+			builder.append("constraint=").append(constraint).append(", ");
+		if (constraintId != null)
+			builder.append("constraintId=").append(constraintId.getName());
+		builder.append("]");
+		return builder.toString();
+	}
 
 }

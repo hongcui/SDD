@@ -67,4 +67,9 @@ public interface IState<T> {
 	 * @return Structure to which the constraint id refers. 
 	 */
 	public Structure getConstraintId();
+
+	/**
+	 * Promotes states of one type to a "higher" type.
+	 */
+	public IState promote();
 }

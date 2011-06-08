@@ -1,6 +1,7 @@
 package taxonomy;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import tree.Tree;
@@ -70,7 +71,7 @@ public class TaxonHierarchy {
 	 * @param rank The rank of the taxon we're looking for.
 	 * @return Matching node, if found, null otherwise.
 	 */
-	private TreeNode<ITaxon> findTaxonByName(String name, TaxonRank rank) {
+	public TreeNode<ITaxon> findTaxonByName(String name, TaxonRank rank) {
 		Deque<TreeNode<ITaxon>> queue = new LinkedList<TreeNode<ITaxon>>();
 		queue.add(hierarchy.getRoot());
 		while(!queue.isEmpty()) {
@@ -128,5 +129,13 @@ public class TaxonHierarchy {
 	@Override
 	public String toString() {
 		return "TaxonHierarchy [hierarchy=" + hierarchy + "]";
+	}
+	
+	public void printSimple() {
+		Iterator<TreeNode<ITaxon>> iter = hierarchy.iterator();
+		while(iter.hasNext()) {
+			ITaxon element = iter.next().getElement();
+			System.out.println(element.getName() + " " + element.getTaxonRank().toString());
+		}
 	}
 }

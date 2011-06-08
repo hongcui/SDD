@@ -5,6 +5,7 @@ package conversion.test;
 
 import static org.junit.Assert.assertFalse;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -12,9 +13,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import taxonomy.ITaxon;
+import taxonomy.SubTaxonException;
 import taxonomy.TaxonHierarchy;
 import taxonomy.TaxonRank;
 import conversion.DescriptionParser;
+import dao.FilenameTaxonDao;
 
 /**
  * @author alex
@@ -22,8 +25,7 @@ import conversion.DescriptionParser;
  */
 public class TestDescriptionParser {
 
-	private DescriptionParser parser = new DescriptionParser("cirsium", TaxonRank.GENUS);
-	private ITaxon taxon = parser.parseTaxon();
+	private FilenameTaxonDao dao = new FilenameTaxonDao();
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -37,23 +39,35 @@ public class TestDescriptionParser {
 	@After
 	public void tearDown() throws Exception {
 	}
-
-	/**
-	 * Test method for {@link conversion.DescriptionParser#parseTaxon()}.
-	 */
-	@Test
-	public void testParseTaxon() {
-		assertFalse(taxon.getStructureTree().isEmpty());
-		System.out.println(taxon);
-		System.out.println(taxon.getRelations());
-		TaxonHierarchy h = new TaxonHierarchy(taxon);
-	}
 	
 	@Test
-	public void testGetTextMap() {
-		Map<String, String> map = taxon.getStatementTextMap();
-		assertFalse(map.isEmpty());
-		System.out.println(map.toString());
+	public final void testBuildHierarchy() {
+		makeHierarchy("cirsium");
+	}
+
+	/**
+	 * 
+	 */
+	private void makeHierarchy(String genusName) {
+		DescriptionParser parser = new DescriptionParser(genusName, TaxonRank.GENUS);
+		ITaxon taxon = parser.parseTaxon();
+		String cirsiumGenusFilename = dao.getFilenameForDescription(TaxonRank.GENUS, genusName);
+		List<String> cirsiumSpecies = dao.getFilenamesForManyDescriptions(TaxonRank.GENUS, genusName, TaxonRank.SPECIES);
+		cirsiumSpecies.remove(cirsiumGenusFilename);
+		TaxonHierarchy h = new TaxonHierarchy(taxon);
+		DescriptionParser speciesParser;
+		for(String s : cirsiumSpecies) {
+			String speciesName = dao.getTaxonValues(s).get("species");
+			System.out.println("Species name: " + speciesName);
+			speciesParser = new DescriptionParser(speciesName, TaxonRank.SPECIES);
+			ITaxon speciesTaxon = speciesParser.parseTaxon();
+			try {
+				h.addSubTaxon(speciesTaxon);
+			} catch (SubTaxonException e) {
+				e.printStackTrace();
+			}
+		}
+		h.printSimple();
 	}
 
 }
