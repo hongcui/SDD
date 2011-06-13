@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,26 +15,16 @@ import java.util.TreeMap;
 
 import states.EmptyState;
 import states.IState;
+import states.RangeState;
 import states.SingletonState;
 import taxonomy.ITaxon;
+import taxonomy.TaxonComparator;
 import taxonomy.TaxonHierarchy;
 import tree.TreeNode;
 import annotationSchema.jaxb.Structure;
 
 /**
  * Class for converting a Taxon Hierarchy into a Taxon-by-Character matrix.
- * @author Alex
- *
- */
-/**
- * @author Alex
- *
- */
-/**
- * @author Alex
- *
- */
-/**
  * @author Alex
  *
  */
@@ -82,6 +73,12 @@ public class TaxonCharacterMatrix {
 		return map;
 	}
 
+	/**
+	 * This is where state inheritance occurs, as well as assigning empty states to characters of taxa
+	 * who have no state for some character in the set of defined characters.
+	 * @param map
+	 * @param allTaxa
+	 */
 	private void postProcessTable(Map<String, Map<ITaxon, IState>> map,
 			List<ITaxon> allTaxa) {
 		for(String ch : map.keySet()) {
@@ -110,13 +107,22 @@ public class TaxonCharacterMatrix {
 			Set<Class> stateTypes = new HashSet<Class>();
 			for(IState state : taxonToState.values()) 
 				stateTypes.add(state.getClass());
-			if(stateTypes.size() > 1) { 	//then promote the singleton states to range states
+			if(stateTypes.size() > 1 && stateTypes.contains(SingletonState.class)) { 	//then promote the singleton states to range states
 				for(ITaxon t : taxonToState.keySet()) {
 					IState state = taxonToState.get(t);
 					if(state instanceof SingletonState)
 						taxonToState.put(t, state.promote());
 				}
 			}
+//			else if(stateTypes.contains(SingletonState.class) 
+//					&& stateTypes.contains(EmptyState.class) && 
+//					!stateTypes.contains(RangeState.class)) {
+//				for(ITaxon t : taxonToState.keySet()) {
+//					IState state = taxonToState.get(t);
+//					if(state instanceof EmptyState)
+//						taxonToState.put(t, ((EmptyState) state).demote());
+//				}
+//			}
 		}
 		
 	}
@@ -156,7 +162,7 @@ public class TaxonCharacterMatrix {
 		}
 		List<String> header = new ArrayList<String>();
 		header.add("");	//leave the first entry blank in the matrix.
-		Map<ITaxon, List<String>> rows = new HashMap<ITaxon, List<String>>();
+		Map<ITaxon, List<String>> rows = new TreeMap<ITaxon, List<String>>(new TaxonComparator());
 		for(String charName : table.keySet()) {
 			header.add(charName);
 			Map<ITaxon, IState> taxonToState = table.get(charName);
@@ -181,22 +187,30 @@ public class TaxonCharacterMatrix {
 		}
 		BufferedWriter out = new BufferedWriter(fstream);
 		try {
-			constructMatrix(out, header, rows);
+			constructMatrix(out, header, rows, "\t");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Writes the matrix to a file.
+	 * @param out Writer to write to.
+	 * @param header Header row of character names
+	 * @param rows Taxon data
+	 * @param delimiter Delimiter for the file (probably tab or comma).
+	 * @throws IOException
+	 */
 	private void constructMatrix(BufferedWriter out, List<String> header,
-			Map<ITaxon, List<String>> rows) throws IOException{
+			Map<ITaxon, List<String>> rows, String delimiter) throws IOException{
 		postProcessRows(header, rows);
 		for(String h : header)
-			out.write(h+",");
+			out.write(h+delimiter);
 		for(ITaxon t : rows.keySet()) {
 			out.write("\n");
 			List<String> row = rows.get(t);
 			for(String s : row)
-				out.write(s+",");
+				out.write(s+delimiter);
 		}
 		out.close();		
 	}
@@ -250,12 +264,18 @@ public class TaxonCharacterMatrix {
 				}
 			}
 			else {	//handle EmptyState and RangeState identically
+				Object from = state.getMap().get("from value");
+				Object to = state.getMap().get("to value");
 				header.set(originalIndex, charName+"_from");
 				header.add(originalIndex+1, charName+"_to");
 				header.add(originalIndex+2, charName+"_from_unit");
 				header.add(originalIndex+3, charName+"_to_unit");
-				row.add(state.getMap().get("from value").toString());
-				row.add(state.getMap().get("to value").toString());
+				if(from == null)
+					from = "";
+				if(to == null)
+					to = "";
+				row.add(from.toString());
+				row.add(to.toString());
 				row.add(state.getFromUnit());
 				row.add(state.getToUnit());
 			}
@@ -268,8 +288,14 @@ public class TaxonCharacterMatrix {
 				}
 			}
 			else {
-				row.add(state.getMap().get("from value").toString());
-				row.add(state.getMap().get("to value").toString());
+				Object from = state.getMap().get("from value");
+				Object to = state.getMap().get("to value");
+				if(from == null)
+					from = "";
+				if(to == null)
+					to = "";
+				row.add(from.toString());
+				row.add(to.toString());
 				row.add(state.getFromUnit());
 				row.add(state.getToUnit());
 			}

@@ -72,6 +72,11 @@ public class EmptyState<T> implements IState<T> {
 	public IState promote() {
 		return this;
 	}
+	
+	public IState demote() {
+		IState demoted = new SingletonState(map.get("from value"), fromUnit);
+		return demoted;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
