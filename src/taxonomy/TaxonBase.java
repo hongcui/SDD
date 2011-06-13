@@ -64,7 +64,14 @@ public class TaxonBase implements ITaxon {
 	 */
 	@Override
 	public String getName() {
-		return this.name;
+		if(this.getTaxonRank().equals(TaxonRank.GENUS)) {
+			String first = this.name.substring(0, 1);
+			first = first.toUpperCase();
+			String rest = this.name.substring(1);
+			return first.concat(rest);
+		}
+		else
+			return this.name;
 	}
 
 	/* (non-Javadoc)

@@ -30,18 +30,21 @@ public class TaxonCharacterMatrixTest {
 
 	@Test
 	public final void testTaxonCharacterMatrix() {
-		TaxonHierarchy th = makeHierarchy("achillea");
+		TaxonHierarchy th = makeHierarchyGenus("achillea");
+//		TaxonHierarchy th = makeHierarchyTwoLevel("cynareae", TaxonRank.TRIBE, TaxonRank.GENUS);
 		th.printSimple();
 		TaxonCharacterMatrix matrix = new TaxonCharacterMatrix(th);
 		Map<String, Map<ITaxon, IState>> map = matrix.getTable();
 		matrix.printSimple();
-		matrix.generateMatrixFile("output/matrix.csv");
+		matrix.generateMatrixFile("output/achillea.txt");
+//		matrix.generateMatrixFile("output/cirsium.txt");
+//		matrix.generateMatrixFile("output/cynareae-genus.txt");
 	}
 	
 	/**
 	 * 
 	 */
-	private TaxonHierarchy makeHierarchy(String genusName) {
+	private TaxonHierarchy makeHierarchyGenus(String genusName) {
 		DescriptionParser parser = new DescriptionParser(genusName, TaxonRank.GENUS);
 		ITaxon taxon = parser.parseTaxon();
 		String cirsiumGenusFilename = dao.getFilenameForDescription(TaxonRank.GENUS, genusName);
@@ -58,6 +61,30 @@ public class TaxonCharacterMatrixTest {
 				h.addSubTaxon(speciesTaxon);
 			} catch (SubTaxonException e) {
 				e.printStackTrace();
+			}
+		}
+		return h;
+	}
+	
+	private TaxonHierarchy makeHierarchyTwoLevel(String topName, TaxonRank topRank, TaxonRank bottomRank) {
+		System.out.println("Making hierarchy for family: " + topName);
+		DescriptionParser parser = new DescriptionParser(topName, topRank);
+		ITaxon taxon = parser.parseTaxon();
+		String rankTop = dao.getFilenameForDescription(topRank, topName);
+		List<String> rankLower = dao.getFilenamesForManyDescriptions(topRank, topName, bottomRank);
+		rankLower.remove(rankTop);
+		TaxonHierarchy h = new TaxonHierarchy(taxon);
+		DescriptionParser bottomParser;
+		for(String s : rankLower) {
+			String bottomName = dao.getTaxonValues(s).get(bottomRank.toString().toLowerCase());
+			System.out.println("Bottom name: " + bottomName);
+			bottomParser = new DescriptionParser(bottomName, bottomRank);
+			ITaxon bottomTaxon = bottomParser.parseTaxon();
+			try {
+				h.addSubTaxon(bottomTaxon);
+			}
+			catch (SubTaxonException e) {
+				System.out.println(e.getMessage());
 			}
 		}
 		return h;
