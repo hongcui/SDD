@@ -1,10 +1,14 @@
 package conversion;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -16,11 +20,19 @@ import javax.xml.namespace.QName;
 import sdd.AbstractCharacterDefinition;
 import sdd.AbstractCharacterMarkup;
 import sdd.CategoricalMarkup;
+import sdd.CharTreeCharacter;
+import sdd.CharTreeNode;
+import sdd.CharTreeNodeRef;
+import sdd.CharTreeNodeSeq;
+import sdd.CharacterRef;
 import sdd.CharacterSet;
+import sdd.CharacterTree;
+import sdd.CharacterTreeSet;
 import sdd.ConceptMarkup;
 import sdd.Dataset;
 import sdd.Datasets;
 import sdd.DescriptiveConcept;
+import sdd.DescriptiveConceptRef;
 import sdd.DescriptiveConceptSet;
 import sdd.DetailText;
 import sdd.DocumentGenerator;
@@ -109,11 +121,17 @@ public class SDDConverter {
 	private void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon) {
 		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
 		CharacterSet characterSet = sddFactory.createCharacterSet();
+		Set<AbstractCharacterDefinition> charsToAdd = new HashSet<AbstractCharacterDefinition>();
+		CharacterTreeSet characterTreeSet = sddFactory.createCharacterTreeSet();
+		CharacterTree characterTree = sddFactory.createCharacterTree();
+		
 		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();
 		Map<String, DescriptiveConcept> dcsToAdd = new HashMap<String, DescriptiveConcept>();
 		System.out.print(taxon.getStructureTree().toString());
+		
 		while(iter.hasNext()) {
-			Structure s = iter.next().getElement();
+			TreeNode<Structure> node = iter.next();
+			Structure s = node.getElement();
 			DescriptiveConcept dc = sddFactory.createDescriptiveConcept();
 			dc.setId(s.getId());
 			Representation rep = sddFactory.createRepresentation();
@@ -122,15 +140,71 @@ public class SDDConverter {
 			rep.getRepresentationGroup().add(labelText);
 			dc.setRepresentation(rep);
 			dcsToAdd.put(s.getId(), dc);
-			addCharactersToCharacterSet(characterSet, s.getCharStateMap());
+			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(characterSet, s.getCharStateMap());
+			charsToAdd.addAll(charsForCharacterTree);
+			addToCharacterTree(characterTree, dc, charsForCharacterTree, node);
 		}
 		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
 		dataset.setDescriptiveConcepts(dcSet);
+		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd);
 		dataset.setCharacters(characterSet);
+		characterTreeSet.getCharacterTree().add(characterTree);
+		dataset.setCharacterTrees(characterTreeSet);
 	}
 
-	private void addCharactersToCharacterSet(CharacterSet characterSet,
+	/**
+	 * This method first adds a Node to a character tree that points to the descriptive concept object.  It then adds some character nodes 
+	 * as references that point to the descriptive concept.
+	 * @param characterTree
+	 * @param dc
+	 * @param charsForCharacterTree
+	 * @param node
+	 */
+	private void addToCharacterTree(CharacterTree characterTree,
+			DescriptiveConcept dc,
+			List<AbstractCharacterDefinition> charsForCharacterTree,
+			TreeNode<Structure> node) {
+		//make a new DC node for the tree, set it's reference to the id of the actual Descriptive Concept, set
+		//the ID to be the id of the DC object with 'dc_node' in front, and point to the parent of the DC object.
+		CharTreeNode dcNode = sddFactory.createCharTreeNode();
+		DescriptiveConceptRef dcRef = sddFactory.createDescriptiveConceptRef();
+		dcRef.setRef(dc.getId());
+		dcNode.setDescriptiveConcept(dcRef);
+		dcNode.setId("dc_node_"+dc.getId());
+		if(node.getParent() != null) {
+			Structure parentStructure = node.getParent().getElement();
+			CharTreeNodeRef ctNodeRef = sddFactory.createCharTreeNodeRef();
+			ctNodeRef.setRef("dc_node_"+parentStructure.getId());
+			dcNode.setParent(ctNodeRef);
+		}
+		//Now, for each character in the character list, make a CharNode for the tree, and point to the descriptive
+		//concept node as the parent.
+		for(AbstractCharacterDefinition character : charsForCharacterTree) {
+			CharTreeCharacter ctCharNode = sddFactory.createCharTreeCharacter();
+			CharacterRef charRef = sddFactory.createCharacterRef();
+			charRef.setRef(character.getId());
+			ctCharNode.setCharacter(charRef);
+			CharTreeNodeRef ctNodeRef = sddFactory.createCharTreeNodeRef();
+			ctNodeRef.setRef(dcNode.getId());
+			ctCharNode.setParent(ctNodeRef);
+			if(characterTree.getNodes() == null) {
+				CharTreeNodeSeq ctNodeSeq = sddFactory.createCharTreeNodeSeq();
+				characterTree.setNodes(ctNodeSeq);
+			}
+			characterTree.getNodes().getNodeOrCharNode().add(ctCharNode);
+		}
+		characterTree.getNodes().getNodeOrCharNode().add(dcNode);
+	}
+
+	/**
+	 * Adds characters from a map between character names and states to an SDD Character Set
+	 * @param characterSet
+	 * @param charStateMap
+	 * @return A list of SDD characters to be used as CharNodes in the character tree.
+	 */
+	private List<AbstractCharacterDefinition> addCharactersToCharacterSet(CharacterSet characterSet,
 			Map<String, IState> charStateMap) {
+		List<AbstractCharacterDefinition> characters = new ArrayList<AbstractCharacterDefinition>();
 		for(String s : charStateMap.keySet()) {
 			AbstractCharacterDefinition character = null;
 			IState state = charStateMap.get(s);
@@ -148,14 +222,24 @@ public class SDDConverter {
 				}
 				character.setRepresentation(rep);
 			}
-			else {
+			else if(state instanceof RangeState){
+				Representation rep = sddFactory.createRepresentation();
+				LabelText labelText = sddFactory.createLabelText();
+				labelText.setValue(s);
+				rep.getRepresentationGroup().add(labelText);
 				
+				if(state.getMap().get("from value") instanceof String) {
+					character = sddFactory.createCategoricalCharacter();
+				}
+				else {
+					character = sddFactory.createQuantitativeCharacter();
+				}
+				character.setRepresentation(rep);
 			}
-			if(!characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().contains(character))
-				characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().add(character);
+			character.setId(s);
+			characters.add(character);
 		}
-		
-		
+		return characters;		
 	}
 
 	/**
