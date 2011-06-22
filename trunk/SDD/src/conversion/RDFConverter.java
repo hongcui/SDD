@@ -53,6 +53,7 @@ public class RDFConverter {
 	 */
 	public void taxonToRDF(ITaxon taxon, String filename) {
 		Model taxonModel = ModelFactory.createDefaultModel();
+		addTaxonomyVocabularyStatements(taxonModel, taxon);
 		Iterator<TreeNode<Structure>> structures = taxon.getStructureTree().iterator();
 		addStructuresToModel(taxonModel, structures);
 		addRelationsToModel(taxonModel, taxon.getRelations());
@@ -66,10 +67,31 @@ public class RDFConverter {
 	 */
 	public Model taxonToRDF(ITaxon taxon) {
 		Model taxonModel = ModelFactory.createDefaultModel();
+		addTaxonomyVocabularyStatements(taxonModel, taxon);
 		Iterator<TreeNode<Structure>> structures = taxon.getStructureTree().iterator();
 		addStructuresToModel(taxonModel, structures);
 		addRelationsToModel(taxonModel, taxon.getRelations());
 		return taxonModel;
+	}
+
+	/**
+	 * Adds some taxonomy vocabulary triples to the taxon model.  Vocabulary defined by
+	 * http://purl.org/NET/biol/ns#
+	 * @param taxonModel
+	 * @param taxon
+	 */
+	private void addTaxonomyVocabularyStatements(Model taxonModel,
+			ITaxon taxon) {
+		Structure wholeOrganism = taxon.getStructureTree().getRoot().getElement();
+		Resource organismResource = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
+				.concat(wholeOrganism.getName()));
+		Property hasTaxonomy = new PropertyImpl(rdfProps.getProperty("biol").concat("hasTaxonomy"));
+		Resource taxonomy = taxonModel.getResource(rdfProps.getProperty("biol").concat("Taxonomy"));
+		Property name = new PropertyImpl(rdfProps.getProperty("biol").concat("name"));
+		Property classification = new PropertyImpl(rdfProps.getProperty("biol").concat(taxon.getTaxonRank().toString().toLowerCase()));
+		taxonModel.add(organismResource, hasTaxonomy, taxonomy);
+		taxonModel.add(taxonomy, name, taxon.getName());
+		taxonModel.add(taxonomy, classification, taxon.getName());
 	}
 
 	/**
