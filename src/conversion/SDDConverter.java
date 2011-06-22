@@ -4,11 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -24,11 +22,13 @@ import sdd.CharTreeCharacter;
 import sdd.CharTreeNode;
 import sdd.CharTreeNodeRef;
 import sdd.CharTreeNodeSeq;
+import sdd.CharacterLocalStateDef;
 import sdd.CharacterRef;
 import sdd.CharacterSet;
 import sdd.CharacterTree;
 import sdd.CharacterTreeSet;
 import sdd.ConceptMarkup;
+import sdd.ConceptStateRef;
 import sdd.Dataset;
 import sdd.Datasets;
 import sdd.DescriptiveConcept;
@@ -68,6 +68,7 @@ public class SDDConverter {
 	private Model model;
 	private JAXBContext sddContext;
 	private ObjectFactory sddFactory;
+	private Map<String, sdd.AbstractRef> refs;
 	
 	/**
 	 * Create a new converter object from a single taxon model.
@@ -81,6 +82,7 @@ public class SDDConverter {
 			e.printStackTrace();
 		}
 		this.sddFactory = new ObjectFactory();
+		this.refs = new HashMap<String, sdd.AbstractRef>();
 	}
 	
 	/**
@@ -121,9 +123,14 @@ public class SDDConverter {
 	private void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon) {
 		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
 		CharacterSet characterSet = sddFactory.createCharacterSet();
-		Set<AbstractCharacterDefinition> charsToAdd = new HashSet<AbstractCharacterDefinition>();
+		Map<String, AbstractCharacterDefinition> charsToAdd = new HashMap<String, AbstractCharacterDefinition>();
 		CharacterTreeSet characterTreeSet = sddFactory.createCharacterTreeSet();
 		CharacterTree characterTree = sddFactory.createCharacterTree();
+		Representation ctRep = sddFactory.createRepresentation();
+		LabelText ctLabelText = sddFactory.createLabelText();
+		ctLabelText.setValue("Structural Character tree");
+		ctRep.getRepresentationGroup().add(ctLabelText);
+		characterTree.setRepresentation(ctRep);
 		
 		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();
 		Map<String, DescriptiveConcept> dcsToAdd = new HashMap<String, DescriptiveConcept>();
@@ -140,13 +147,12 @@ public class SDDConverter {
 			rep.getRepresentationGroup().add(labelText);
 			dc.setRepresentation(rep);
 			dcsToAdd.put(s.getId(), dc);
-			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(characterSet, s.getCharStateMap());
-			charsToAdd.addAll(charsForCharacterTree);
+			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap());
 			addToCharacterTree(characterTree, dc, charsForCharacterTree, node);
 		}
 		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
 		dataset.setDescriptiveConcepts(dcSet);
-		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd);
+		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd.values());
 		dataset.setCharacters(characterSet);
 		characterTreeSet.getCharacterTree().add(characterTree);
 		dataset.setCharacterTrees(characterTreeSet);
@@ -202,7 +208,7 @@ public class SDDConverter {
 	 * @param charStateMap
 	 * @return A list of SDD characters to be used as CharNodes in the character tree.
 	 */
-	private List<AbstractCharacterDefinition> addCharactersToCharacterSet(CharacterSet characterSet,
+	private List<AbstractCharacterDefinition> addCharactersToCharacterSet(Map<String, AbstractCharacterDefinition> characterMap,
 			Map<String, IState> charStateMap) {
 		List<AbstractCharacterDefinition> characters = new ArrayList<AbstractCharacterDefinition>();
 		for(String s : charStateMap.keySet()) {
@@ -213,9 +219,29 @@ public class SDDConverter {
 				LabelText labelText = sddFactory.createLabelText();
 				labelText.setValue(s);
 				rep.getRepresentationGroup().add(labelText);
+				Representation stateRep = sddFactory.createRepresentation();
+				LabelText stateLabelText = sddFactory.createLabelText();
+				stateLabelText.setValue((String) state.getMap().get("value"));
+				stateRep.getRepresentationGroup().add(stateLabelText);
 				
 				if(state.getMap().get("value") instanceof String) {
+					String stateName = (String) state.getMap().get("value");
 					character = sddFactory.createCategoricalCharacter();
+					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
+					if(!refs.containsKey(stateName)) {
+						CharacterLocalStateDef localStateDef = sddFactory.createCharacterLocalStateDef();
+						localStateDef.setId(stateName);
+						localStateDef.setRepresentation(stateRep);
+						localStateDef.setId("state_".concat(stateName));
+						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(localStateDef);
+						//add reference to refs map for future use.
+						ConceptStateRef stateRef = sddFactory.createConceptStateRef();
+						stateRef.setRef(localStateDef.getId());
+						refs.put(stateName, stateRef);
+					}
+					else {
+						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(refs.get(stateName));
+					}
 				}
 				else {
 					character = sddFactory.createQuantitativeCharacter();
@@ -230,6 +256,7 @@ public class SDDConverter {
 				
 				if(state.getMap().get("from value") instanceof String) {
 					character = sddFactory.createCategoricalCharacter();
+					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
 				}
 				else {
 					character = sddFactory.createQuantitativeCharacter();
@@ -238,8 +265,42 @@ public class SDDConverter {
 			}
 			character.setId(s);
 			characters.add(character);
+			mergeNewCharacter(characterMap, character);
 		}
 		return characters;		
+	}
+
+	private void mergeNewCharacter(
+			Map<String, AbstractCharacterDefinition> characterMap,
+			AbstractCharacterDefinition character) {
+		String charName = character.getId();
+		if(!characterMap.containsKey(charName))
+			characterMap.put(charName, character);
+		else {
+			AbstractCharacterDefinition presentChar = characterMap.get(charName);
+			if(presentChar instanceof sdd.CategoricalCharacter) {
+				if(character instanceof sdd.CategoricalCharacter) {
+					//then just merge states of the two
+					((sdd.CategoricalCharacter)presentChar).getStates().getStateDefinitionOrStateReference().
+						addAll(
+								((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference());
+				}
+				else if(character instanceof sdd.QuantitativeCharacter) {
+					String q = "q_".concat(character.getId());
+					character.setId(q);
+					characterMap.put(q, character);
+				}
+			}
+			else if(presentChar instanceof sdd.QuantitativeCharacter) {
+				if(character instanceof sdd.CategoricalCharacter) {
+					String q = "q_".concat(presentChar.getId());
+					presentChar.setId(q);
+					characterMap.put(q, presentChar);
+					characterMap.put(charName, character);
+				}
+			}
+		}
+		
 	}
 
 	/**

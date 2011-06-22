@@ -27,7 +27,7 @@ public class TestSDDConverter {
 	public void testTaxonToSDD() {
 		TaxonHierarchy h = new TaxonHierarchy(parser.parseTaxon());
 		SDDConverter toSDD = new SDDConverter(null);
-		toSDD.taxonToSDD(h.getHierarchy().getRoot().getElement(), "output/cirsium-sdd.xml");
+		toSDD.taxonToSDD(h.getHierarchy().getRoot().getElement(), "output/cirsium-sdd-fix.xml");
 	}
 
 }
