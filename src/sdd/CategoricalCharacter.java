@@ -163,7 +163,7 @@ public class CategoricalCharacter
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((states == null) ? 0 : states.hashCode());
+		result = prime * result + this.id.hashCode();
 		return result;
 	}
 
@@ -179,11 +179,6 @@ public class CategoricalCharacter
 		if (!(obj instanceof CategoricalCharacter))
 			return false;
 		CategoricalCharacter other = (CategoricalCharacter) obj;
-		if (states == null) {
-			if (other.states != null)
-				return false;
-		} else if (!states.equals(other.states))
-			return false;
 		if (this.id == null) {
 			if(other.id != null)
 				return false;

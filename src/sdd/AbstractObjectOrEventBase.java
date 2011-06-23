@@ -69,7 +69,7 @@ import org.w3c.dom.Element;
 })
 public abstract class AbstractObjectOrEventBase {
 
-    @XmlElement(name = "Representation")
+	@XmlElement(name = "Representation")
     protected Representation representation;
     @XmlElement(name = "Links")
     protected LinkSet links;
@@ -281,4 +281,68 @@ public abstract class AbstractObjectOrEventBase {
         return otherAttributes;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof AbstractObjectOrEventBase)) {
+			return false;
+		}
+		AbstractObjectOrEventBase other = (AbstractObjectOrEventBase) obj;
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(this.getClass().toString() + "[");
+		if (representation != null)
+			builder.append("representation=").append(representation)
+					.append(", ");
+		if (links != null)
+			builder.append("links=").append(links).append(", ");
+		if (nextVersionBase != null)
+			builder.append("nextVersionBase=").append(nextVersionBase)
+					.append(", ");
+		if (any != null)
+			builder.append("any=").append(any).append(", ");
+		if (uri != null)
+			builder.append("uri=").append(uri).append(", ");
+		if (id != null)
+			builder.append("id=").append(id).append(", ");
+		if (debuglabel != null)
+			builder.append("debuglabel=").append(debuglabel).append(", ");
+		if (otherAttributes != null)
+			builder.append("otherAttributes=").append(otherAttributes);
+		builder.append("]");
+		return builder.toString();
+	}
 }

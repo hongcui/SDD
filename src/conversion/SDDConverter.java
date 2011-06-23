@@ -17,6 +17,8 @@ import javax.xml.namespace.QName;
 
 import sdd.AbstractCharacterDefinition;
 import sdd.AbstractCharacterMarkup;
+import sdd.AbstractRef;
+import sdd.CatSummaryData;
 import sdd.CategoricalMarkup;
 import sdd.CharTreeCharacter;
 import sdd.CharTreeNode;
@@ -27,8 +29,8 @@ import sdd.CharacterRef;
 import sdd.CharacterSet;
 import sdd.CharacterTree;
 import sdd.CharacterTreeSet;
+import sdd.CodedDescription;
 import sdd.ConceptMarkup;
-import sdd.ConceptStateRef;
 import sdd.Dataset;
 import sdd.Datasets;
 import sdd.DescriptiveConcept;
@@ -44,7 +46,11 @@ import sdd.NaturalLanguageMarkup;
 import sdd.ObjectFactory;
 import sdd.QuantitativeMarkup;
 import sdd.Representation;
+import sdd.StateData;
 import sdd.StateMarkup;
+import sdd.TaxonNameCore;
+import sdd.TaxonNameRef;
+import sdd.TaxonomicRank;
 import sdd.TechnicalMetadata;
 import sdd.ValueMarkup;
 import states.IState;
@@ -69,6 +75,7 @@ public class SDDConverter {
 	private JAXBContext sddContext;
 	private ObjectFactory sddFactory;
 	private Map<String, sdd.AbstractRef> refs;
+	private Map<String, Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>>> taxonNameToCharState;
 	
 	/**
 	 * Create a new converter object from a single taxon model.
@@ -83,6 +90,7 @@ public class SDDConverter {
 		}
 		this.sddFactory = new ObjectFactory();
 		this.refs = new HashMap<String, sdd.AbstractRef>();
+		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>>>();
 	}
 	
 	/**
@@ -109,9 +117,33 @@ public class SDDConverter {
 	private void addDataset(Datasets root, ITaxon taxon) {
 		Dataset dataset = sddFactory.createDataset();
 		dataset.setLang("en-us");
+		addTaxonNameToDataset(dataset, taxon);
 		addRepresentationToDataset(dataset, taxon);
 		addDescriptiveConceptsToDataset(dataset, taxon);
+		addCodedDescriptionToDataset(dataset, taxon);
 		root.getDataset().add(dataset);
+	}
+
+	/**
+	 * Add a taxon name and rank to a dataset.
+	 * @param dataset
+	 * @param taxon
+	 */
+	private void addTaxonNameToDataset(Dataset dataset, ITaxon taxon) {
+		TaxonNameCore taxonNameCore = sddFactory.createTaxonNameCore();
+		taxonNameCore.setId(taxon.getName());
+		TaxonomicRank taxonomicRank = sddFactory.createTaxonomicRank();
+		String rank = taxon.getTaxonRank().toString().toLowerCase();
+		taxonomicRank.setLiteral(rank);
+		Representation rep = sddFactory.createRepresentation();
+		LabelText labelText = sddFactory.createLabelText();
+		labelText.setValue(rank.concat(" ").concat(taxon.getName()));
+		rep.getRepresentationGroup().add(labelText);
+		taxonNameCore.setRepresentation(rep);
+		taxonNameCore.setRank(taxonomicRank);
+		if(dataset.getTaxonNames() == null)
+			dataset.setTaxonNames(sddFactory.createTaxonNameSet());
+		dataset.getTaxonNames().getTaxonName().add(taxonNameCore);
 	}
 
 	/**
@@ -147,7 +179,7 @@ public class SDDConverter {
 			rep.getRepresentationGroup().add(labelText);
 			dc.setRepresentation(rep);
 			dcsToAdd.put(s.getId(), dc);
-			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap());
+			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap(), taxon.getName());
 			addToCharacterTree(characterTree, dc, charsForCharacterTree, node);
 		}
 		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
@@ -206,13 +238,20 @@ public class SDDConverter {
 	 * Adds characters from a map between character names and states to an SDD Character Set
 	 * @param characterSet
 	 * @param charStateMap
+	 * @param taxonName 
 	 * @return A list of SDD characters to be used as CharNodes in the character tree.
 	 */
 	private List<AbstractCharacterDefinition> addCharactersToCharacterSet(Map<String, AbstractCharacterDefinition> characterMap,
-			Map<String, IState> charStateMap) {
+			Map<String, IState> charStateMap, String taxonName) {
 		List<AbstractCharacterDefinition> characters = new ArrayList<AbstractCharacterDefinition>();
+		if(!taxonNameToCharState.containsKey(taxonName))
+			taxonNameToCharState.put(taxonName, new HashMap<AbstractCharacterDefinition, List<CharacterLocalStateDef>>());
+		
+		Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>> charStateDescMap = taxonNameToCharState.get(taxonName);
+		
 		for(String s : charStateMap.keySet()) {
 			AbstractCharacterDefinition character = null;
+			CharacterLocalStateDef localStateDef = null;
 			IState state = charStateMap.get(s);
 			if(state instanceof SingletonState) {
 				Representation rep = sddFactory.createRepresentation();
@@ -229,18 +268,18 @@ public class SDDConverter {
 					character = sddFactory.createCategoricalCharacter();
 					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
 					if(!refs.containsKey(stateName)) {
-						CharacterLocalStateDef localStateDef = sddFactory.createCharacterLocalStateDef();
+						localStateDef = sddFactory.createCharacterLocalStateDef();
 						localStateDef.setId(stateName);
 						localStateDef.setRepresentation(stateRep);
 						localStateDef.setId("state_".concat(stateName));
 						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(localStateDef);
 						//add reference to refs map for future use.
-						ConceptStateRef stateRef = sddFactory.createConceptStateRef();
+						AbstractRef stateRef = sddFactory.createConceptStateRef();
 						stateRef.setRef(localStateDef.getId());
 						refs.put(stateName, stateRef);
 					}
 					else {
-						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(refs.get(stateName));
+//						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(refs.get(stateName));
 					}
 				}
 				else {
@@ -265,14 +304,22 @@ public class SDDConverter {
 			}
 			character.setId(s);
 			characters.add(character);
-			mergeNewCharacter(characterMap, character);
+			mergeNewCharacter(characterMap, character, taxonName);
+			if(!charStateDescMap.containsKey(character))
+				charStateDescMap.put(character, new ArrayList<CharacterLocalStateDef>());
+			charStateDescMap.get(character).add(localStateDef);
 		}
 		return characters;		
 	}
 
+	/**
+	 * Add or merge character into existing set (really a map) of characters in the dataset.
+	 * @param characterMap
+	 * @param character
+	 */
 	private void mergeNewCharacter(
 			Map<String, AbstractCharacterDefinition> characterMap,
-			AbstractCharacterDefinition character) {
+			AbstractCharacterDefinition character, String taxonName) {
 		String charName = character.getId();
 		if(!characterMap.containsKey(charName))
 			characterMap.put(charName, character);
@@ -298,6 +345,60 @@ public class SDDConverter {
 					characterMap.put(q, presentChar);
 					characterMap.put(charName, character);
 				}
+			}
+		}
+	}
+	
+	/**
+	 * Adds a Coded Description to the set of Coded Descriptions for a Dataset.
+	 * @param dataset
+	 * @param taxon
+	 */
+	private void addCodedDescriptionToDataset(Dataset dataset, ITaxon taxon) {
+		if(dataset.getCodedDescriptions() == null)
+			dataset.setCodedDescriptions(sddFactory.createCodedDescriptionSet());
+		CodedDescription description = sddFactory.createCodedDescription();
+		Representation descRep = sddFactory.createRepresentation();
+		LabelText descLabel = sddFactory.createLabelText();
+		descLabel.setValue("Coded description for " + taxon.getName());
+		descRep.getRepresentationGroup().add(descLabel);
+		description.setRepresentation(descRep);
+		//indicate the taxon scope
+		TaxonNameRef taxonNameRef = sddFactory.createTaxonNameRef();
+		taxonNameRef.setRef(taxon.getName());
+		description.setScope(sddFactory.createDescriptionScopeSet());
+		description.getScope().getTaxonName().add(taxonNameRef);
+		//now add in the summary data
+		description.setSummaryData(sddFactory.createSummaryDataSet());
+		addSummaryDataToCodedDescription(description, taxon);
+		
+		//and finally, add this description to the Coded Description Set
+		dataset.getCodedDescriptions().getCodedDescription().add(description);
+	}
+
+	/**
+	 * Use references to previously-defined DCs and characters to build a coded description for this taxon.
+	 * @param description
+	 * @param taxon
+	 */
+	private void addSummaryDataToCodedDescription(CodedDescription description,
+			ITaxon taxon) {
+		System.out.println(this.taxonNameToCharState.toString());
+		Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>> map = this.taxonNameToCharState.get(taxon.getName());
+		for(AbstractCharacterDefinition character : map.keySet()) {
+			if(character instanceof sdd.CategoricalCharacter) {
+				CatSummaryData summaryData = sddFactory.createCatSummaryData();
+				summaryData.setRef(character.getId());
+				for(CharacterLocalStateDef stateDef : map.get(character)) {
+					if (stateDef != null) {
+						StateData stateData = sddFactory.createStateData();
+						stateData.setRef(stateDef.getId());
+						summaryData.getState().add(stateData);
+					}
+				}
+				JAXBElement<CatSummaryData> dataElement =
+					new JAXBElement<CatSummaryData>(new QName("http://rs.tdwg.org/UBIF/2006/", "Categorical"), CatSummaryData.class, CatSummaryData.class, (CatSummaryData) summaryData);
+				description.getSummaryData().getCategoricalOrQuantitativeOrSequence().add(dataElement);
 			}
 		}
 		
