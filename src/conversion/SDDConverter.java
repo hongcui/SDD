@@ -46,10 +46,10 @@ import sdd.NaturalLanguageDescription;
 import sdd.NaturalLanguageDescriptionSet;
 import sdd.NaturalLanguageMarkup;
 import sdd.ObjectFactory;
+import sdd.QuantSummaryData;
 import sdd.QuantitativeCharMapping;
 import sdd.QuantitativeCharMappingSet;
 import sdd.QuantitativeCharacter;
-import sdd.QuantitativeCharacter.MeasurementUnit;
 import sdd.QuantitativeMarkup;
 import sdd.Representation;
 import sdd.StateData;
@@ -58,6 +58,7 @@ import sdd.TaxonNameCore;
 import sdd.TaxonNameRef;
 import sdd.TaxonomicRank;
 import sdd.TechnicalMetadata;
+import sdd.UnivarSimpleStatMeasureData;
 import sdd.ValueMarkup;
 import sdd.ValueRangeWithClass;
 import states.IState;
@@ -473,8 +474,22 @@ public class SDDConverter {
 					new JAXBElement<CatSummaryData>(new QName("http://rs.tdwg.org/UBIF/2006/", "Categorical"), CatSummaryData.class, CatSummaryData.class, (CatSummaryData) summaryData);
 				description.getSummaryData().getCategoricalOrQuantitativeOrSequence().add(dataElement);
 			}
+			if(character instanceof sdd.QuantitativeCharacter) {
+				QuantSummaryData summaryData = sddFactory.createQuantSummaryData();
+				summaryData.setRef(character.getId());
+				UnivarSimpleStatMeasureData low = sddFactory.createUnivarSimpleStatMeasureData();
+				low.setType(new QName("http://rs.tdwg.org/UBIF/2006/", "Low"));
+				low.setValue(((sdd.QuantitativeCharacter)character).getMappings().getMapping().get(0).getFrom().getLower());
+				summaryData.getMeasureOrPMeasure().add(low);
+				UnivarSimpleStatMeasureData high = sddFactory.createUnivarSimpleStatMeasureData();
+				high.setType(new QName("http://rs.tdwg.org/UBIF/2006/", "High"));
+				high.setValue(((sdd.QuantitativeCharacter)character).getMappings().getMapping().get(0).getFrom().getUpper());
+				summaryData.getMeasureOrPMeasure().add(high);
+				JAXBElement<QuantSummaryData> dataElement =
+					new JAXBElement<QuantSummaryData>(new QName("http://rs.tdwg.org/UBIF/2006/", "Quantitative"), QuantSummaryData.class, QuantSummaryData.class, (QuantSummaryData) summaryData);
+				description.getSummaryData().getCategoricalOrQuantitativeOrSequence().add(dataElement);
+			}
 		}
-		
 	}
 
 	/**
