@@ -209,4 +209,73 @@ public abstract class AbstractRef {
         return otherAttributes;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((debuglabel == null) ? 0 : debuglabel.hashCode());
+		result = prime * result + ((href == null) ? 0 : href.hashCode());
+		result = prime * result + ((label == null) ? 0 : label.hashCode());
+		result = prime * result + ((ref == null) ? 0 : ref.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof AbstractRef)) {
+			return false;
+		}
+		AbstractRef other = (AbstractRef) obj;
+		if (debuglabel == null) {
+			if (other.debuglabel != null) {
+				return false;
+			}
+		} else if (!debuglabel.equals(other.debuglabel)) {
+			return false;
+		}
+		if (href == null) {
+			if (other.href != null) {
+				return false;
+			}
+		} else if (!href.equals(other.href)) {
+			return false;
+		}
+		if (label == null) {
+			if (other.label != null) {
+				return false;
+			}
+		} else if (!label.equals(other.label)) {
+			return false;
+		}
+		if (ref == null) {
+			if (other.ref != null) {
+				return false;
+			}
+		} else if (!ref.equals(other.ref)) {
+			return false;
+		}
+		if (type == null) {
+			if (other.type != null) {
+				return false;
+			}
+		} else if (!type.equals(other.type)) {
+			return false;
+		}
+		return true;
+	}
+
 }

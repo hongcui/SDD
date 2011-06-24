@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -44,6 +46,10 @@ import sdd.NaturalLanguageDescription;
 import sdd.NaturalLanguageDescriptionSet;
 import sdd.NaturalLanguageMarkup;
 import sdd.ObjectFactory;
+import sdd.QuantitativeCharMapping;
+import sdd.QuantitativeCharMappingSet;
+import sdd.QuantitativeCharacter;
+import sdd.QuantitativeCharacter.MeasurementUnit;
 import sdd.QuantitativeMarkup;
 import sdd.Representation;
 import sdd.StateData;
@@ -53,6 +59,7 @@ import sdd.TaxonNameRef;
 import sdd.TaxonomicRank;
 import sdd.TechnicalMetadata;
 import sdd.ValueMarkup;
+import sdd.ValueRangeWithClass;
 import states.IState;
 import states.RangeState;
 import states.SingletonState;
@@ -74,8 +81,16 @@ public class SDDConverter {
 	private Model model;
 	private JAXBContext sddContext;
 	private ObjectFactory sddFactory;
+	
+	/** This maps state names to State References.  For use when a state is defined previously and is a valid state for a different, later
+	 * character. 
+	 */
 	private Map<String, sdd.AbstractRef> refs;
-	private Map<String, Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>>> taxonNameToCharState;
+	
+	/** This maps taxon names to a map from CharacterDefinitions to Sets of state definitions.  This is basically holding the taxon-by-character
+	 * matrix information for building a CodedDescription.
+	 */
+	private Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> taxonNameToCharState;
 	
 	/**
 	 * Create a new converter object from a single taxon model.
@@ -90,7 +105,7 @@ public class SDDConverter {
 		}
 		this.sddFactory = new ObjectFactory();
 		this.refs = new HashMap<String, sdd.AbstractRef>();
-		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>>>();
+		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 	}
 	
 	/**
@@ -236,7 +251,7 @@ public class SDDConverter {
 
 	/**
 	 * Adds characters from a map between character names and states to an SDD Character Set
-	 * @param characterSet
+	 * @param characterMap
 	 * @param charStateMap
 	 * @param taxonName 
 	 * @return A list of SDD characters to be used as CharNodes in the character tree.
@@ -245,9 +260,9 @@ public class SDDConverter {
 			Map<String, IState> charStateMap, String taxonName) {
 		List<AbstractCharacterDefinition> characters = new ArrayList<AbstractCharacterDefinition>();
 		if(!taxonNameToCharState.containsKey(taxonName))
-			taxonNameToCharState.put(taxonName, new HashMap<AbstractCharacterDefinition, List<CharacterLocalStateDef>>());
+			taxonNameToCharState.put(taxonName, new HashMap<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>());
 		
-		Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>> charStateDescMap = taxonNameToCharState.get(taxonName);
+		Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> charStateDescMap = taxonNameToCharState.get(taxonName);
 		
 		for(String s : charStateMap.keySet()) {
 			AbstractCharacterDefinition character = null;
@@ -266,24 +281,32 @@ public class SDDConverter {
 				if(state.getMap().get("value") instanceof String) {
 					String stateName = (String) state.getMap().get("value");
 					character = sddFactory.createCategoricalCharacter();
+					character.setId(s);
 					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
-					if(!refs.containsKey(stateName)) {
-						localStateDef = sddFactory.createCharacterLocalStateDef();
-						localStateDef.setId(stateName);
-						localStateDef.setRepresentation(stateRep);
-						localStateDef.setId("state_".concat(stateName));
+					localStateDef = sddFactory.createCharacterLocalStateDef();
+					localStateDef.setId(stateName);
+					localStateDef.setRepresentation(stateRep);
+					localStateDef.setId("state_".concat(stateName));
+					AbstractRef stateRef;
+					if(!refs.containsKey(stateName)) {	//if we're seeing this state for the first time, add it to character as a definition
 						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(localStateDef);
 						//add reference to refs map for future use.
-						AbstractRef stateRef = sddFactory.createConceptStateRef();
+						stateRef = sddFactory.createConceptStateRef();
 						stateRef.setRef(localStateDef.getId());
 						refs.put(stateName, stateRef);
 					}
-					else {
-//						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(refs.get(stateName));
+					else {	//we've seen this state before and it's not a duplicate for this character, get a Concept ref. from refs Map
+						if(!charStateDescMap.get(character).contains(localStateDef)) {
+							stateRef = refs.get(stateName);
+							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
+						}
 					}
 				}
-				else {
+				else if(TypeUtil.isNumeric(state.getMap().get("value"))) {
 					character = sddFactory.createQuantitativeCharacter();
+					character.setId(s);
+					QuantitativeCharMappingSet mappingSet = sddFactory.createQuantitativeCharMappingSet();
+					putMappingAndRangeOnQuanChar(character, state, mappingSet);
 				}
 				character.setRepresentation(rep);
 			}
@@ -295,21 +318,71 @@ public class SDDConverter {
 				
 				if(state.getMap().get("from value") instanceof String) {
 					character = sddFactory.createCategoricalCharacter();
+					character.setId(s);
 					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
+				}
+				else if(TypeUtil.isNumeric(state.getMap().get("from value"))) {
+					character = sddFactory.createQuantitativeCharacter();
+					character.setId(s);
+					QuantitativeCharMappingSet mappingSet = sddFactory.createQuantitativeCharMappingSet();
+					putMappingAndRangeOnQuanChar(character, state, mappingSet);
 				}
 				else {
 					character = sddFactory.createQuantitativeCharacter();
+					character.setId(s);
 				}
 				character.setRepresentation(rep);
 			}
-			character.setId(s);
 			characters.add(character);
 			mergeNewCharacter(characterMap, character, taxonName);
 			if(!charStateDescMap.containsKey(character))
-				charStateDescMap.put(character, new ArrayList<CharacterLocalStateDef>());
+				charStateDescMap.put(character, new HashSet<CharacterLocalStateDef>());
 			charStateDescMap.get(character).add(localStateDef);
 		}
 		return characters;		
+	}
+
+	/**
+	 * Adds a mapping and value range to the mapping set of a QuantitativeCharacter.
+	 * @param character
+	 * @param state
+	 */
+	private void putMappingAndRangeOnQuanChar(
+			AbstractCharacterDefinition character, IState state, QuantitativeCharMappingSet mappingSet) {
+		if (state instanceof SingletonState) {
+			QuantitativeCharMapping mapping = sddFactory.createQuantitativeCharMapping();
+			ValueRangeWithClass range = sddFactory.createValueRangeWithClass();
+			range.setLower((Double) state.getMap().get("value"));
+			range.setUpper((Double) state.getMap().get("value"));
+			mapping.setFrom(range);
+			if (!mappingSet.getMapping().contains(mapping))
+				mappingSet.getMapping().add(mapping);
+			QuantitativeCharacter.MeasurementUnit measurementUnit = new QuantitativeCharacter.MeasurementUnit();
+			LabelText unitLabelText = sddFactory.createLabelText();
+			unitLabelText.setValue(state.getFromUnit());
+			unitLabelText.setRole(new QName("http://rs.tdwg.org/UBIF/2006/", "Abbrev"));
+			measurementUnit.getLabel().add(unitLabelText);
+			((sdd.QuantitativeCharacter) character).setMappings(mappingSet);
+			((sdd.QuantitativeCharacter) character)
+					.setMeasurementUnit(measurementUnit);
+		}
+		else if (state instanceof RangeState) {
+			QuantitativeCharMapping mapping = sddFactory.createQuantitativeCharMapping();
+			ValueRangeWithClass range = sddFactory.createValueRangeWithClass();
+			range.setLower((Double) state.getMap().get("from value"));
+			range.setUpper((Double) state.getMap().get("to value"));
+			mapping.setFrom(range);
+			if (!mappingSet.getMapping().contains(mapping))
+				mappingSet.getMapping().add(mapping);
+			QuantitativeCharacter.MeasurementUnit measurementUnit = new QuantitativeCharacter.MeasurementUnit();
+			LabelText unitLabelText = sddFactory.createLabelText();
+			unitLabelText.setValue(state.getFromUnit());
+			unitLabelText.setRole(new QName("http://rs.tdwg.org/UBIF/2006/", "Abbrev"));
+			measurementUnit.getLabel().add(unitLabelText);
+			((sdd.QuantitativeCharacter) character).setMappings(mappingSet);
+			((sdd.QuantitativeCharacter) character)
+					.setMeasurementUnit(measurementUnit);
+		}
 	}
 
 	/**
@@ -384,7 +457,7 @@ public class SDDConverter {
 	private void addSummaryDataToCodedDescription(CodedDescription description,
 			ITaxon taxon) {
 		System.out.println(this.taxonNameToCharState.toString());
-		Map<AbstractCharacterDefinition, List<CharacterLocalStateDef>> map = this.taxonNameToCharState.get(taxon.getName());
+		Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> map = this.taxonNameToCharState.get(taxon.getName());
 		for(AbstractCharacterDefinition character : map.keySet()) {
 			if(character instanceof sdd.CategoricalCharacter) {
 				CatSummaryData summaryData = sddFactory.createCatSummaryData();

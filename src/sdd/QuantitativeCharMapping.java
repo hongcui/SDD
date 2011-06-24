@@ -124,4 +124,48 @@ public class QuantitativeCharMapping {
         this.nextVersion = value;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((from == null) ? 0 : from.hashCode());
+		result = prime * result + ((toState == null) ? 0 : toState.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof QuantitativeCharMapping)) {
+			return false;
+		}
+		QuantitativeCharMapping other = (QuantitativeCharMapping) obj;
+		if (from == null) {
+			if (other.from != null) {
+				return false;
+			}
+		} else if (!from.equals(other.from)) {
+			return false;
+		}
+		if (toState == null) {
+			if (other.toState != null) {
+				return false;
+			}
+		} else if (!toState.equals(other.toState)) {
+			return false;
+		}
+		return true;
+	}
+
 }

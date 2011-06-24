@@ -126,4 +126,57 @@ public class ValueRangeOrVerbatim {
         this.verbatim = value;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((lower == null) ? 0 : lower.hashCode());
+		result = prime * result + ((upper == null) ? 0 : upper.hashCode());
+		result = prime * result
+				+ ((verbatim == null) ? 0 : verbatim.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ValueRangeOrVerbatim)) {
+			return false;
+		}
+		ValueRangeOrVerbatim other = (ValueRangeOrVerbatim) obj;
+		if (lower == null) {
+			if (other.lower != null) {
+				return false;
+			}
+		} else if (!lower.equals(other.lower)) {
+			return false;
+		}
+		if (upper == null) {
+			if (other.upper != null) {
+				return false;
+			}
+		} else if (!upper.equals(other.upper)) {
+			return false;
+		}
+		if (verbatim == null) {
+			if (other.verbatim != null) {
+				return false;
+			}
+		} else if (!verbatim.equals(other.verbatim)) {
+			return false;
+		}
+		return true;
+	}
+
 }
