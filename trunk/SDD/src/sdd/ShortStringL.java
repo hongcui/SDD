@@ -182,4 +182,27 @@ public class ShortStringL {
         return otherAttributes;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("[");
+		if (audience != null)
+			builder.append("audience=").append(audience).append(", ");
+		if (lang != null)
+			builder.append("lang=").append(lang).append(", ");
+		if (otherAttributes != null)
+			builder.append("otherAttributes=").append(otherAttributes).append(
+					", ");
+		if (translatedfrom != null)
+			builder.append("translatedfrom=").append(translatedfrom).append(
+					", ");
+		if (value != null)
+			builder.append("value=").append(value);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

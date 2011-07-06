@@ -86,4 +86,17 @@ public class Representation
         return this.representationGroup;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Rep [");
+		if (representationGroup != null)
+			builder.append(representationGroup.toString());
+		builder.append("]");
+		return builder.toString();
+	}
+
 }
