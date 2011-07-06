@@ -21,6 +21,7 @@ import sdd.AbstractCharacterDefinition;
 import sdd.AbstractCharacterMarkup;
 import sdd.AbstractRef;
 import sdd.CatSummaryData;
+import sdd.CategoricalCharacter;
 import sdd.CategoricalMarkup;
 import sdd.CharTreeCharacter;
 import sdd.CharTreeNode;
@@ -65,6 +66,7 @@ import states.IState;
 import states.RangeState;
 import states.SingletonState;
 import taxonomy.ITaxon;
+import taxonomy.TaxonHierarchy;
 import tree.TreeNode;
 import util.TypeUtil;
 import util.XMLGregorianCalendarConverter;
@@ -93,6 +95,9 @@ public class SDDConverter {
 	 */
 	private Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> taxonNameToCharState;
 	
+	private Map<String, DescriptiveConcept> dcsToAdd;
+	Map<String, AbstractCharacterDefinition> charsToAdd;
+	
 	/**
 	 * Create a new converter object from a single taxon model.
 	 * @param taxonModel
@@ -109,6 +114,19 @@ public class SDDConverter {
 		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 	}
 	
+	public SDDConverter() {
+		try {
+			this.sddContext = JAXBContext.newInstance(sdd.ObjectFactory.class);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+		this.sddFactory = new ObjectFactory();
+		this.refs = new HashMap<String, sdd.AbstractRef>();
+		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
+		dcsToAdd = new HashMap<String, DescriptiveConcept>();
+		charsToAdd = new HashMap<String, AbstractCharacterDefinition>();
+	}
+
 	/**
 	 * Transform the model for a single taxon into an SDD document.
 	 * @param filename Name of the xml document.
@@ -124,13 +142,58 @@ public class SDDConverter {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Converts a TaxonHierarchy into an associated SDD XML file.  A Datasets SDD object is created
+	 * and set as the root of the XML file.
+	 * @param hierarchy
+	 * @param filename
+	 */
+	public void taxonHierarchyToSDD(TaxonHierarchy hierarchy, String filename) {
+		try {
+			Marshaller marshaller = sddContext.createMarshaller();
+			Datasets root = sddFactory.createDatasets();
+			addMetadata(root);
+			addDataset(root, hierarchy);
+			marshaller.marshal(root, new File(filename));
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Adds a Dataset to the root Datasets object, using data from all of the taxa in the hierarchy.
+	 * @param root
+	 * @param hierarchy
+	 */
+	protected void addDataset(Datasets root, TaxonHierarchy hierarchy) {
+		Dataset dataset = sddFactory.createDataset();
+		dataset.setLang("en-us");
+		addRepresentationToDataset(dataset, hierarchy.getHierarchy().getRoot().getElement());
+		Iterator<TreeNode<ITaxon>> iter = hierarchy.getHierarchy().iterator();
+		while(iter.hasNext()) {
+			TreeNode<ITaxon> node = iter.next();
+			ITaxon taxon = node.getElement();
+			addTaxonNameToDataset(dataset, taxon);
+			addDescriptiveConceptsToDataset(dataset, taxon);
+			addCodedDescriptionToDataset(dataset, taxon);
+		}
+		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
+		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
+		dataset.setDescriptiveConcepts(dcSet);
+		CharacterSet characterSet = sddFactory.createCharacterSet();
+		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd.values());
+		dataset.setCharacters(characterSet);
+		root.getDataset().add(dataset);
+		
+	}
 
 	/**
 	 * Adds a Dataset to the root Datasets object, using data from taxon object.
 	 * @param root The root object of the SDD document.
 	 * @param taxon Object to retrieve data from.
 	 */
-	private void addDataset(Datasets root, ITaxon taxon) {
+	protected void addDataset(Datasets root, ITaxon taxon) {
 		Dataset dataset = sddFactory.createDataset();
 		dataset.setLang("en-us");
 		addTaxonNameToDataset(dataset, taxon);
@@ -145,7 +208,7 @@ public class SDDConverter {
 	 * @param dataset
 	 * @param taxon
 	 */
-	private void addTaxonNameToDataset(Dataset dataset, ITaxon taxon) {
+	protected void addTaxonNameToDataset(Dataset dataset, ITaxon taxon) {
 		TaxonNameCore taxonNameCore = sddFactory.createTaxonNameCore();
 		taxonNameCore.setId(taxon.getName());
 		TaxonomicRank taxonomicRank = sddFactory.createTaxonomicRank();
@@ -163,16 +226,28 @@ public class SDDConverter {
 	}
 
 	/**
-	 * Adds a set of descriptive concepts (based on structures from annotation schema)
+	 * Adds a set of descriptive concepts (based on structures from annotation schema).  This is really adding the bulk of the DescriptiveTerminology,
+	 * since it also calls the methods to build a CharacterSet and CharacterTrees.
 	 * to a dataset.
 	 * @param dataset
 	 * @param taxon
 	 */
-	private void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon) {
-		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
-		CharacterSet characterSet = sddFactory.createCharacterSet();
-		Map<String, AbstractCharacterDefinition> charsToAdd = new HashMap<String, AbstractCharacterDefinition>();
-		CharacterTreeSet characterTreeSet = sddFactory.createCharacterTreeSet();
+	protected void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon) {
+		DescriptiveConceptSet dcSet = null;
+		if(dataset.getDescriptiveConcepts() == null)
+			dcSet = sddFactory.createDescriptiveConceptSet();
+		else
+			dcSet = dataset.getDescriptiveConcepts();
+		CharacterSet characterSet = null;
+		if(dataset.getCharacters() == null)
+			characterSet = sddFactory.createCharacterSet();
+		else
+			characterSet = dataset.getCharacters();
+		CharacterTreeSet characterTreeSet = null;
+		if(dataset.getCharacterTrees() == null)
+			characterTreeSet = sddFactory.createCharacterTreeSet();
+		else
+			characterTreeSet = dataset.getCharacterTrees();
 		CharacterTree characterTree = sddFactory.createCharacterTree();
 		Representation ctRep = sddFactory.createRepresentation();
 		LabelText ctLabelText = sddFactory.createLabelText();
@@ -180,10 +255,7 @@ public class SDDConverter {
 		ctRep.getRepresentationGroup().add(ctLabelText);
 		characterTree.setRepresentation(ctRep);
 		
-		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();
-		Map<String, DescriptiveConcept> dcsToAdd = new HashMap<String, DescriptiveConcept>();
-		System.out.print(taxon.getStructureTree().toString());
-		
+		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();		
 		while(iter.hasNext()) {
 			TreeNode<Structure> node = iter.next();
 			Structure s = node.getElement();
@@ -195,13 +267,14 @@ public class SDDConverter {
 			rep.getRepresentationGroup().add(labelText);
 			dc.setRepresentation(rep);
 			dcsToAdd.put(s.getId(), dc);
-			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap(), taxon.getName());
+			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap(), node, taxon.getName());
 			addToCharacterTree(characterTree, dc, charsForCharacterTree, node);
 		}
-		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
-		dataset.setDescriptiveConcepts(dcSet);
-		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd.values());
-		dataset.setCharacters(characterSet);
+		//This needs to be done Globally, not in the method!
+//		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
+//		dataset.setDescriptiveConcepts(dcSet);
+//		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd.values());
+//		dataset.setCharacters(characterSet);
 		characterTreeSet.getCharacterTree().add(characterTree);
 		dataset.setCharacterTrees(characterTreeSet);
 	}
@@ -214,7 +287,7 @@ public class SDDConverter {
 	 * @param charsForCharacterTree
 	 * @param node
 	 */
-	private void addToCharacterTree(CharacterTree characterTree,
+	protected void addToCharacterTree(CharacterTree characterTree,
 			DescriptiveConcept dc,
 			List<AbstractCharacterDefinition> charsForCharacterTree,
 			TreeNode<Structure> node) {
@@ -252,13 +325,15 @@ public class SDDConverter {
 
 	/**
 	 * Adds characters from a map between character names and states to an SDD Character Set
-	 * @param characterMap
-	 * @param charStateMap
+	 * @param characterMap This map will maintain pairs from character names to SDD Characters.  Passed on to mergeCharacters method and back to the 
+	 * addDescriptiveConceptsToDataset method, helping to maintain the Character Terminology.
+	 * @param charStateMap This is a mapping from character names to IState objects as provided by the ITaxon.
+	 * @param node Node from the Structure tree of a taxon, from which a full character name will be derived.
 	 * @param taxonName 
 	 * @return A list of SDD characters to be used as CharNodes in the character tree.
 	 */
-	private List<AbstractCharacterDefinition> addCharactersToCharacterSet(Map<String, AbstractCharacterDefinition> characterMap,
-			Map<String, IState> charStateMap, String taxonName) {
+	protected List<AbstractCharacterDefinition> addCharactersToCharacterSet(Map<String, AbstractCharacterDefinition> characterMap,
+			Map<String, IState> charStateMap, TreeNode<Structure> node, String taxonName) {
 		List<AbstractCharacterDefinition> characters = new ArrayList<AbstractCharacterDefinition>();
 		if(!taxonNameToCharState.containsKey(taxonName))
 			taxonNameToCharState.put(taxonName, new HashMap<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>());
@@ -269,20 +344,21 @@ public class SDDConverter {
 			AbstractCharacterDefinition character = null;
 			CharacterLocalStateDef localStateDef = null;
 			IState state = charStateMap.get(s);
+			String fullCharacterName = util.ConversionUtil.resolveFullCharacterName(s, node);
 			if(state instanceof SingletonState) {
 				Representation rep = sddFactory.createRepresentation();
 				LabelText labelText = sddFactory.createLabelText();
-				labelText.setValue(s);
+				labelText.setValue(fullCharacterName);
 				rep.getRepresentationGroup().add(labelText);
 				Representation stateRep = sddFactory.createRepresentation();
 				LabelText stateLabelText = sddFactory.createLabelText();
-				stateLabelText.setValue((String) state.getMap().get("value"));
+				stateLabelText.setValue(state.getMap().get("value").toString());
 				stateRep.getRepresentationGroup().add(stateLabelText);
 				
 				if(state.getMap().get("value") instanceof String) {
 					String stateName = (String) state.getMap().get("value");
 					character = sddFactory.createCategoricalCharacter();
-					character.setId(s);
+					character.setId(fullCharacterName);
 					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
 					localStateDef = sddFactory.createCharacterLocalStateDef();
 					localStateDef.setId(stateName);
@@ -297,7 +373,11 @@ public class SDDConverter {
 						refs.put(stateName, stateRef);
 					}
 					else {	//we've seen this state before and it's not a duplicate for this character, get a Concept ref. from refs Map
-						if(!charStateDescMap.get(character).contains(localStateDef)) {
+						if(charStateDescMap.containsKey(character) && !charStateDescMap.get(character).contains(localStateDef)) {
+							stateRef = refs.get(stateName);
+							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
+						}
+						else if(!charStateDescMap.containsKey(character)) {
 							stateRef = refs.get(stateName);
 							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
 						}
@@ -305,7 +385,7 @@ public class SDDConverter {
 				}
 				else if(TypeUtil.isNumeric(state.getMap().get("value"))) {
 					character = sddFactory.createQuantitativeCharacter();
-					character.setId(s);
+					character.setId(fullCharacterName);
 					QuantitativeCharMappingSet mappingSet = sddFactory.createQuantitativeCharMappingSet();
 					putMappingAndRangeOnQuanChar(character, state, mappingSet);
 				}
@@ -314,23 +394,23 @@ public class SDDConverter {
 			else if(state instanceof RangeState){
 				Representation rep = sddFactory.createRepresentation();
 				LabelText labelText = sddFactory.createLabelText();
-				labelText.setValue(s);
+				labelText.setValue(fullCharacterName);
 				rep.getRepresentationGroup().add(labelText);
 				
 				if(state.getMap().get("from value") instanceof String) {
 					character = sddFactory.createCategoricalCharacter();
-					character.setId(s);
+					character.setId(fullCharacterName);
 					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
 				}
 				else if(TypeUtil.isNumeric(state.getMap().get("from value"))) {
 					character = sddFactory.createQuantitativeCharacter();
-					character.setId(s);
+					character.setId(fullCharacterName);
 					QuantitativeCharMappingSet mappingSet = sddFactory.createQuantitativeCharMappingSet();
 					putMappingAndRangeOnQuanChar(character, state, mappingSet);
 				}
 				else {
 					character = sddFactory.createQuantitativeCharacter();
-					character.setId(s);
+					character.setId(fullCharacterName);
 				}
 				character.setRepresentation(rep);
 			}
@@ -348,7 +428,7 @@ public class SDDConverter {
 	 * @param character
 	 * @param state
 	 */
-	private void putMappingAndRangeOnQuanChar(
+	protected void putMappingAndRangeOnQuanChar(
 			AbstractCharacterDefinition character, IState state, QuantitativeCharMappingSet mappingSet) {
 		if (state instanceof SingletonState) {
 			QuantitativeCharMapping mapping = sddFactory.createQuantitativeCharMapping();
@@ -391,7 +471,7 @@ public class SDDConverter {
 	 * @param characterMap
 	 * @param character
 	 */
-	private void mergeNewCharacter(
+	protected void mergeNewCharacter(
 			Map<String, AbstractCharacterDefinition> characterMap,
 			AbstractCharacterDefinition character, String taxonName) {
 		String charName = character.getId();
@@ -399,12 +479,18 @@ public class SDDConverter {
 			characterMap.put(charName, character);
 		else {
 			AbstractCharacterDefinition presentChar = characterMap.get(charName);
+//			System.out.println("<Debug>Merging characters for taxon="+taxonName+"\nnew character="+character.toString() +"\npresent character="+presentChar.toString());
 			if(presentChar instanceof sdd.CategoricalCharacter) {
 				if(character instanceof sdd.CategoricalCharacter) {
 					//then just merge states of the two
 					((sdd.CategoricalCharacter)presentChar).getStates().getStateDefinitionOrStateReference().
 						addAll(
 								((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference());
+					System.out.println("<Debug>Merged new into present:"+presentChar.toString());
+					Set stateSet = new HashSet();
+					stateSet.addAll(((CategoricalCharacter) presentChar).getStates().getStateDefinitionOrStateReference());
+					((CategoricalCharacter) presentChar).getStates().getStateDefinitionOrStateReference().clear();
+					((CategoricalCharacter) presentChar).getStates().getStateDefinitionOrStateReference().addAll(stateSet);
 				}
 				else if(character instanceof sdd.QuantitativeCharacter) {
 					String q = "q_".concat(character.getId());
@@ -428,7 +514,7 @@ public class SDDConverter {
 	 * @param dataset
 	 * @param taxon
 	 */
-	private void addCodedDescriptionToDataset(Dataset dataset, ITaxon taxon) {
+	protected void addCodedDescriptionToDataset(Dataset dataset, ITaxon taxon) {
 		if(dataset.getCodedDescriptions() == null)
 			dataset.setCodedDescriptions(sddFactory.createCodedDescriptionSet());
 		CodedDescription description = sddFactory.createCodedDescription();
@@ -455,9 +541,8 @@ public class SDDConverter {
 	 * @param description
 	 * @param taxon
 	 */
-	private void addSummaryDataToCodedDescription(CodedDescription description,
+	protected void addSummaryDataToCodedDescription(CodedDescription description,
 			ITaxon taxon) {
-		System.out.println(this.taxonNameToCharState.toString());
 		Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> map = this.taxonNameToCharState.get(taxon.getName());
 		for(AbstractCharacterDefinition character : map.keySet()) {
 			if(character instanceof sdd.CategoricalCharacter) {
@@ -497,7 +582,7 @@ public class SDDConverter {
 	 * @param dataset
 	 * @param taxon
 	 */
-	private void addRepresentationToDataset(Dataset dataset, ITaxon taxon) {
+	protected void addRepresentationToDataset(Dataset dataset, ITaxon taxon) {
 		Representation rep = sddFactory.createRepresentation();
 		LabelText labelText = sddFactory.createLabelText();
 		String taxonRank = taxon.getTaxonRank().toString();
@@ -675,7 +760,7 @@ public class SDDConverter {
 	 * and a Generator named "RDF to SDD conversion tool."
 	 * @param root
 	 */
-	private void addMetadata(Datasets root) {
+	protected void addMetadata(Datasets root) {
 		TechnicalMetadata metadata = sddFactory.createTechnicalMetadata();
 		XMLGregorianCalendar xgcNow = XMLGregorianCalendarConverter.asXMLGregorianCalendar(new Date(System.currentTimeMillis()));
 		metadata.setCreated(xgcNow);
