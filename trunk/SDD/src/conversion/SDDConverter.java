@@ -266,7 +266,7 @@ public class SDDConverter {
 			labelText.setValue(s.getName());
 			rep.getRepresentationGroup().add(labelText);
 			dc.setRepresentation(rep);
-			dcsToAdd.put(s.getId(), dc);
+			dcsToAdd.put(s.getName(), dc);
 			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap(), node, taxon.getName());
 			addToCharacterTree(characterTree, dc, charsForCharacterTree, node);
 		}
