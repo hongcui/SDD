@@ -345,6 +345,7 @@ public class SDDConverter {
 			CharacterLocalStateDef localStateDef = null;
 			IState state = charStateMap.get(s);
 			String fullCharacterName = util.ConversionUtil.resolveFullCharacterName(s, node);
+			System.out.println(fullCharacterName +": " +state.toString());
 			if(state instanceof SingletonState) {
 				Representation rep = sddFactory.createRepresentation();
 				LabelText labelText = sddFactory.createLabelText();
@@ -441,6 +442,8 @@ public class SDDConverter {
 			QuantitativeCharacter.MeasurementUnit measurementUnit = new QuantitativeCharacter.MeasurementUnit();
 			LabelText unitLabelText = sddFactory.createLabelText();
 			unitLabelText.setValue(state.getFromUnit());
+			if(state.getFromUnit() == null || state.getFromUnit().isEmpty())
+				unitLabelText.setValue("counted occurences");
 			unitLabelText.setRole(new QName("http://rs.tdwg.org/UBIF/2006/", "Abbrev"));
 			measurementUnit.getLabel().add(unitLabelText);
 			((sdd.QuantitativeCharacter) character).setMappings(mappingSet);
@@ -458,6 +461,8 @@ public class SDDConverter {
 			QuantitativeCharacter.MeasurementUnit measurementUnit = new QuantitativeCharacter.MeasurementUnit();
 			LabelText unitLabelText = sddFactory.createLabelText();
 			unitLabelText.setValue(state.getFromUnit());
+			if(state.getFromUnit() == null || state.getFromUnit().isEmpty())
+				unitLabelText.setValue("counted occurences");
 			unitLabelText.setRole(new QName("http://rs.tdwg.org/UBIF/2006/", "Abbrev"));
 			measurementUnit.getLabel().add(unitLabelText);
 			((sdd.QuantitativeCharacter) character).setMappings(mappingSet);
@@ -486,7 +491,7 @@ public class SDDConverter {
 					((sdd.CategoricalCharacter)presentChar).getStates().getStateDefinitionOrStateReference().
 						addAll(
 								((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference());
-					System.out.println("<Debug>Merged new into present:"+presentChar.toString());
+					System.out.println("<Debug-merge>Merged new into present:"+presentChar.toString());
 					Set stateSet = new HashSet();
 					stateSet.addAll(((CategoricalCharacter) presentChar).getStates().getStateDefinitionOrStateReference());
 					((CategoricalCharacter) presentChar).getStates().getStateDefinitionOrStateReference().clear();
@@ -504,6 +509,29 @@ public class SDDConverter {
 					presentChar.setId(q);
 					characterMap.put(q, presentChar);
 					characterMap.put(charName, character);
+				}
+				else if(character instanceof sdd.QuantitativeCharacter) {
+					//we continuously merge the existing character to contain a minimum and maximum for it's range
+					//the individual taxon characters will maintain their specific ranges (which should fall in between the
+					//min and max for the Character Definition.
+					List<QuantitativeCharMapping> newMappings = ((QuantitativeCharacter)character).getMappings().getMapping();
+					List<QuantitativeCharMapping> presentMappings = ((QuantitativeCharacter) presentChar).getMappings().getMapping();
+					Double min = Double.POSITIVE_INFINITY;
+					Double max = Double.NEGATIVE_INFINITY;
+					for(QuantitativeCharMapping mapping : newMappings) {
+						if(mapping.getFrom().getLower() < min)
+							min = mapping.getFrom().getLower();
+						if(mapping.getFrom().getUpper() > max)
+							max = mapping.getFrom().getUpper();
+					}
+					for(QuantitativeCharMapping mapping : presentMappings) {
+						if(mapping.getFrom().getLower() < min)
+							min = mapping.getFrom().getLower();
+						if(mapping.getFrom().getUpper() > max)
+							max = mapping.getFrom().getUpper();
+					}
+					((QuantitativeCharMapping) ((QuantitativeCharacter) presentChar).getMappings().getMapping().get(0)).getFrom().setLower(min);
+					((QuantitativeCharMapping) ((QuantitativeCharacter) presentChar).getMappings().getMapping().get(0)).getFrom().setUpper(max);
 				}
 			}
 		}
@@ -563,11 +591,11 @@ public class SDDConverter {
 				QuantSummaryData summaryData = sddFactory.createQuantSummaryData();
 				summaryData.setRef(character.getId());
 				UnivarSimpleStatMeasureData low = sddFactory.createUnivarSimpleStatMeasureData();
-				low.setType(new QName("http://rs.tdwg.org/UBIF/2006/", "Low"));
+				low.setType(new QName("http://rs.tdwg.org/UBIF/2006/", "ObserverEstLower"));
 				low.setValue(((sdd.QuantitativeCharacter)character).getMappings().getMapping().get(0).getFrom().getLower());
 				summaryData.getMeasureOrPMeasure().add(low);
 				UnivarSimpleStatMeasureData high = sddFactory.createUnivarSimpleStatMeasureData();
-				high.setType(new QName("http://rs.tdwg.org/UBIF/2006/", "High"));
+				high.setType(new QName("http://rs.tdwg.org/UBIF/2006/", "ObserverEstUpper"));
 				high.setValue(((sdd.QuantitativeCharacter)character).getMappings().getMapping().get(0).getFrom().getUpper());
 				summaryData.getMeasureOrPMeasure().add(high);
 				JAXBElement<QuantSummaryData> dataElement =

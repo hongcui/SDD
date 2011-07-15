@@ -33,7 +33,18 @@ public class StateFactory {
 				return rangeState;
 			}
 			else {
-				RangeState<String> rangeState = new RangeState<String>(c.getFrom(), c.getTo());
+				//Let's first check if it's a count, by trying to parse it as an integer.
+				Double from = null, to = null;
+				IState rangeState = null;
+				try {
+					from = Double.parseDouble(c.getFrom());
+					to = Double.parseDouble(c.getTo());
+					rangeState = new RangeState<Double>(from, to);
+					System.out.println("<Debug-StateFactory> Parsed as a quantitative count: "+c.toString());
+				}
+				catch (NumberFormatException e) {
+					rangeState = new RangeState<String>(c.getFrom(), c.getTo());
+				}
 				rangeState.addModifier(c.getModifier());
 				rangeState.addConstraint(c.getConstraint());
 				if(!c.getConstraintid().isEmpty())
