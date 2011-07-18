@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -19,6 +20,7 @@ import javax.xml.namespace.QName;
 
 import sdd.AbstractCharacterDefinition;
 import sdd.AbstractCharacterMarkup;
+import sdd.AbstractObjectOrEventBase;
 import sdd.AbstractRef;
 import sdd.CatSummaryData;
 import sdd.CategoricalCharacter;
@@ -34,6 +36,7 @@ import sdd.CharacterTree;
 import sdd.CharacterTreeSet;
 import sdd.CodedDescription;
 import sdd.ConceptMarkup;
+import sdd.ConceptStateRef;
 import sdd.Dataset;
 import sdd.Datasets;
 import sdd.DescriptiveConcept;
@@ -124,7 +127,7 @@ public class SDDConverter {
 		this.refs = new HashMap<String, sdd.AbstractRef>();
 		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 		dcsToAdd = new HashMap<String, DescriptiveConcept>();
-		charsToAdd = new HashMap<String, AbstractCharacterDefinition>();
+		charsToAdd = new TreeMap<String, AbstractCharacterDefinition>();
 	}
 
 	/**
@@ -166,6 +169,7 @@ public class SDDConverter {
 	 * @param root
 	 * @param hierarchy
 	 */
+	@SuppressWarnings("unchecked")
 	protected void addDataset(Datasets root, TaxonHierarchy hierarchy) {
 		Dataset dataset = sddFactory.createDataset();
 		dataset.setLang("en-us");
@@ -183,6 +187,7 @@ public class SDDConverter {
 		dataset.setDescriptiveConcepts(dcSet);
 		CharacterSet characterSet = sddFactory.createCharacterSet();
 		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd.values());
+		postProcessCharacterSet(characterSet);
 		dataset.setCharacters(characterSet);
 		root.getDataset().add(dataset);
 		
@@ -260,7 +265,7 @@ public class SDDConverter {
 			TreeNode<Structure> node = iter.next();
 			Structure s = node.getElement();
 			DescriptiveConcept dc = sddFactory.createDescriptiveConcept();
-			dc.setId(s.getId());
+			dc.setId(s.getName());
 			Representation rep = sddFactory.createRepresentation();
 			LabelText labelText = sddFactory.createLabelText();
 			labelText.setValue(s.getName());
@@ -347,10 +352,10 @@ public class SDDConverter {
 			String fullCharacterName = util.ConversionUtil.resolveFullCharacterName(s, node);
 			System.out.println(fullCharacterName +": " +state.toString());
 			if(state instanceof SingletonState) {
-				Representation rep = sddFactory.createRepresentation();
+				Representation characterRep = sddFactory.createRepresentation();
 				LabelText labelText = sddFactory.createLabelText();
 				labelText.setValue(fullCharacterName);
-				rep.getRepresentationGroup().add(labelText);
+				characterRep.getRepresentationGroup().add(labelText);
 				Representation stateRep = sddFactory.createRepresentation();
 				LabelText stateLabelText = sddFactory.createLabelText();
 				stateLabelText.setValue(state.getMap().get("value").toString());
@@ -390,7 +395,7 @@ public class SDDConverter {
 					QuantitativeCharMappingSet mappingSet = sddFactory.createQuantitativeCharMappingSet();
 					putMappingAndRangeOnQuanChar(character, state, mappingSet);
 				}
-				character.setRepresentation(rep);
+				character.setRepresentation(characterRep);
 			}
 			else if(state instanceof RangeState){
 				Representation rep = sddFactory.createRepresentation();
@@ -797,6 +802,78 @@ public class SDDConverter {
 		gen.setVersion("0.1");
 		metadata.setGenerator(gen);
 		root.setTechnicalMetadata(metadata);
+	}
+	
+	/**
+	 * Do post-processing stuff for CharacterSet before adding to Dataset.
+	 * Namely, make sure StateDefinition ids come before refs.
+	 * @param characterSet
+	 */
+	private void postProcessCharacterSet(CharacterSet characterSet) {
+		Map<String, CharacterLocalStateDef> seenIds = new HashMap<String, CharacterLocalStateDef>();
+		Map<String, ConceptStateRef> seenRefs = new HashMap<String, ConceptStateRef>();
+		List<AbstractCharacterDefinition> characterList = characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter();
+		for(AbstractCharacterDefinition character : characterList) {
+			if(character instanceof CategoricalCharacter) {
+				List<Object> states = ((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference();
+				List<Object> reconciledStates = new ArrayList<Object>();
+				Map<String, Object> characterStateIds = new HashMap<String, Object>();
+				Map<String, Object> duplicateRefs = new HashMap<String, Object>();
+				for(Object state : states) {
+					if(state instanceof CharacterLocalStateDef) {
+						String stateId = ((CharacterLocalStateDef) state).getId();
+						characterStateIds.put(stateId, state);
+						//if we're looking at an id, and there's already been an id, replace it with a ref
+						if(seenIds.containsKey(stateId)) {
+							//get it from seenRefs if it's already in there
+							if(seenRefs.containsKey(stateId)) {
+								reconciledStates.add(seenRefs.get(stateId));									
+							}
+							else {
+								//Make a new ref and add it as a state
+								ConceptStateRef stateRef = sddFactory.createConceptStateRef();
+								stateRef.setRef(((CharacterLocalStateDef) state).getId());
+								reconciledStates.add(stateRef);
+								seenRefs.put(stateId, stateRef);
+							}
+						}
+						//else this is the first time we've seen an id for this state, mark it as seen, and include it 
+						//in the reconciled states
+						else {
+							seenIds.put(stateId, (CharacterLocalStateDef) state);
+							reconciledStates.add(state);
+						}
+					}
+					else if(state instanceof ConceptStateRef) {
+						String stateId = ((ConceptStateRef)state).getRef();
+						if(characterStateIds.containsKey(stateId))	//mark this duplicate ref for deletion
+							duplicateRefs.put(stateId, state);
+						//if we're looking at a ref which we haven't seen an id for yet...
+						if(!seenIds.containsKey(stateId)) {
+							//Then make a StateDef out of this state, change the ref to id, and mark id as seen
+							CharacterLocalStateDef localStateDef = sddFactory.createCharacterLocalStateDef();
+							localStateDef.setId(stateId);
+							Representation stateRep = sddFactory.createRepresentation();
+							LabelText stateLabelText = sddFactory.createLabelText();
+							stateLabelText.setValue(stateId.replace("state_", ""));
+							stateRep.getRepresentationGroup().add(stateLabelText);
+							localStateDef.setRepresentation(stateRep);
+							reconciledStates.add(localStateDef);
+							seenIds.put(stateId, localStateDef);
+						}
+						else {
+							seenRefs.put(stateId, (ConceptStateRef) state);
+							reconciledStates.add(state);
+						}
+					}
+				}
+				reconciledStates.removeAll(duplicateRefs.values());
+				((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().clear();
+				((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().addAll(reconciledStates);
+				((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().removeAll(duplicateRefs.values());
+			}
+		}
+		
 	}
 
 	/**
