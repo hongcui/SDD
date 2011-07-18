@@ -20,11 +20,11 @@ import javax.xml.namespace.QName;
 
 import sdd.AbstractCharacterDefinition;
 import sdd.AbstractCharacterMarkup;
-import sdd.AbstractObjectOrEventBase;
 import sdd.AbstractRef;
 import sdd.CatSummaryData;
 import sdd.CategoricalCharacter;
 import sdd.CategoricalMarkup;
+import sdd.CharTreeAbstractNode;
 import sdd.CharTreeCharacter;
 import sdd.CharTreeNode;
 import sdd.CharTreeNodeRef;
@@ -36,7 +36,9 @@ import sdd.CharacterTree;
 import sdd.CharacterTreeSet;
 import sdd.CodedDescription;
 import sdd.ConceptMarkup;
+import sdd.ConceptStateDef;
 import sdd.ConceptStateRef;
+import sdd.ConceptStateSeq;
 import sdd.Dataset;
 import sdd.Datasets;
 import sdd.DescriptiveConcept;
@@ -46,6 +48,8 @@ import sdd.DetailText;
 import sdd.DocumentGenerator;
 import sdd.LabelText;
 import sdd.MarkupText;
+import sdd.ModifierDef;
+import sdd.ModifierSeq;
 import sdd.NaturalLanguageDescription;
 import sdd.NaturalLanguageDescriptionSet;
 import sdd.NaturalLanguageMarkup;
@@ -61,6 +65,7 @@ import sdd.StateMarkup;
 import sdd.TaxonNameCore;
 import sdd.TaxonNameRef;
 import sdd.TaxonomicRank;
+import sdd.TaxonomicScopeSet;
 import sdd.TechnicalMetadata;
 import sdd.UnivarSimpleStatMeasureData;
 import sdd.ValueMarkup;
@@ -99,7 +104,14 @@ public class SDDConverter {
 	private Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> taxonNameToCharState;
 	
 	private Map<String, DescriptiveConcept> dcsToAdd;
-	Map<String, AbstractCharacterDefinition> charsToAdd;
+	private Map<String, AbstractCharacterDefinition> charsToAdd;
+	private Map<ITaxon, TaxonNameCore> taxonToTaxonName;
+	private Map<DescriptiveConcept, CharTreeNode> dcToCtNode;
+	private Map<String, ModifierDef> modifiers;
+	private Map<CharacterLocalStateDef, ModifierDef> stateToModifier;
+	//Have a Descriptive Concept holding ConceptStates for global use.
+	private DescriptiveConcept globalStates;
+	private Map<String, ConceptStateRef> mustBeGlobal;
 	
 	/**
 	 * Create a new converter object from a single taxon model.
@@ -128,6 +140,21 @@ public class SDDConverter {
 		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 		dcsToAdd = new HashMap<String, DescriptiveConcept>();
 		charsToAdd = new TreeMap<String, AbstractCharacterDefinition>();
+		this.taxonToTaxonName = new HashMap<ITaxon, TaxonNameCore>();
+		this.dcToCtNode = new HashMap<DescriptiveConcept, CharTreeNode>();
+		this.modifiers = new HashMap<String, ModifierDef>();
+		this.stateToModifier = new HashMap<CharacterLocalStateDef, ModifierDef>();
+		//global Descriptive Concept for global states
+		this.globalStates = sddFactory.createDescriptiveConcept();
+		Representation rep = sddFactory.createRepresentation();
+		LabelText labelText = sddFactory.createLabelText();
+		labelText.setValue("Descriptive Concept for holding global states.");
+		rep.getRepresentationGroup().add(labelText);
+		this.globalStates.setRepresentation(rep);
+		this.globalStates.setId("dc_states");
+		ConceptStateSeq stateSeq = sddFactory.createConceptStateSeq();
+		this.globalStates.setConceptStates(stateSeq);
+		this.mustBeGlobal = new HashMap<String, ConceptStateRef>();
 	}
 
 	/**
@@ -175,13 +202,25 @@ public class SDDConverter {
 		dataset.setLang("en-us");
 		addRepresentationToDataset(dataset, hierarchy.getHierarchy().getRoot().getElement());
 		Iterator<TreeNode<ITaxon>> iter = hierarchy.getHierarchy().iterator();
+		
+		//Have a Modifier Descriptive Concept for global use.
+		DescriptiveConcept dcModifiers = sddFactory.createDescriptiveConcept();
+		dcModifiers.setId("modifiers");
+		Representation modRep = sddFactory.createRepresentation();
+		LabelText labelTextMod = sddFactory.createLabelText();
+		labelTextMod.setValue("Descriptive Concept for holding modifiers.");
+		modRep.getRepresentationGroup().add(labelTextMod);
+		dcModifiers.setRepresentation(modRep);
+		
 		while(iter.hasNext()) {
 			TreeNode<ITaxon> node = iter.next();
 			ITaxon taxon = node.getElement();
 			addTaxonNameToDataset(dataset, taxon);
-			addDescriptiveConceptsToDataset(dataset, taxon);
+			addDescriptiveConceptsToDataset(dataset, taxon, dcModifiers);
 			addCodedDescriptionToDataset(dataset, taxon);
 		}
+		dcsToAdd.put("modifiers", dcModifiers);
+		dcsToAdd.put("globalStates", this.globalStates);
 		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
 		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
 		dataset.setDescriptiveConcepts(dcSet);
@@ -203,7 +242,7 @@ public class SDDConverter {
 		dataset.setLang("en-us");
 		addTaxonNameToDataset(dataset, taxon);
 		addRepresentationToDataset(dataset, taxon);
-		addDescriptiveConceptsToDataset(dataset, taxon);
+		addDescriptiveConceptsToDataset(dataset, taxon, null);
 		addCodedDescriptionToDataset(dataset, taxon);
 		root.getDataset().add(dataset);
 	}
@@ -228,6 +267,7 @@ public class SDDConverter {
 		if(dataset.getTaxonNames() == null)
 			dataset.setTaxonNames(sddFactory.createTaxonNameSet());
 		dataset.getTaxonNames().getTaxonName().add(taxonNameCore);
+		taxonToTaxonName.put(taxon, taxonNameCore);
 	}
 
 	/**
@@ -236,8 +276,9 @@ public class SDDConverter {
 	 * to a dataset.
 	 * @param dataset
 	 * @param taxon
+	 * @param dcModifiers 
 	 */
-	protected void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon) {
+	protected void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon, DescriptiveConcept dcModifiers) {
 		DescriptiveConceptSet dcSet = null;
 		if(dataset.getDescriptiveConcepts() == null)
 			dcSet = sddFactory.createDescriptiveConceptSet();
@@ -259,6 +300,11 @@ public class SDDConverter {
 		ctLabelText.setValue("Structural Character tree");
 		ctRep.getRepresentationGroup().add(ctLabelText);
 		characterTree.setRepresentation(ctRep);
+		TaxonomicScopeSet taxonomicScopeSet = sddFactory.createTaxonomicScopeSet();
+		TaxonNameRef taxonNameRef = sddFactory.createTaxonNameRef();
+		taxonNameRef.setRef(taxonToTaxonName.get(taxon).getId());
+		taxonomicScopeSet.getTaxonName().add(taxonNameRef);
+		characterTree.setScope(taxonomicScopeSet);
 		
 		Iterator<TreeNode<Structure>> iter = taxon.getStructureTree().iterator();		
 		while(iter.hasNext()) {
@@ -274,6 +320,7 @@ public class SDDConverter {
 			dcsToAdd.put(s.getName(), dc);
 			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap(), node, taxon.getName());
 			addToCharacterTree(characterTree, dc, charsForCharacterTree, node);
+			addToModifiersFromDescriptiveConcepts(dc, dcModifiers, s);
 		}
 		//This needs to be done Globally, not in the method!
 //		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
@@ -282,6 +329,38 @@ public class SDDConverter {
 //		dataset.setCharacters(characterSet);
 		characterTreeSet.getCharacterTree().add(characterTree);
 		dataset.setCharacterTrees(characterTreeSet);
+	}
+
+	/**
+	 * Adds modifier set to Descriptive Concept definition.
+	 * @param dc
+	 * @param modifiersDc 
+	 * @param s
+	 */
+	protected void addToModifiersFromDescriptiveConcepts(DescriptiveConcept dc,
+			DescriptiveConcept modifiersDc, Structure s) {
+		ModifierSeq modifierSeq = modifiersDc.getModifiers();
+		if(modifierSeq == null) {
+			modifierSeq = sddFactory.createModifierSeq();
+			modifiersDc.setModifiers(modifierSeq);
+		}
+		for(String charName : s.getCharStateMap().keySet()) {
+			IState state = s.getCharStateMap().get(charName);
+			if(state.getModifier() != null) {
+				ModifierDef modifierDef;
+				if(! this.modifiers.containsKey(state.getModifier())) {
+					modifierDef = sddFactory.createModifierDef();
+					modifierDef.setId(state.getModifier().replace(" ", "_"));
+					Representation rep = sddFactory.createRepresentation();
+					LabelText labelText = sddFactory.createLabelText();
+					labelText.setValue(state.getModifier());
+					rep.getRepresentationGroup().add(labelText);
+					modifierDef.setRepresentation(rep);
+					modifierSeq.getModifier().add(modifierDef);
+					modifiers.put(state.getModifier(), modifierDef);
+				}
+			}
+		}
 	}
 
 	/**
@@ -298,16 +377,28 @@ public class SDDConverter {
 			TreeNode<Structure> node) {
 		//make a new DC node for the tree, set it's reference to the id of the actual Descriptive Concept, set
 		//the ID to be the id of the DC object with 'dc_node' in front, and point to the parent of the DC object.
-		CharTreeNode dcNode = sddFactory.createCharTreeNode();
+		Object dcNode = null;
+		String dcNodeId = null;
 		DescriptiveConceptRef dcRef = sddFactory.createDescriptiveConceptRef();
 		dcRef.setRef(dc.getId());
-		dcNode.setDescriptiveConcept(dcRef);
-		dcNode.setId("dc_node_"+dc.getId());
+		if(this.dcToCtNode.containsKey(dc)) {
+			dcNode = sddFactory.createCharTreeNodeRef();
+			((CharTreeNodeRef)dcNode).setRef(this.dcToCtNode.get(dc).getId());
+			dcNodeId = ((CharTreeNodeRef) dcNode).getRef();
+		}
+		else {
+			dcNode = sddFactory.createCharTreeNode();
+			((CharTreeNode) dcNode).setDescriptiveConcept(dcRef);
+			((CharTreeNode) dcNode).setId("dc_node_"+dc.getId());
+			this.dcToCtNode.put(dc, (CharTreeNode) dcNode);
+			dcNodeId = ((CharTreeNode)dcNode).getId();
+		}
 		if(node.getParent() != null) {
 			Structure parentStructure = node.getParent().getElement();
 			CharTreeNodeRef ctNodeRef = sddFactory.createCharTreeNodeRef();
-			ctNodeRef.setRef("dc_node_"+parentStructure.getId());
-			dcNode.setParent(ctNodeRef);
+			ctNodeRef.setRef("dc_node_"+parentStructure.getName());
+			if(dcNode instanceof CharTreeNode)
+				((CharTreeNode) dcNode).setParent(ctNodeRef);
 		}
 		//Now, for each character in the character list, make a CharNode for the tree, and point to the descriptive
 		//concept node as the parent.
@@ -317,7 +408,7 @@ public class SDDConverter {
 			charRef.setRef(character.getId());
 			ctCharNode.setCharacter(charRef);
 			CharTreeNodeRef ctNodeRef = sddFactory.createCharTreeNodeRef();
-			ctNodeRef.setRef(dcNode.getId());
+			ctNodeRef.setRef(dcNodeId);
 			ctCharNode.setParent(ctNodeRef);
 			if(characterTree.getNodes() == null) {
 				CharTreeNodeSeq ctNodeSeq = sddFactory.createCharTreeNodeSeq();
@@ -325,7 +416,8 @@ public class SDDConverter {
 			}
 			characterTree.getNodes().getNodeOrCharNode().add(ctCharNode);
 		}
-		characterTree.getNodes().getNodeOrCharNode().add(dcNode);
+		if(dcNode instanceof CharTreeAbstractNode)
+			characterTree.getNodes().getNodeOrCharNode().add((CharTreeAbstractNode) dcNode);
 	}
 
 	/**
@@ -372,6 +464,10 @@ public class SDDConverter {
 					localStateDef.setId("state_".concat(stateName));
 					AbstractRef stateRef;
 					if(!refs.containsKey(stateName)) {	//if we're seeing this state for the first time, add it to character as a definition
+						ConceptStateDef conceptStateDef = sddFactory.createConceptStateDef();
+						conceptStateDef.setId(localStateDef.getId());
+						conceptStateDef.setRepresentation(localStateDef.getRepresentation());
+						this.globalStates.getConceptStates().getStateDefinition().add(conceptStateDef);
 						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(localStateDef);
 						//add reference to refs map for future use.
 						stateRef = sddFactory.createConceptStateRef();
@@ -382,10 +478,12 @@ public class SDDConverter {
 						if(charStateDescMap.containsKey(character) && !charStateDescMap.get(character).contains(localStateDef)) {
 							stateRef = refs.get(stateName);
 							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
+							this.mustBeGlobal.put(stateRef.getRef(), (ConceptStateRef) stateRef);
 						}
 						else if(!charStateDescMap.containsKey(character)) {
 							stateRef = refs.get(stateName);
 							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
+							this.mustBeGlobal.put(stateRef.getRef(), (ConceptStateRef) stateRef);
 						}
 					}
 				}
@@ -809,7 +907,7 @@ public class SDDConverter {
 	 * Namely, make sure StateDefinition ids come before refs.
 	 * @param characterSet
 	 */
-	private void postProcessCharacterSet(CharacterSet characterSet) {
+	protected void postProcessCharacterSet(CharacterSet characterSet) {
 		Map<String, CharacterLocalStateDef> seenIds = new HashMap<String, CharacterLocalStateDef>();
 		Map<String, ConceptStateRef> seenRefs = new HashMap<String, ConceptStateRef>();
 		List<AbstractCharacterDefinition> characterList = characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter();
@@ -817,17 +915,14 @@ public class SDDConverter {
 			if(character instanceof CategoricalCharacter) {
 				List<Object> states = ((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference();
 				List<Object> reconciledStates = new ArrayList<Object>();
-				Map<String, Object> characterStateIds = new HashMap<String, Object>();
-				Map<String, Object> duplicateRefs = new HashMap<String, Object>();
 				for(Object state : states) {
 					if(state instanceof CharacterLocalStateDef) {
 						String stateId = ((CharacterLocalStateDef) state).getId();
-						characterStateIds.put(stateId, state);
 						//if we're looking at an id, and there's already been an id, replace it with a ref
 						if(seenIds.containsKey(stateId)) {
 							//get it from seenRefs if it's already in there
 							if(seenRefs.containsKey(stateId)) {
-								reconciledStates.add(seenRefs.get(stateId));									
+								reconciledStates.add(seenRefs.get(stateId));
 							}
 							else {
 								//Make a new ref and add it as a state
@@ -846,8 +941,6 @@ public class SDDConverter {
 					}
 					else if(state instanceof ConceptStateRef) {
 						String stateId = ((ConceptStateRef)state).getRef();
-						if(characterStateIds.containsKey(stateId))	//mark this duplicate ref for deletion
-							duplicateRefs.put(stateId, state);
 						//if we're looking at a ref which we haven't seen an id for yet...
 						if(!seenIds.containsKey(stateId)) {
 							//Then make a StateDef out of this state, change the ref to id, and mark id as seen
@@ -867,13 +960,57 @@ public class SDDConverter {
 						}
 					}
 				}
-				reconciledStates.removeAll(duplicateRefs.values());
 				((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().clear();
 				((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().addAll(reconciledStates);
-				((CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().removeAll(duplicateRefs.values());
+				postProcessCharacterHelper((CategoricalCharacter) character);
 			}
 		}
 		
+	}
+
+	/**
+	 * This eliminates refs from characters that already have an id for the same state as the ref is pointing to.
+	 * @param character
+	 */
+	private void postProcessCharacterHelper(CategoricalCharacter character) {
+		List<Object> states = ((CategoricalCharacter) character)
+				.getStates().getStateDefinitionOrStateReference();
+		Map<String, CharacterLocalStateDef> ids = new HashMap<String, CharacterLocalStateDef>();
+		Map<String, ConceptStateRef> refs = new HashMap<String, ConceptStateRef>();
+		for (Object state : states) {
+			if (state instanceof CharacterLocalStateDef) {
+				String stateId = ((CharacterLocalStateDef) state).getId();
+				if(this.mustBeGlobal.containsKey(stateId)) {
+					refs.put(stateId, this.mustBeGlobal.get(stateId));
+				}
+				else {
+					ids.put(stateId, (CharacterLocalStateDef) state);
+					removeFromGlobalStates((CharacterLocalStateDef)state);
+				}
+			} else {
+				refs.put(((ConceptStateRef) state).getRef(), (ConceptStateRef) state);
+			}
+		}
+		for (String id : ids.keySet()) {
+			if (refs.containsKey(id))
+				refs.remove(id);
+		}
+		((CategoricalCharacter) character).getStates().getStateDefinitionOrStateReference().clear();
+		((CategoricalCharacter) character).getStates().getStateDefinitionOrStateReference().addAll(ids.values());
+		((CategoricalCharacter) character).getStates().getStateDefinitionOrStateReference().addAll(refs.values());
+	}
+	
+	/**
+	 * Remove all occurences from globalStates that match the given local state.
+	 * @param state
+	 */
+	private void removeFromGlobalStates(CharacterLocalStateDef state) {	
+		List<ConceptStateDef> markForRemoval = new ArrayList<ConceptStateDef>();
+		for(ConceptStateDef conceptState : this.globalStates.getConceptStates().getStateDefinition()) {
+			if(conceptState.getId().equals(state.getId()))
+				markForRemoval.add(conceptState);
+		}
+		this.globalStates.getConceptStates().getStateDefinition().removeAll(markForRemoval);		
 	}
 
 	/**

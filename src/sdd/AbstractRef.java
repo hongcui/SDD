@@ -278,4 +278,21 @@ public abstract class AbstractRef {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AbstractRef [");
+		if (debuglabel != null)
+			builder.append("debuglabel=").append(debuglabel).append(", ");
+		if (label != null)
+			builder.append("label=").append(label).append(", ");
+		if (ref != null)
+			builder.append("ref=").append(ref);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }
