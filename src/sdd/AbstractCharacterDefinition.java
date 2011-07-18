@@ -46,8 +46,12 @@ import javax.xml.bind.annotation.XmlType;
     QuantitativeCharacter.class
 })
 public abstract class AbstractCharacterDefinition
-    extends VersionedAbstractObject
+    extends VersionedAbstractObject implements Comparable
 {
 
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }
