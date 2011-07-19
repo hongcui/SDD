@@ -62,6 +62,11 @@ import sdd.QuantitativeMarkup;
 import sdd.Representation;
 import sdd.StateData;
 import sdd.StateMarkup;
+import sdd.TaxonHierarchyCore;
+import sdd.TaxonHierarchyNode;
+import sdd.TaxonHierarchyNodeRef;
+import sdd.TaxonHierarchyNodeSeq;
+import sdd.TaxonHierarchySet;
 import sdd.TaxonNameCore;
 import sdd.TaxonNameRef;
 import sdd.TaxonomicRank;
@@ -219,6 +224,7 @@ public class SDDConverter {
 			addDescriptiveConceptsToDataset(dataset, taxon, dcModifiers);
 			addCodedDescriptionToDataset(dataset, taxon);
 		}
+		addTaxonHierarchyToDataset(dataset, hierarchy);
 		dcsToAdd.put("modifiers", dcModifiers);
 		dcsToAdd.put("globalStates", this.globalStates);
 		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
@@ -230,6 +236,48 @@ public class SDDConverter {
 		dataset.setCharacters(characterSet);
 		root.getDataset().add(dataset);
 		
+	}
+
+	/**
+	 * Places a Taxon Hierarchy in the dataset according to the Hierarchy defined under the TaxonHierarchy object.
+	 * The Taxon Names to which the hierarchy nodes refer are defined by {@link SDDConverter#addTaxonNameToDataset(Dataset, ITaxon)}.
+	 * @param dataset
+	 * @param hierarchy The hierarchy object from which an SDD Taxon Hierarchy is induced.
+	 */
+	private void addTaxonHierarchyToDataset(Dataset dataset, TaxonHierarchy hierarchy) {
+		TaxonHierarchySet thSet = sddFactory.createTaxonHierarchySet();
+		TaxonHierarchyCore core = sddFactory.createTaxonHierarchyCore();
+		Representation rep = sddFactory.createRepresentation();
+		LabelText labelText = sddFactory.createLabelText();
+		labelText.setValue("Taxon hierarchy defined by this collection of descriptions.");
+		rep.getRepresentationGroup().add(labelText);
+		core.setRepresentation(rep);
+		core.setTaxonHierarchyType(new QName("http://rs.tdwg.org/UBIF/2006/", "Phylogenetic Taxonomy"));
+		TaxonHierarchyNodeSeq nodeSeq = sddFactory.createTaxonHierarchyNodeSeq();
+		Iterator<TreeNode<ITaxon>> iter = hierarchy.getHierarchy().iterator();
+		
+		while(iter.hasNext()) {
+			TreeNode<ITaxon> treeNode = iter.next();
+			ITaxon taxon = treeNode.getElement();
+			TaxonNameCore taxonName = this.taxonToTaxonName.get(taxon);
+			TaxonHierarchyNode taxonNode = sddFactory.createTaxonHierarchyNode();
+			taxonNode.setId("th_node_".concat(taxon.getName()));
+			TaxonNameRef ref = sddFactory.createTaxonNameRef();
+			ref.setRef(taxonName.getId());
+			taxonNode.setTaxonName(ref);
+			
+			TreeNode<ITaxon> parentTreeNode = treeNode.getParent();
+			if(parentTreeNode != null) {
+				ITaxon parentTaxon = parentTreeNode.getElement();
+				TaxonHierarchyNodeRef parentNodeRef = sddFactory.createTaxonHierarchyNodeRef();
+				parentNodeRef.setRef("th_node_".concat(parentTaxon.getName()));
+				taxonNode.setParent(parentNodeRef);
+			}
+			nodeSeq.getNode().add(taxonNode);
+		}
+		core.setNodes(nodeSeq);
+		thSet.getTaxonHierarchy().add(core);
+		dataset.setTaxonHierarchies(thSet);
 	}
 
 	/**
