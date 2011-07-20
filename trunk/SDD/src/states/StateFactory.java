@@ -69,8 +69,12 @@ public class StateFactory {
 					singletonState.addConstraintId((Structure) c.getConstraintid().get(0));
 				return singletonState;
 			} else {
-				SingletonState<String> singletonState = new SingletonState<String>(c.getValue());
-				singletonState.addModifier(c.getModifier());
+				SingletonState<String> singletonState = new SingletonState<String>(
+						c.getValue().replace("/","slash"));
+				if(c.getModifier() != null)
+					singletonState.addModifier(c.getModifier().replace("\u00B1","plus_minus"));
+				else
+					singletonState.addModifier(c.getModifier());
 				singletonState.addConstraint(c.getConstraint());
 				if(!c.getConstraintid().isEmpty())
 					singletonState.addConstraintId((Structure) c.getConstraintid().get(0));

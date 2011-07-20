@@ -2,6 +2,7 @@ package conversion;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -18,6 +20,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 
+import sdd.AbstractCharSummaryData;
 import sdd.AbstractCharacterDefinition;
 import sdd.AbstractCharacterMarkup;
 import sdd.AbstractRef;
@@ -49,6 +52,7 @@ import sdd.DocumentGenerator;
 import sdd.LabelText;
 import sdd.MarkupText;
 import sdd.ModifierDef;
+import sdd.ModifierRefWithData;
 import sdd.ModifierSeq;
 import sdd.NaturalLanguageDescription;
 import sdd.NaturalLanguageDescriptionSet;
@@ -81,6 +85,7 @@ import states.SingletonState;
 import taxonomy.ITaxon;
 import taxonomy.TaxonHierarchy;
 import tree.TreeNode;
+import util.QuantitativeStateDef;
 import util.TypeUtil;
 import util.XMLGregorianCalendarConverter;
 import annotationSchema.jaxb.Structure;
@@ -108,12 +113,35 @@ public class SDDConverter {
 	 */
 	private Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> taxonNameToCharState;
 	
+	/**
+	 * This map maintains the DescriptiveConcepts that will be added to the Dataset.
+	 */
 	private Map<String, DescriptiveConcept> dcsToAdd;
+	
+	/**
+	 * This map maintains the Characters that will be added to the Dataset.
+	 */
 	private Map<String, AbstractCharacterDefinition> charsToAdd;
+	
+	/**
+	 * Maintains a mapping from ITaxon objects to SDD TaxonNames (used as reference in building SDD TaxonHierarchy).
+	 */
 	private Map<ITaxon, TaxonNameCore> taxonToTaxonName;
+	
+	/**
+	 * Used to keep track of which DescriptiveConcepts are pointed to by which CharacterTreeNodes.
+	 */
 	private Map<DescriptiveConcept, CharTreeNode> dcToCtNode;
+	
+	/**
+	 * Maps names (Strings) of modifiers to their SDD ModifierDef.
+	 */
 	private Map<String, ModifierDef> modifiers;
-	private Map<CharacterLocalStateDef, ModifierDef> stateToModifier;
+	
+	/**
+	 * Maps ITaxon name to the characters that contain modifiers.
+	 */
+	private Map<String, Map<CharacterLocalStateDef, ModifierDef>> stateToModifier;
 	//Have a Descriptive Concept holding ConceptStates for global use.
 	private DescriptiveConcept globalStates;
 	private Map<String, ConceptStateRef> mustBeGlobal;
@@ -148,7 +176,7 @@ public class SDDConverter {
 		this.taxonToTaxonName = new HashMap<ITaxon, TaxonNameCore>();
 		this.dcToCtNode = new HashMap<DescriptiveConcept, CharTreeNode>();
 		this.modifiers = new HashMap<String, ModifierDef>();
-		this.stateToModifier = new HashMap<CharacterLocalStateDef, ModifierDef>();
+		this.stateToModifier = new HashMap<String, Map<CharacterLocalStateDef, ModifierDef>>();
 		//global Descriptive Concept for global states
 		this.globalStates = sddFactory.createDescriptiveConcept();
 		Representation rep = sddFactory.createRepresentation();
@@ -191,6 +219,14 @@ public class SDDConverter {
 			addMetadata(root);
 			addDataset(root, hierarchy);
 			marshaller.marshal(root, new File(filename));
+			System.out.println("Modifier map:");
+			for(String s : this.stateToModifier.keySet()) {
+				System.out.println(s);
+				Map<CharacterLocalStateDef, ModifierDef> map = this.stateToModifier.get(s);
+				for(CharacterLocalStateDef state : map.keySet())
+					System.out.println("\t"+state+": "+map.get(state));
+			}
+			System.out.println("End modifier map.");
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -244,7 +280,7 @@ public class SDDConverter {
 	 * @param dataset
 	 * @param hierarchy The hierarchy object from which an SDD Taxon Hierarchy is induced.
 	 */
-	private void addTaxonHierarchyToDataset(Dataset dataset, TaxonHierarchy hierarchy) {
+	protected void addTaxonHierarchyToDataset(Dataset dataset, TaxonHierarchy hierarchy) {
 		TaxonHierarchySet thSet = sddFactory.createTaxonHierarchySet();
 		TaxonHierarchyCore core = sddFactory.createTaxonHierarchyCore();
 		Representation rep = sddFactory.createRepresentation();
@@ -252,7 +288,7 @@ public class SDDConverter {
 		labelText.setValue("Taxon hierarchy defined by this collection of descriptions.");
 		rep.getRepresentationGroup().add(labelText);
 		core.setRepresentation(rep);
-		core.setTaxonHierarchyType(new QName("http://rs.tdwg.org/UBIF/2006/", "Phylogenetic Taxonomy"));
+		core.setTaxonHierarchyType(new QName("http://rs.tdwg.org/UBIF/2006/", "PhylogeneticTaxonomy"));
 		TaxonHierarchyNodeSeq nodeSeq = sddFactory.createTaxonHierarchyNodeSeq();
 		Iterator<TreeNode<ITaxon>> iter = hierarchy.getHierarchy().iterator();
 		
@@ -368,7 +404,7 @@ public class SDDConverter {
 			dcsToAdd.put(s.getName(), dc);
 			List<AbstractCharacterDefinition> charsForCharacterTree = addCharactersToCharacterSet(charsToAdd, s.getCharStateMap(), node, taxon.getName());
 			addToCharacterTree(characterTree, dc, charsForCharacterTree, node);
-			addToModifiersFromDescriptiveConcepts(dc, dcModifiers, s);
+			addToModifiersFromDescriptiveConcepts(taxon, dc, dcModifiers, s);
 		}
 		//This needs to be done Globally, not in the method!
 //		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
@@ -385,7 +421,7 @@ public class SDDConverter {
 	 * @param modifiersDc 
 	 * @param s
 	 */
-	protected void addToModifiersFromDescriptiveConcepts(DescriptiveConcept dc,
+	protected void addToModifiersFromDescriptiveConcepts(ITaxon taxon, DescriptiveConcept dc,
 			DescriptiveConcept modifiersDc, Structure s) {
 		ModifierSeq modifierSeq = modifiersDc.getModifiers();
 		if(modifierSeq == null) {
@@ -398,7 +434,7 @@ public class SDDConverter {
 				ModifierDef modifierDef;
 				if(! this.modifiers.containsKey(state.getModifier())) {
 					modifierDef = sddFactory.createModifierDef();
-					modifierDef.setId(state.getModifier().replace(" ", "_"));
+					modifierDef.setId("mod_".concat(state.getModifier().replace(" ", "_")));
 					Representation rep = sddFactory.createRepresentation();
 					LabelText labelText = sddFactory.createLabelText();
 					labelText.setValue(state.getModifier());
@@ -540,6 +576,7 @@ public class SDDConverter {
 					character.setId(fullCharacterName);
 					QuantitativeCharMappingSet mappingSet = sddFactory.createQuantitativeCharMappingSet();
 					putMappingAndRangeOnQuanChar(character, state, mappingSet);
+					localStateDef = new QuantitativeStateDef(character.getId(), character);
 				}
 				character.setRepresentation(characterRep);
 			}
@@ -559,6 +596,7 @@ public class SDDConverter {
 					character.setId(fullCharacterName);
 					QuantitativeCharMappingSet mappingSet = sddFactory.createQuantitativeCharMappingSet();
 					putMappingAndRangeOnQuanChar(character, state, mappingSet);
+					localStateDef = new QuantitativeStateDef(character.getId(), character);
 				}
 				else {
 					character = sddFactory.createQuantitativeCharacter();
@@ -571,6 +609,14 @@ public class SDDConverter {
 			if(!charStateDescMap.containsKey(character))
 				charStateDescMap.put(character, new HashSet<CharacterLocalStateDef>());
 			charStateDescMap.get(character).add(localStateDef);
+			//map the taxon to the char/state modifier, if modifier is not null
+			String modName = state.getModifier();
+			if(modName != null) {
+				ModifierDef modDef = this.modifiers.get(modName);
+				if(this.stateToModifier.get(taxonName) == null)
+					this.stateToModifier.put(taxonName, new HashMap<CharacterLocalStateDef, ModifierDef>());
+				this.stateToModifier.get(taxonName).put(localStateDef, modDef);
+			}
 		}
 		return characters;		
 	}
@@ -720,8 +766,11 @@ public class SDDConverter {
 	 * @param description
 	 * @param taxon
 	 */
+	@SuppressWarnings("unchecked")
 	protected void addSummaryDataToCodedDescription(CodedDescription description,
 			ITaxon taxon) {
+		Set<JAXBElement> dataElementSet = new TreeSet<JAXBElement>(
+				new SummaryDataComparator<JAXBElement>());
 		Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> map = this.taxonNameToCharState.get(taxon.getName());
 		for(AbstractCharacterDefinition character : map.keySet()) {
 			if(character instanceof sdd.CategoricalCharacter) {
@@ -731,12 +780,19 @@ public class SDDConverter {
 					if (stateDef != null) {
 						StateData stateData = sddFactory.createStateData();
 						stateData.setRef(stateDef.getId());
+						//add in modifier, if present
+						ModifierDef modDef = this.stateToModifier.get(taxon.getName()).get(stateDef);
+						if(modDef != null) {
+							ModifierRefWithData modRef = sddFactory.createModifierRefWithData();
+							modRef.setRef(modDef.getId());
+							stateData.getModifier().add(modRef);
+						}
 						summaryData.getState().add(stateData);
 					}
 				}
 				JAXBElement<CatSummaryData> dataElement =
 					new JAXBElement<CatSummaryData>(new QName("http://rs.tdwg.org/UBIF/2006/", "Categorical"), CatSummaryData.class, CatSummaryData.class, (CatSummaryData) summaryData);
-				description.getSummaryData().getCategoricalOrQuantitativeOrSequence().add(dataElement);
+				dataElementSet.add(dataElement);
 			}
 			if(character instanceof sdd.QuantitativeCharacter) {
 				QuantSummaryData summaryData = sddFactory.createQuantSummaryData();
@@ -749,11 +805,24 @@ public class SDDConverter {
 				high.setType(new QName("http://rs.tdwg.org/UBIF/2006/", "ObserverEstUpper"));
 				high.setValue(((sdd.QuantitativeCharacter)character).getMappings().getMapping().get(0).getFrom().getUpper());
 				summaryData.getMeasureOrPMeasure().add(high);
+				for(CharacterLocalStateDef stateDef : map.get(character)) {
+					if (stateDef != null) {
+						//add in modifier, if present
+						ModifierDef modDef = this.stateToModifier.get(taxon.getName()).get(stateDef);
+						if(modDef != null) {
+							ModifierRefWithData modRef = sddFactory.createModifierRefWithData();
+							modRef.setRef(modDef.getId());
+							summaryData.getModifier().add(modRef);
+						}
+					}
+				}
 				JAXBElement<QuantSummaryData> dataElement =
 					new JAXBElement<QuantSummaryData>(new QName("http://rs.tdwg.org/UBIF/2006/", "Quantitative"), QuantSummaryData.class, QuantSummaryData.class, (QuantSummaryData) summaryData);
-				description.getSummaryData().getCategoricalOrQuantitativeOrSequence().add(dataElement);
+				dataElementSet.add(dataElement);
 			}
 		}
+		for(JAXBElement element : dataElementSet)
+			description.getSummaryData().getCategoricalOrQuantitativeOrSequence().add(element);
 	}
 
 	/**
