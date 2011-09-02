@@ -7,6 +7,10 @@ import sdd.AbstractCharacterDefinition;
 import sdd.CharacterLocalStateDef;
 
 /**
+ * This is used as a kind of "dummy" local state definition for QuantitativeCharacters.
+ * Primary use is for help in maintaining map (in SDDConverter) 
+ * from LocalStateDefs to ModifierDefs (which was originally created for use with 
+ * Categorical Characters only).
  * @author Alex
  *
  */
