@@ -113,37 +113,31 @@ public class SDDConverter {
 	 */
 	private Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> taxonNameToCharState;
 	
-	/**
-	 * This map maintains the DescriptiveConcepts that will be added to the Dataset.
-	 */
+	/** This map maintains the DescriptiveConcepts that will be added to the Dataset.	 */
 	private Map<String, DescriptiveConcept> dcsToAdd;
 	
-	/**
-	 * This map maintains the Characters that will be added to the Dataset.
-	 */
+	/** This map maintains the Characters that will be added to the Dataset.	 */
 	private Map<String, AbstractCharacterDefinition> charsToAdd;
 	
-	/**
-	 * Maintains a mapping from ITaxon objects to SDD TaxonNames (used as reference in building SDD TaxonHierarchy).
-	 */
+	/** Maintains a mapping from ITaxon objects to SDD TaxonNames (used as reference in building SDD TaxonHierarchy).	 */
 	private Map<ITaxon, TaxonNameCore> taxonToTaxonName;
 	
-	/**
-	 * Used to keep track of which DescriptiveConcepts are pointed to by which CharacterTreeNodes.
-	 */
+	/** Used to keep track of which DescriptiveConcepts are pointed to by which CharacterTreeNodes.	 */
 	private Map<DescriptiveConcept, CharTreeNode> dcToCtNode;
 	
-	/**
-	 * Maps names (Strings) of modifiers to their SDD ModifierDef.
-	 */
+	/** Maps names (Strings) of modifiers to their SDD ModifierDef.	 */
 	private Map<String, ModifierDef> modifiers;
 	
-	/**
-	 * Maps ITaxon name to the characters that contain modifiers.
-	 */
+	/** Maps ITaxon name to the characters that contain modifiers.	 */
 	private Map<String, Map<CharacterLocalStateDef, ModifierDef>> stateToModifier;
-	//Have a Descriptive Concept holding ConceptStates for global use.
+	
+	/** Have a Descriptive Concept holding ConceptStates for global use. */
 	private DescriptiveConcept globalStates;
+	
+	/**
+	 * This map contains ConceptStates that are used by more than one character, and must
+	 * therefore be global ConceptStates, and not just local CharacterDefs.
+	 */
 	private Map<String, ConceptStateRef> mustBeGlobal;
 	
 	/**
@@ -162,6 +156,9 @@ public class SDDConverter {
 		this.taxonNameToCharState = new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 	}
 	
+	/**
+	 * Constructor used to convert a whole hierarchy of taxa, and not just a single taxon.
+	 */
 	public SDDConverter() {
 		try {
 			this.sddContext = JAXBContext.newInstance(sdd.ObjectFactory.class);
@@ -264,11 +261,12 @@ public class SDDConverter {
 		dcsToAdd.put("modifiers", dcModifiers);
 		dcsToAdd.put("globalStates", this.globalStates);
 		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
-		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
+		
 		dataset.setDescriptiveConcepts(dcSet);
 		CharacterSet characterSet = sddFactory.createCharacterSet();
 		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd.values());
 		postProcessCharacterSet(characterSet);
+		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
 		dataset.setCharacters(characterSet);
 		root.getDataset().add(dataset);
 		
@@ -360,7 +358,7 @@ public class SDDConverter {
 	 * to a dataset.
 	 * @param dataset
 	 * @param taxon
-	 * @param dcModifiers 
+	 * @param dcModifiers The DescriptiveConcept object that contains modifiers used throughout the document. 
 	 */
 	protected void addDescriptiveConceptsToDataset(Dataset dataset, ITaxon taxon, DescriptiveConcept dcModifiers) {
 		DescriptiveConceptSet dcSet = null;
@@ -417,9 +415,10 @@ public class SDDConverter {
 
 	/**
 	 * Adds modifier set to Descriptive Concept definition.
+	 * @param taxon Taxon object from which modifiers are being added.
 	 * @param dc
-	 * @param modifiersDc 
-	 * @param s
+	 * @param modifiersDc
+	 * @param s Structure containing char-state map to get modifiers from.
 	 */
 	protected void addToModifiersFromDescriptiveConcepts(ITaxon taxon, DescriptiveConcept dc,
 			DescriptiveConcept modifiersDc, Structure s) {
