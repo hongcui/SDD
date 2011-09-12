@@ -42,7 +42,7 @@ public class TestDescriptionParser {
 	
 	@Test
 	public final void testBuildHierarchy() {
-		makeHierarchy("cirsium");
+		makeHierarchy("achillea");
 	}
 
 	/**
