@@ -546,7 +546,44 @@ public class SDDConverter {
 					localStateDef.setRepresentation(stateRep);
 					localStateDef.setId("state_".concat(stateName));
 					AbstractRef stateRef;
-					if(!refs.containsKey(stateName)) {	//if we're seeing this state for the first time, add it to character as a definition
+//					if(!refs.containsKey(stateName)) {	//if we're seeing this state for the first time, add it to character as a definition
+//						ConceptStateDef conceptStateDef = sddFactory.createConceptStateDef();
+//						conceptStateDef.setId(localStateDef.getId());
+//						conceptStateDef.setRepresentation(localStateDef.getRepresentation());
+//						this.globalStates.getConceptStates().getStateDefinition().add(conceptStateDef);
+//						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(localStateDef);
+//						//add reference to refs map for future use.
+//						stateRef = sddFactory.createConceptStateRef();
+//						stateRef.setRef(localStateDef.getId());
+//						refs.put(stateName, stateRef);
+//					}
+//					else {	//we've seen this state before and it's not a duplicate for this character, get a Concept ref. from refs Map
+//						if((charStateDescMap.containsKey(character) && !charStateDescMap.get(character).contains(localStateDef))
+//								|| !charStateDescMap.containsKey(character)) {
+//							stateRef = refs.get(stateName);
+//							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
+//							this.mustBeGlobal.put(stateRef.getRef(), (ConceptStateRef) stateRef);
+//						}
+					//if we remove this character from the picture, is there another character that
+					//still maps to the state in question? if so, then we need it globally. Otherwise,
+					//we can leave it as a StateDefinition
+					Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> copy = 
+						new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
+					copy.putAll(this.taxonNameToCharState);
+					boolean flaggedGlobal = false;
+					for(Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> taxonMap : copy.values()) {
+						taxonMap.remove(character);	//remove from each taxon character->state map
+						for(Set<CharacterLocalStateDef> set : taxonMap.values()) {
+							if(!flaggedGlobal && set.contains(localStateDef)) {
+								stateRef = refs.get(stateName);
+								((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
+								this.mustBeGlobal.put(stateRef.getRef(), (ConceptStateRef) stateRef);
+								flaggedGlobal = true;
+								break;
+							}
+						}
+					}					
+					if(!flaggedGlobal && !refs.containsKey(stateName)) {
 						ConceptStateDef conceptStateDef = sddFactory.createConceptStateDef();
 						conceptStateDef.setId(localStateDef.getId());
 						conceptStateDef.setRepresentation(localStateDef.getRepresentation());
@@ -556,18 +593,6 @@ public class SDDConverter {
 						stateRef = sddFactory.createConceptStateRef();
 						stateRef.setRef(localStateDef.getId());
 						refs.put(stateName, stateRef);
-					}
-					else {	//we've seen this state before and it's not a duplicate for this character, get a Concept ref. from refs Map
-						if(charStateDescMap.containsKey(character) && !charStateDescMap.get(character).contains(localStateDef)) {
-							stateRef = refs.get(stateName);
-							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
-							this.mustBeGlobal.put(stateRef.getRef(), (ConceptStateRef) stateRef);
-						}
-						else if(!charStateDescMap.containsKey(character)) {
-							stateRef = refs.get(stateName);
-							((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
-							this.mustBeGlobal.put(stateRef.getRef(), (ConceptStateRef) stateRef);
-						}
 					}
 				}
 				else if(TypeUtil.isNumeric(state.getMap().get("value"))) {
@@ -1122,11 +1147,19 @@ public class SDDConverter {
 	 */
 	private void removeFromGlobalStates(CharacterLocalStateDef state) {	
 		List<ConceptStateDef> markForRemoval = new ArrayList<ConceptStateDef>();
+		System.out.println("Here are the states currently marked as global:");
 		for(ConceptStateDef conceptState : this.globalStates.getConceptStates().getStateDefinition()) {
+			System.out.println(conceptState.getId());
 			if(conceptState.getId().equals(state.getId()))
 				markForRemoval.add(conceptState);
 		}
-		this.globalStates.getConceptStates().getStateDefinition().removeAll(markForRemoval);		
+		System.out.println("Here are states marked for removal:");
+		for(ConceptStateDef def : markForRemoval)
+			System.out.println(def.getId());
+		this.globalStates.getConceptStates().getStateDefinition().removeAll(markForRemoval);
+		System.out.println("Here are the states left:");
+		for(ConceptStateDef def : this.globalStates.getConceptStates().getStateDefinition())
+			System.out.println(def.getId());
 	}
 
 	/**
