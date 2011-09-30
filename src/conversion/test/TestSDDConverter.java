@@ -34,7 +34,8 @@ public class TestSDDConverter {
 		TaxonHierarchy h = makeHierarchyGenus("achillea");
 		SDDConverter toSDD = new SDDConverter();
 //		toSDD.taxonToSDD(h.getHierarchy().getRoot().getElement(), "output/centaurea-sdd.xml");
-		toSDD.taxonHierarchyToSDD(h, "output/achillea-sdd.xml");
+//		toSDD.taxonHierarchyToSDD(h, "output/achillea-species-sdd.xml");
+		toSDD.taxonHierarchyToSDD(h, "SPECIES", "output/achillea-species-sdd.xml");
 	}
 	
 	private TaxonHierarchy makeHierarchyGenus(String genusName) {
