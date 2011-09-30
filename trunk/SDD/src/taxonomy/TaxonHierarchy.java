@@ -1,8 +1,10 @@
 package taxonomy;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import tree.Tree;
 import tree.TreeNode;
@@ -84,6 +86,22 @@ public class TaxonHierarchy {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns an iterator of nodes only at taxonomic rank specified by rankName.
+	 * @param rankName
+	 * @return
+	 */
+	public Iterator<TreeNode<ITaxon>> rankIterator(String rankName) {
+		List<TreeNode<ITaxon>> nodeList = new ArrayList<TreeNode<ITaxon>>();
+		Iterator<TreeNode<ITaxon>> iter = this.hierarchy.iterator();
+		while(iter.hasNext()) {
+			TreeNode<ITaxon> node = iter.next();
+			if(node.getElement().getTaxonRank().toString().equals(rankName))
+				nodeList.add(node);
+		}
+		return nodeList.iterator();
 	}
 
 	/* (non-Javadoc)

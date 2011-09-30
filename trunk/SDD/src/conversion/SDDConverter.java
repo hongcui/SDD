@@ -228,13 +228,40 @@ public class SDDConverter {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Converts a TaxonHierarchy into an associated SDD XML file.  A Datasets SDD object is created
+	 * and set as the root of the XML file. This method only uses the taxa from the hierarchy that
+	 * match taxonRank.
+	 * @param hierarchy
+	 * @param taxonRank
+	 * @param filename
+	 */
+	public void taxonHierarchyToSDD(TaxonHierarchy hierarchy, String taxonRank, String filename) {
+		try {
+			Marshaller marshaller = sddContext.createMarshaller();
+			Datasets root = sddFactory.createDatasets();
+			addMetadata(root);
+			addDataset(root, hierarchy, taxonRank);
+			marshaller.marshal(root, new File(filename));
+			System.out.println("Modifier map:");
+			for(String s : this.stateToModifier.keySet()) {
+				System.out.println(s);
+				Map<CharacterLocalStateDef, ModifierDef> map = this.stateToModifier.get(s);
+				for(CharacterLocalStateDef state : map.keySet())
+					System.out.println("\t"+state+": "+map.get(state));
+			}
+			System.out.println("End modifier map.");
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Adds a Dataset to the root Datasets object, using data from all of the taxa in the hierarchy.
 	 * @param root
 	 * @param hierarchy
 	 */
-	@SuppressWarnings("unchecked")
 	protected void addDataset(Datasets root, TaxonHierarchy hierarchy) {
 		Dataset dataset = sddFactory.createDataset();
 		dataset.setLang("en-us");
@@ -271,6 +298,50 @@ public class SDDConverter {
 		root.getDataset().add(dataset);
 		
 	}
+	
+	/**
+	 * Adds a Dataset to the root Datasets object, using data from taxa in the hierarchy
+	 * that match the taxonRank specified.
+	 * @param root
+	 * @param hierarchy
+	 * @param taxonRank
+	 */
+	protected void addDataset(Datasets root, TaxonHierarchy hierarchy, String taxonRank) {
+		Dataset dataset = sddFactory.createDataset();
+		dataset.setLang("en-us");
+		addRepresentationToDataset(dataset, hierarchy.getHierarchy().getRoot().getElement());
+		Iterator<TreeNode<ITaxon>> iter = hierarchy.rankIterator(taxonRank);
+		
+		//Have a Modifier Descriptive Concept for global use.
+		DescriptiveConcept dcModifiers = sddFactory.createDescriptiveConcept();
+		dcModifiers.setId("modifiers");
+		Representation modRep = sddFactory.createRepresentation();
+		LabelText labelTextMod = sddFactory.createLabelText();
+		labelTextMod.setValue("Descriptive Concept for holding modifiers.");
+		modRep.getRepresentationGroup().add(labelTextMod);
+		dcModifiers.setRepresentation(modRep);
+		
+		while(iter.hasNext()) {
+			TreeNode<ITaxon> node = iter.next();
+			ITaxon taxon = node.getElement();
+			System.out.println("Processing taxon: " + taxon.toString());
+			addTaxonNameToDataset(dataset, taxon);
+			addDescriptiveConceptsToDataset(dataset, taxon, dcModifiers);
+			addCodedDescriptionToDataset(dataset, taxon);
+		}
+		addTaxonHierarchyToDataset(dataset, hierarchy);
+		dcsToAdd.put("modifiers", dcModifiers);
+		dcsToAdd.put("globalStates", this.globalStates);
+		DescriptiveConceptSet dcSet = sddFactory.createDescriptiveConceptSet();
+		
+		dataset.setDescriptiveConcepts(dcSet);
+		CharacterSet characterSet = sddFactory.createCharacterSet();
+		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().addAll(charsToAdd.values());
+		postProcessCharacterSet(characterSet);
+		dcSet.getDescriptiveConcept().addAll(dcsToAdd.values());
+		dataset.setCharacters(characterSet);
+		root.getDataset().add(dataset);
+	}
 
 	/**
 	 * Places a Taxon Hierarchy in the dataset according to the Hierarchy defined under the TaxonHierarchy object.
@@ -293,6 +364,8 @@ public class SDDConverter {
 		while(iter.hasNext()) {
 			TreeNode<ITaxon> treeNode = iter.next();
 			ITaxon taxon = treeNode.getElement();
+			if(!this.taxonToTaxonName.containsKey(taxon))
+				addTaxonNameToDataset(dataset, taxon);
 			TaxonNameCore taxonName = this.taxonToTaxonName.get(taxon);
 			TaxonHierarchyNode taxonNode = sddFactory.createTaxonHierarchyNode();
 			taxonNode.setId("th_node_".concat(taxon.getName()));
@@ -1107,7 +1180,6 @@ public class SDDConverter {
 				postProcessCharacterHelper((CategoricalCharacter) character);
 			}
 		}
-		
 	}
 
 	/**
@@ -1148,19 +1220,19 @@ public class SDDConverter {
 	 */
 	private void removeFromGlobalStates(CharacterLocalStateDef state) {	
 		List<ConceptStateDef> markForRemoval = new ArrayList<ConceptStateDef>();
-		System.out.println("Here are the states currently marked as global:");
+//		System.out.println("Here are the states currently marked as global:");
 		for(ConceptStateDef conceptState : this.globalStates.getConceptStates().getStateDefinition()) {
-			System.out.println(conceptState.getId());
+//			System.out.println(conceptState.getId());
 			if(conceptState.getId().equals(state.getId()))
 				markForRemoval.add(conceptState);
 		}
-		System.out.println("Here are states marked for removal:");
-		for(ConceptStateDef def : markForRemoval)
-			System.out.println(def.getId());
+//		System.out.println("Here are states marked for removal:");
+//		for(ConceptStateDef def : markForRemoval)
+//			System.out.println(def.getId());
 		this.globalStates.getConceptStates().getStateDefinition().removeAll(markForRemoval);
-		System.out.println("Here are the states left:");
-		for(ConceptStateDef def : this.globalStates.getConceptStates().getStateDefinition())
-			System.out.println(def.getId());
+//		System.out.println("Here are the states left:");
+//		for(ConceptStateDef def : this.globalStates.getConceptStates().getStateDefinition())
+//			System.out.println(def.getId());
 	}
 
 	/**
