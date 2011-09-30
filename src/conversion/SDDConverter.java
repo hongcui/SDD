@@ -497,7 +497,8 @@ public class SDDConverter {
 				CharTreeNodeSeq ctNodeSeq = sddFactory.createCharTreeNodeSeq();
 				characterTree.setNodes(ctNodeSeq);
 			}
-			characterTree.getNodes().getNodeOrCharNode().add(ctCharNode);
+			if(!characterTree.getNodes().getNodeOrCharNode().contains(ctCharNode))
+				characterTree.getNodes().getNodeOrCharNode().add(ctCharNode);
 		}
 		if(dcNode instanceof CharTreeAbstractNode)
 			characterTree.getNodes().getNodeOrCharNode().add((CharTreeAbstractNode) dcNode);
