@@ -12,6 +12,7 @@ import taxonomy.ITaxon;
 import taxonomy.SubTaxonException;
 import taxonomy.TaxonHierarchy;
 import taxonomy.TaxonRank;
+import conversion.DatasetLoader;
 import conversion.DescriptionParser;
 import conversion.SDDConverter;
 import dao.FilenameTaxonDao;
@@ -32,10 +33,12 @@ public class TestSDDConverter {
 	@Test
 	public void testTaxonToSDD() {
 		TaxonHierarchy h = makeHierarchyGenus("achillea");
-		SDDConverter toSDD = new SDDConverter();
+//		SDDConverter toSDD = new SDDConverter();
 //		toSDD.taxonToSDD(h.getHierarchy().getRoot().getElement(), "output/centaurea-sdd.xml");
 //		toSDD.taxonHierarchyToSDD(h, "output/achillea-species-sdd.xml");
-		toSDD.taxonHierarchyToSDD(h, "SPECIES", "output/achillea-species-sdd.xml");
+//		toSDD.taxonHierarchyToSDD(h, "SPECIES", "output/achillea-species-sdd.xml");
+		DatasetLoader loader = new DatasetLoader(h);
+		loader.taxonHierarchyToSDD("output/achillea-loader-test.xml");
 	}
 	
 	private TaxonHierarchy makeHierarchyGenus(String genusName) {
