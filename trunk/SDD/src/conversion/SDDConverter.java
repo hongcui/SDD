@@ -614,6 +614,10 @@ public class SDDConverter {
 					String stateName = (String) state.getMap().get("value");
 					character = sddFactory.createCategoricalCharacter();
 					character.setId(fullCharacterName);
+					//Debugging...
+					if(character.getId().equals("stem_architecture_or_shape") ||
+							character.getId().equals("stem_architecture"))
+						System.out.println("Start Debugging the stem_architecture_or_shape bug...");
 					((sdd.CategoricalCharacter)character).setStates(sddFactory.createCharacterStateSeq());
 					localStateDef = sddFactory.createCharacterLocalStateDef();
 					localStateDef.setId(stateName);
@@ -650,6 +654,8 @@ public class SDDConverter {
 						for(Set<CharacterLocalStateDef> set : taxonMap.values()) {
 							if(!flaggedGlobal && set.contains(localStateDef)) {
 								stateRef = refs.get(stateName);
+//								System.out.println("***Found global state for character:\n" + character.toString() 
+//										+ "\n" + stateRef.toString() + "\n***");
 								((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(stateRef);
 								this.mustBeGlobal.put(stateRef.getRef(), (ConceptStateRef) stateRef);
 								flaggedGlobal = true;
@@ -667,6 +673,9 @@ public class SDDConverter {
 						stateRef = sddFactory.createConceptStateRef();
 						stateRef.setRef(localStateDef.getId());
 						refs.put(stateName, stateRef);
+					}
+					else if(!flaggedGlobal && refs.containsKey(stateName)) {
+						((sdd.CategoricalCharacter)character).getStates().getStateDefinitionOrStateReference().add(refs.get(stateName));
 					}
 				}
 				else if(TypeUtil.isNumeric(state.getMap().get("value"))) {
