@@ -29,4 +29,12 @@ public class BaseDao {
 		}
 		return con;
 	}
+	
+	/**
+	 * 
+	 * @return The DatabaseProperties object.
+	 */
+	public DatabaseProperties getProperties() {
+		return this.props;
+	}
 }

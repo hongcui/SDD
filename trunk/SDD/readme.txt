@@ -53,3 +53,26 @@ the TaxonHierarchy and the name of an output path in which to place an
 RDF XML document as output. So, you can place either an absolute path or 
 relative (to the project) path as an argument to this method.
 
+Changing RDF Namespaces
+
+The namespaces used for various predicates ("structure", "character", etc.)
+can be changed in the conversion/rdf.properties file.  These are just
+populated with toy names at the moment, it's safe to change any of them
+(other than the "rdf" property).
+
+Changing Database Names and Table Names
+
+The filename fetching and singular->plural term processing rely on
+the FilenameTaxonDao and SingularPluralDao objects, respectively. These
+query certain databases containing tables holding relevant information.
+The names of the databases and tables in which the data lies can be 
+configured in the dao/database.properties files.  The properties to change
+to make such configurations are:
+
+- singular-plural-database
+- singular-plural-table-name
+- filename-database
+- filename-table-name
+
+Thus, when changes in versions occur, the table names can be easily updated.
+

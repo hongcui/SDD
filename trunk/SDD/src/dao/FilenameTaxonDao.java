@@ -19,7 +19,8 @@ import taxonomy.TaxonRank;
  */
 public class FilenameTaxonDao extends BaseDao{
 	
-	private String database = "toboston";
+	private String database = this.getProperties().getProperty("filename-database");
+	private String tablename = this.getProperties().getProperty("filename-table-name");
 	
 	/**
 	 * Ordered list of taxon ranks.
@@ -48,7 +49,8 @@ public class FilenameTaxonDao extends BaseDao{
 		try {
 			conn = getConnection(database);
 			Statement s = conn.createStatement();
-			rs = s.executeQuery("SELECT * FROM fnav19_filename2taxon WHERE filename = '" + filename +"';");
+			rs = s.executeQuery("SELECT * FROM " + this.tablename +
+					" WHERE filename = '" + filename +"';");
 			while(rs.next()) {
 				result.put("family", rs.getString("family"));
 				result.put("subfamily", rs.getString("subfamily"));

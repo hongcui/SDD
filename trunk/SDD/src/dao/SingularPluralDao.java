@@ -9,7 +9,8 @@ import java.util.List;
 
 public class SingularPluralDao extends BaseDao {
 
-	private String database = "singularpluralorgannames";
+	private String database = this.getProperties().getProperty("singular-plural-database");
+	private String tablename = this.getProperties().getProperty("singular-plural-table-name");
 	
 	/**
 	 * Return the singular form from a plural form (or an empty result 
@@ -24,8 +25,8 @@ public class SingularPluralDao extends BaseDao {
 		try {
 			conn = getConnection(database);
 			Statement s = conn.createStatement();
-			rs = s.executeQuery("SELECT singular FROM singularplural_fnav19 WHERE plural = '"
-					+ plural + "';");
+			rs = s.executeQuery("SELECT singular FROM " + this.tablename +
+					" WHERE plural = '" + plural + "';");
 			while(rs.next()) {
 				result.add(rs.getString("singular"));
 			}
