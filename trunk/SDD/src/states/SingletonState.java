@@ -13,6 +13,7 @@ import annotationSchema.jaxb.Structure;
  */
 public class SingletonState<T> implements IState<T> {
 	
+	public static final String KEY = "value";
 	private Map<String, T> map;
 	private String unit, modifier, constraint;
 	private Structure constraintId;
@@ -34,7 +35,7 @@ public class SingletonState<T> implements IState<T> {
 	 */
 	public SingletonState(T value, String unit) {
 		this.map = new HashMap<String, T>();
-		this.map.put("value", value);
+		this.map.put(KEY, value);
 		this.unit = unit;
 	}
 

@@ -11,6 +11,8 @@ import annotationSchema.jaxb.Structure;
  */
 public class RangeState<T> implements IState<T> {
 	
+	public static final String KEY_FROM = "from value";
+	public static final String KEY_TO = "to value";
 	private Map<String, T> map;
 	private String fromUnit, toUnit, modifier, constraint;
 	private Structure constraintId;
@@ -22,8 +24,8 @@ public class RangeState<T> implements IState<T> {
 	 */
 	public RangeState(T from, T to) {
 		this.map = new HashMap<String, T>();
-		this.map.put("from value", from);
-		this.map.put("to value", to);
+		this.map.put(KEY_FROM, from);
+		this.map.put(KEY_TO, to);
 	}
 	
 	/**
@@ -34,8 +36,8 @@ public class RangeState<T> implements IState<T> {
 	 */
 	public RangeState(T from, T to, String fromUnit, String toUnit) {
 		this.map = new HashMap<String, T>();
-		this.map.put("from value", from);
-		this.map.put("to value", to);
+		this.map.put(KEY_FROM, from);
+		this.map.put(KEY_TO, to);
 		this.fromUnit = fromUnit;
 		this.toUnit = toUnit;
 	}

@@ -24,6 +24,7 @@ public class DatasetLoader {
 	private TaxonHierarchyObserver taxonHierarchyObserver;
 	private DescriptiveConceptHandler dcHandler;
 	private ModifierHandler modifierHandler;
+	private CharacterSetHandler characterSetHandler;
 	
 	/**
 	 * Constructs new entry-class object.
@@ -55,6 +56,10 @@ public class DatasetLoader {
 		dcHandler.addObserver(modifierHandler);
 		modifierHandler.addObserver(dcHandler);
 		
+		this.characterSetHandler = new CharacterSetHandler();
+		//character set handler subscribes to the dataset handler
+		datasetHandler.addObserver(characterSetHandler);
+		
 		try {
 			this.sddContext = JAXBContext.newInstance(sdd.ObjectFactory.class);
 		} catch (JAXBException e) {
@@ -73,6 +78,7 @@ public class DatasetLoader {
 		this.datasetsHandler.handle();
 		this.datasetHandler.handle();
 		this.dcHandler.handle();
+		this.characterSetHandler.handle();
 		Datasets root = this.datasetsHandler.getDatasets();
 		root.getDataset().add(this.datasetHandler.getDataset());
 		
