@@ -3,7 +3,6 @@ package conversion;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Observable;
 
 import sdd.DetailText;
@@ -41,9 +40,9 @@ public class DatasetHandler extends Observable implements Handler {
 	/**
 	 * Called when one of the properties has changed.
 	 */
-	public void publish(Object arg) {
+	public void publish(TreeNode<ITaxon> node) {
 		this.setChanged();
-		this.notifyObservers(arg);
+		this.notifyObservers(node);
 	}
 	
 	/**
