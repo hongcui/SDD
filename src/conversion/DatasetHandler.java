@@ -46,6 +46,11 @@ public class DatasetHandler extends Observable implements Handler {
 		this.notifyObservers(arg);
 	}
 	
+	/**
+	 * Adds a representation for the dataset based on the root Taxon of 
+	 * the hierarchy.  Then calls processHierarchy, which notifies 
+	 * observers of each of the ITaxon TreeNodes in the hierarchy.
+	 */
 	@Override
 	public void handle() {
 		//Adds some representation based on the root Taxon of the hierarchy
