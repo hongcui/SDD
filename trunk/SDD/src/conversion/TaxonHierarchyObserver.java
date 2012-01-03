@@ -36,14 +36,14 @@ public class TaxonHierarchyObserver implements Observer {
 	private sdd.TaxonHierarchySet taxonHierarchySet;
 	private sdd.TaxonHierarchyCore taxonHierarchyCore;
 	private sdd.TaxonHierarchyNodeSeq taxonHierarchyNodeSeq;
-	private TaxonNameHandler taxonNameHandler;
+	private sdd.Dataset dataset;
 	
-	public TaxonHierarchyObserver(TaxonNameHandler handler) {
-		this.taxonNameHandler = handler;
+	public TaxonHierarchyObserver(sdd.Dataset dataset) {
 		this.sddFactory = new sdd.ObjectFactory();
 		this.taxonHierarchySet = this.sddFactory.createTaxonHierarchySet();
 		this.taxonHierarchyCore = sddFactory.createTaxonHierarchyCore();
 		this.taxonHierarchyNodeSeq = sddFactory.createTaxonHierarchyNodeSeq();
+		this.dataset = dataset;
 		addRepToTaxonHierarchyCore();
 		taxonHierarchyCore.setNodes(taxonHierarchyNodeSeq);
 		taxonHierarchySet.getTaxonHierarchy().add(taxonHierarchyCore);
@@ -58,9 +58,7 @@ public class TaxonHierarchyObserver implements Observer {
 			TaxonNameHandler handler = (TaxonNameHandler)obs;
 			if(arg instanceof TreeNode) {
 				TreeNode<ITaxon> node = (TreeNode<ITaxon>)arg;
-				addTaxonHierarchyToDataset(
-						handler.getDatasetHandler().getDataset(),
-						node);
+				addTaxonHierarchyToDataset(handler.getDataset(), node);
 			}
 		}
 	}
@@ -116,9 +114,7 @@ public class TaxonHierarchyObserver implements Observer {
 	 * @return
 	 */
 	private TaxonNameCore lookupTaxonNameCore (ITaxon taxon) {
-		List<TaxonNameCore> coreNames = 
-				((DatasetHandler)this.taxonNameHandler.getDatasetHandler()).
-					getDataset().getTaxonNames().getTaxonName();
+		List<TaxonNameCore> coreNames = this.dataset.getTaxonNames().getTaxonName();
 		for(TaxonNameCore name : coreNames) {
 			if(taxon.getName().equals(name.getId()))
 				return name;

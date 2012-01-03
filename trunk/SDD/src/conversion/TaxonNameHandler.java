@@ -19,7 +19,7 @@ import tree.TreeNode;
  */
 public class TaxonNameHandler extends Observable implements Observer, Handler {
 
-	private DatasetHandler datasetHandler;
+	private sdd.Dataset dataset;
 	private sdd.TaxonNameSet taxonNameSet;
 	private sdd.ObjectFactory sddFactory;
 	
@@ -27,11 +27,10 @@ public class TaxonNameHandler extends Observable implements Observer, Handler {
 	 * Observes a DatasetHandler.
 	 * @param datasetHandler
 	 */
-	public TaxonNameHandler(DatasetHandler datasetHandler) {
+	public TaxonNameHandler(sdd.Dataset dataset) {
 		this.sddFactory = new sdd.ObjectFactory();
 		this.taxonNameSet = sddFactory.createTaxonNameSet();
-		this.datasetHandler = datasetHandler;
-		this.datasetHandler.addObserver(this);
+		this.dataset = dataset;
 	}
 	
 	/**
@@ -88,15 +87,14 @@ public class TaxonNameHandler extends Observable implements Observer, Handler {
 
 	@Override
 	public void handle() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub	
 	}
 
 	/**
-	 * @return the datasetHandler
+	 * @return the SDD dataset.
 	 */
-	public DatasetHandler getDatasetHandler() {
-		return datasetHandler;
+	public Dataset getDataset() {
+		return this.dataset;
 	}
 
 }

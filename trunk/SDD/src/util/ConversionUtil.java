@@ -1,5 +1,8 @@
 package util;
 
+import sdd.LabelText;
+import sdd.ObjectFactory;
+import sdd.Representation;
 import tree.TreeNode;
 import annotationSchema.jaxb.Structure;
 
@@ -29,5 +32,20 @@ public class ConversionUtil {
 			parent = parent.getParent();
 		}
 		return charName;
+	}
+	
+	/**
+	 * Creates a new Representation object, with a LabelText
+	 * piece that has value as it's string value.
+	 * @param value String to place inside LabelText.
+	 * @return New representation object.
+	 */
+	public static Representation makeRep(String value) {
+		ObjectFactory sddFactory = new ObjectFactory();
+		Representation rep = sddFactory.createRepresentation();
+		LabelText labelText = sddFactory.createLabelText();
+		labelText.setValue(value);
+		rep.getRepresentationGroup().add(labelText);
+		return rep;
 	}
 }
