@@ -75,7 +75,7 @@ public class Structure {
     
     @SuppressWarnings("rawtypes")
     @XmlTransient
-	protected Map<String, IState> stateMap;
+	protected Map<String, List<IState>> stateMap;
     @XmlTransient
     protected Map<String, String> modifierMap;
     @XmlTransient
@@ -234,9 +234,9 @@ public class Structure {
 	 * @return the stateMap
 	 */
 	@SuppressWarnings("rawtypes")
-	public Map<String, IState> getCharStateMap() {
+	public Map<String, List<IState>> getCharStateMap() {
 		if(stateMap == null)
-			stateMap = new TreeMap<String, IState>();
+			stateMap = new TreeMap<String, List<IState>>();
 		return stateMap;
 	}
 	
@@ -248,8 +248,17 @@ public class Structure {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void addMapping(String charName, IState state) {
 		if(stateMap == null)
-			stateMap = new TreeMap<String, IState>();
-		stateMap.put(charName, state);
+			stateMap = new TreeMap<String, List<IState>>();
+		if(stateMap.get(charName) == null) {
+			List<IState> stateList = new ArrayList<IState>();
+			stateList.add(state);
+			stateMap.put(charName, stateList);
+		}
+		else {
+			List<IState> stateList = stateMap.get(charName);
+			stateList.add(state);
+			stateMap.put(charName, stateList);
+		}
 	}
 
 	/**
