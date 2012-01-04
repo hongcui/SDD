@@ -3,6 +3,7 @@ package conversion;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -17,7 +18,6 @@ import sdd.CategoricalCharacter;
 import sdd.CharacterLocalStateDef;
 import sdd.CharacterSet;
 import sdd.CharacterStateSeq;
-import sdd.ConceptStateRef;
 import sdd.LabelText;
 import sdd.ObjectFactory;
 import sdd.QuantitativeCharMapping;
@@ -45,7 +45,7 @@ import annotationSchema.jaxb.Structure;
 public class CharacterSetHandler extends Observable implements Handler,
 		Observer {
 
-	private static final String STATE_ID_PREFIX = "state_";
+	public static final String STATE_ID_PREFIX = "state_";
 	private static ObjectFactory sddFactory = new ObjectFactory();
 	
 	/** Taxon-by-character matrix. */
@@ -64,6 +64,25 @@ public class CharacterSetHandler extends Observable implements Handler,
 				Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 		this.characterSet = sddFactory.createCharacterSet();
 		this.stateRefs = new TreeMap<String, AbstractRef>();
+	}
+	
+	/**
+	 * Publishes to the descriptive concept handler to notify it 
+	 * of encountering a global state.  Also publishes to the 
+	 * Modifier handler.
+	 */
+	private void publish(AbstractRef stateRef) {
+		this.setChanged();
+		this.notifyObservers(stateRef);
+	}
+	
+	/**
+	 * Notifies the Modifier Handler.
+	 * @param localStateDef
+	 */
+	private void publish(CharacterLocalStateDef localStateDef) {
+		this.setChanged();
+		this.notifyObservers(localStateDef);		
 	}
 
 	/**
@@ -94,7 +113,7 @@ public class CharacterSetHandler extends Observable implements Handler,
 		//loop over each structure in this ITaxon
 		while(iterStructure.hasNext()) {
 			TreeNode<Structure> structureNode = iterStructure.next();
-			Map<String, IState> charStateMap = 
+			Map<String, List<IState>> charStateMap = 
 					structureNode.getElement().getCharStateMap();
 			//loop over char->state mappings in this structure
 			for(String charString : charStateMap.keySet()) {
@@ -105,75 +124,82 @@ public class CharacterSetHandler extends Observable implements Handler,
 				String fullCharName = 
 						ConversionUtil.resolveFullCharacterName(charString, structureNode);
 				Representation charRep = ConversionUtil.makeRep(fullCharName);
-				///get associated state (and it's value)
-				IState state = charStateMap.get(charString);
-				Object stateValue = state.getMap().get(SingletonState.KEY);
-				if(state instanceof SingletonState) {
-					//if it's some categorical character
-					if(stateValue instanceof String) {
-						Map<CategoricalCharacter, CharacterLocalStateDef> charStatePair = 
-								makeSingleCategoricalCharState(fullCharName, 
-																stateValue);
-						character = charStatePair.keySet().iterator().next();
-						localStateDef = charStatePair.get(character);
-					}	//otherwise, it's numeric
-					else if(TypeUtil.isNumeric(stateValue)) {
-						character = makeSingleQuantitativeCharState(localStateDef,
-								fullCharName, state);
+				///get each associated state (and it's value)
+				List<IState> stateList = charStateMap.get(charString);
+				for(IState state : stateList) {		
+					if(state instanceof SingletonState) {
+						//if it's some categorical character
+						Object stateValue = state.getMap().get(SingletonState.KEY);
+						String stateName = stateValue.toString();
+						if(stateValue instanceof String) {
+							if(character == null)
+								character = makeSingleCategoricalCharacter(fullCharName);
+							localStateDef = makeSingleCategoricalState(stateValue);
+							attachStateCategorical((CategoricalCharacter) character, localStateDef, stateName);
+						}	//otherwise, it's numeric
+						else if(TypeUtil.isNumeric(stateValue)) {
+							if(character == null)
+								character = makeSingleQuantitativeCharState(localStateDef,
+										fullCharName, state);
+						}
 					}
+					else if(state instanceof RangeState) {
+						//could be some kind of text range (i.e. a range of colors)
+						if(state.getMap().get(RangeState.KEY_FROM) instanceof String) {
+							character = sddFactory.createCategoricalCharacter();
+							character.setId(fullCharName);
+							((sdd.CategoricalCharacter)character).setStates(
+									sddFactory.createCharacterStateSeq());
+						}
+						else if(TypeUtil.isNumeric(state.getMap().get(RangeState.KEY_FROM))) {
+							if(character == null)
+								character = makeRangeQuantitativeCharState(localStateDef,
+										fullCharName, state);
+						}
+						else {	//TODO 
+							character = sddFactory.createQuantitativeCharacter();
+							character.setId(fullCharName);
+						}
+					}
+					//we use the same char rep in either case (for all states of that char)
+					character.setRepresentation(charRep);
+					Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> charStateDescMap = 
+							matrix.get(node.getElement().getName());
+					if(!charStateDescMap.containsKey(character))
+						charStateDescMap.put(character, new HashSet<CharacterLocalStateDef>());
+					charStateDescMap.get(character).add(localStateDef);
 				}
-				else if(state instanceof RangeState) {
-					//could be some kind of text range (i.e. a range of colors)
-					if(state.getMap().get(RangeState.KEY_FROM) instanceof String) {
-						character = sddFactory.createCategoricalCharacter();
-						character.setId(fullCharName);
-						((sdd.CategoricalCharacter)character).setStates(
-								sddFactory.createCharacterStateSeq());
-					}
-					else if(TypeUtil.isNumeric(state.getMap().get(RangeState.KEY_FROM))) {
-						character = makeRangeQuantitativeCharState(localStateDef,
-								fullCharName, state);
-					}
-					else {	//TODO 
-						character = sddFactory.createQuantitativeCharacter();
-						character.setId(fullCharName);
-					}
-				}
-				//we use the same char rep in either case
-				character.setRepresentation(charRep);
-				Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> charStateDescMap = 
-						matrix.get(node.getElement().getName());
-				if(!charStateDescMap.containsKey(character))
-					charStateDescMap.put(character, new HashSet<CharacterLocalStateDef>());
-				charStateDescMap.get(character).add(localStateDef);
 			}
 		}
 	}
 
 	/**
-	 * Makes a single categorical character state definition.
+	 * Makes a single categorical character.
 	 * @param fullCharName
-	 * @param stateValue
 	 * @return sdd CategoricalCharacter for addition to CharacterSet.
 	 */
-	private Map<CategoricalCharacter, CharacterLocalStateDef> makeSingleCategoricalCharState(
-			String fullCharName, Object stateValue) {
-		Representation stateRep = 
-				ConversionUtil.makeRep(stateValue.toString());
-		String stateName = stateValue.toString();
+	private CategoricalCharacter makeSingleCategoricalCharacter(String fullCharName) {
 		CategoricalCharacter character = sddFactory.createCategoricalCharacter();
 		character.setId(fullCharName);
 		//need to start with an empty state seq in this categorical char
 		CharacterStateSeq stateSeq = sddFactory.createCharacterStateSeq();
 		character.setStates(stateSeq);
+		return character;
+	}
+	
+	/**
+	 * Makes a single local state definition for a categorical character.
+	 * @param stateValue
+	 * @return
+	 */
+	private CharacterLocalStateDef makeSingleCategoricalState(Object stateValue) {
+		Representation stateRep = 
+				ConversionUtil.makeRep(stateValue.toString());
+		String stateName = stateValue.toString();
 		CharacterLocalStateDef localStateDef = sddFactory.createCharacterLocalStateDef();
 		localStateDef.setId(STATE_ID_PREFIX.concat(stateName));
 		localStateDef.setRepresentation(stateRep);
-		attachStateCategorical(character, localStateDef, stateName);
-		Map<CategoricalCharacter, CharacterLocalStateDef> charStatePair =
-				new HashMap<CategoricalCharacter, CharacterLocalStateDef>();
-		charStatePair.put(character, localStateDef);
-		return charStatePair;
+		return localStateDef;
 	}
 	
 	/**
@@ -185,40 +211,46 @@ public class CharacterSetHandler extends Observable implements Handler,
 	private void attachStateCategorical(CategoricalCharacter character,
 			CharacterLocalStateDef localStateDef, String stateName) {
 		//We first have to check if there's another character that uses this
-		//same state.  If we remove this character from the matrix, is there 
+		//same state.  If we remove this character from consideration, is there 
 		//another one that still maps to the state in question?  If so,
 		//we need this state globally.
-		Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> copy = 
-				new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
-		copy.putAll(this.matrix);
 		boolean flaggedGlobal = false;
 		for(Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> taxonMap 
-				: copy.values()) {
-			taxonMap.remove(character);	//remove this character from each taxon mapping
-			for(Set<CharacterLocalStateDef> stateSet : taxonMap.values()) {
-				if(!flaggedGlobal && stateSet.contains(localStateDef)) {
-					System.out.println("<DEBUG>Found global state: " +
-							stateName);
+				: this.matrix.values()) {
+			for(AbstractCharacterDefinition presentChar : taxonMap.keySet()) {
+				Set<CharacterLocalStateDef> stateSet = taxonMap.get(presentChar);
+				if(!flaggedGlobal && stateSet.contains(localStateDef) &&
+						!presentChar.equals(character)) {
 					//then we need this state globally
 					AbstractRef stateRef = stateRefs.get(stateName);
-					character.getStates().
-						getStateDefinitionOrStateReference().add(stateRef);
+					List<Object> currentStates = 
+							character.getStates().getStateDefinitionOrStateReference();
+					if(!currentStates.contains(stateRef))
+						currentStates.add(stateRef);
 					flaggedGlobal = true;
+					publish(stateRef);	//publish to DCHandler
 					break;
 				}
 			}
 		}
+		List<Object> currentStates = 
+				character.getStates().getStateDefinitionOrStateReference();
 		if(!flaggedGlobal && !stateRefs.containsKey(stateName)) {
 			//haven't seen this before, stays as a local state def.
-			character.getStates().
-				getStateDefinitionOrStateReference().add(localStateDef);
+			if(!currentStates.contains(localStateDef))
+				currentStates.add(localStateDef);
+			publish(localStateDef);
 			//make a ref for this in case we see it later
 			AbstractRef stateRef = sddFactory.createConceptStateRef();
 			stateRef.setRef(localStateDef.getId());
 			stateRefs.put(stateName, stateRef);
 		}
+//		else if(!flaggedGlobal){
+//			if(!currentStates.contains(stateRefs.get(stateName)))
+//				currentStates.add(stateRefs.get(stateName));
+//		}
 	}
-	
+
 	/**
 	 * Makes a single quantitative character state definition.
 	 * @param character
@@ -317,11 +349,39 @@ public class CharacterSetHandler extends Observable implements Handler,
 		for(String taxon : matrix.keySet()) {
 			Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> charStateMap = matrix.get(taxon);
 			for(AbstractCharacterDefinition charDef : charStateMap.keySet()) {
-				charsToAdd.put(charDef.getId(), charDef);
+				if(charDef.getId().equals("stem_architecture"))
+					System.out.println(charDef);
+				if(!charsToAdd.containsKey(charDef.getId()))
+						charsToAdd.put(charDef.getId(), charDef);
+				else {	//merge categorical characters
+					AbstractCharacterDefinition character = 
+							charsToAdd.get(charDef.getId());
+//					System.out.println("Merging character: " + character);
+					if(character instanceof CategoricalCharacter) {
+						CategoricalCharacter tempChar = (CategoricalCharacter) charDef;
+						mergeWithoutDuplicates((CategoricalCharacter) character, tempChar);
+					}
+				}
 			}
 		}
 		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().
 			addAll(charsToAdd.values());
+	}
+	
+	/**
+	 * Merges a temp character's states into a "keeper" character's states,
+	 * disallowing duplicate refs or duplicate local state defs (task of removing
+	 * defs from state set when appropriate state reference exists).
+	 * @param keeper
+	 * @param temp
+	 */
+	private void mergeWithoutDuplicates(CategoricalCharacter keeper, CategoricalCharacter temp) {
+		List<Object> statesToKeep = keeper.getStates().getStateDefinitionOrStateReference();
+		List<Object> tempStates = temp.getStates().getStateDefinitionOrStateReference();
+		for(Object tempState : tempStates) {
+			if(!statesToKeep.contains(tempState))
+				statesToKeep.add(tempState);
+		}
 	}
 
 	/**

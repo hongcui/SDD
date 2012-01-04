@@ -40,7 +40,7 @@ public class StateFactory {
 					from = Double.parseDouble(c.getFrom());
 					to = Double.parseDouble(c.getTo());
 					rangeState = new RangeState<Double>(from, to);
-					System.out.println("<Debug-StateFactory> Parsed as a quantitative count: "+c.toString());
+//					System.out.println("<Debug-StateFactory> Parsed as a quantitative count: "+c.toString());
 				}
 				catch (NumberFormatException e) {
 					rangeState = new RangeState<String>(c.getFrom(), c.getTo());
@@ -69,16 +69,28 @@ public class StateFactory {
 					singletonState.addConstraintId((Structure) c.getConstraintid().get(0));
 				return singletonState;
 			} else {
-				SingletonState<String> singletonState = new SingletonState<String>(
-						c.getValue().replace("/","slash"));
+				//Need to check here for counts, too
+				IState state = null;
+				Double value = null;
+				try {
+					value = Double.parseDouble(c.getValue());
+					state = new RangeState<Double>(value, value);
+//					System.out.println("<DEBUG-StateFactory> Parse as quant. count: " + value.toString());
+				}
+				catch (NumberFormatException e) {
+					if(c.getValue().equals("/"))
+						state = new EmptyState<String>();
+					else
+						state = new SingletonState<String>(c.getValue().replace("/","slash"));
+				}
 				if(c.getModifier() != null)
-					singletonState.addModifier(c.getModifier().replace("\u00B1","plus_minus"));
+					state.addModifier(c.getModifier().replace("\u00B1","plus_minus"));
 				else
-					singletonState.addModifier(c.getModifier());
-				singletonState.addConstraint(c.getConstraint());
+					state.addModifier(c.getModifier());
+				state.addConstraint(c.getConstraint());
 				if(!c.getConstraintid().isEmpty())
-					singletonState.addConstraintId((Structure) c.getConstraintid().get(0));
-				return singletonState;
+					state.addConstraintId((Structure) c.getConstraintid().get(0));
+				return state;
 			}
 		}
 	}

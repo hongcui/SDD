@@ -59,6 +59,8 @@ public class DatasetLoader {
 		this.characterSetHandler = new CharacterSetHandler();
 		//character set handler subscribes to the dataset handler
 		datasetHandler.addObserver(characterSetHandler);
+		//dcHandler needs to subscribe to the characterSetHandler
+		characterSetHandler.addObserver(dcHandler);
 		
 		try {
 			this.sddContext = JAXBContext.newInstance(sdd.ObjectFactory.class);

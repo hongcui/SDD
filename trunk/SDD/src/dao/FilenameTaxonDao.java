@@ -206,6 +206,7 @@ public class FilenameTaxonDao extends BaseDao{
 				e.printStackTrace();
 			}
 		}
+		System.out.println(filenames);
 		return filenames;
 	}
 }

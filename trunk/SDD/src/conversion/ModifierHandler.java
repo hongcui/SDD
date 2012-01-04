@@ -5,6 +5,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+import sdd.AbstractRef;
 import sdd.DescriptiveConcept;
 import sdd.LabelText;
 import sdd.ModifierDef;
@@ -55,23 +56,28 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 			Structure structure = (Structure) arg;
 			//loop over each character name in the structure's char->state map
 			for(String charName : structure.getCharStateMap().keySet()) {
-				IState state = structure.getCharStateMap().get(charName);
-				if(state.getModifier() != null) {
-					ModifierDef modifierDef;
-					if(! seenModifiers.contains(state.getModifier())) {
-						modifierDef = sddFactory.createModifierDef();
-						modifierDef.setId(ID_PREFIX.concat(
-								state.getModifier().replace(" ", "_")));
-						Representation rep = 
-								ConversionUtil.makeRep(state.getModifier());
-						modifierDef.setRepresentation(rep);
-						//add to modifier sequence
-						dcModifiers.getModifiers().getModifier().add(modifierDef);
-						seenModifiers.add(state.getModifier());
-						publish(dcModifiers);
+				for(IState state : structure.getCharStateMap().get(charName)) {
+					if(state.getModifier() != null) {
+						ModifierDef modifierDef;
+						if(! seenModifiers.contains(state.getModifier())) {
+							modifierDef = sddFactory.createModifierDef();
+							modifierDef.setId(ID_PREFIX.concat(
+									state.getModifier().replace(" ", "_")));
+							Representation rep = 
+									ConversionUtil.makeRep(state.getModifier());
+							modifierDef.setRepresentation(rep);
+							//add to modifier sequence
+							dcModifiers.getModifiers().getModifier().add(modifierDef);
+							seenModifiers.add(state.getModifier());
+							publish(dcModifiers);
+						}
 					}
 				}
 			}
+		}
+		else if(observable instanceof CharacterSetHandler &&
+				arg instanceof AbstractRef) {
+			AbstractRef ref = (AbstractRef) arg;
 		}
 	}
 	

@@ -2,10 +2,14 @@ package conversion;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import sdd.AbstractRef;
+import sdd.ConceptStateDef;
+import sdd.ConceptStateSeq;
 import sdd.DescriptiveConcept;
 import sdd.DescriptiveConceptSet;
 import sdd.ObjectFactory;
@@ -26,12 +30,22 @@ public class DescriptiveConceptHandler extends Observable implements Handler, Ob
 	private static ObjectFactory sddFactory = new ObjectFactory();
 	private DescriptiveConceptSet dcSet;
 	private Map<String, DescriptiveConcept> dcsToAdd;
+	
+	public static final String DC_PREFIX = "dc_";
+	public static final String GLOBAL_STATE_ID = "dc_global_states";
 	/**
 	 * 
 	 */
 	public DescriptiveConceptHandler() {
 		this.dcSet = sddFactory.createDescriptiveConceptSet();
-		dcsToAdd = new HashMap<String, DescriptiveConcept>();
+		this.dcsToAdd = new HashMap<String, DescriptiveConcept>();
+		DescriptiveConcept dcGlobalStates = sddFactory.createDescriptiveConcept();
+		dcGlobalStates.setId(GLOBAL_STATE_ID);
+		Representation rep = ConversionUtil.makeRep("Descriptive concept describing states used globally.");
+		dcGlobalStates.setRepresentation(rep);
+		ConceptStateSeq conceptStates = sddFactory.createConceptStateSeq();
+		dcGlobalStates.setConceptStates(conceptStates);
+		this.dcsToAdd.put(GLOBAL_STATE_ID, dcGlobalStates);
 	}
 
 	/**
@@ -55,6 +69,25 @@ public class DescriptiveConceptHandler extends Observable implements Handler, Ob
 			//Update the modifier DC (which will be added to set later).
 			dcsToAdd.put(dcModifiers.getId(), dcModifiers);
 		}
+		else if(o instanceof CharacterSetHandler && 
+				arg instanceof AbstractRef) {
+			addToGlobalStates((AbstractRef)arg);
+		}
+	}
+
+	/**
+	 * Adds a new global state to the descriptive concepts.
+	 * @param ref
+	 */
+	private void addToGlobalStates(AbstractRef ref) {
+		ConceptStateDef conceptStateDef = sddFactory.createConceptStateDef();
+		conceptStateDef.setId(ref.getRef());
+		Representation rep = 
+				ConversionUtil.makeRep(ref.getRef().replace(CharacterSetHandler.STATE_ID_PREFIX, ""));
+		conceptStateDef.setRepresentation(rep);
+		List<ConceptStateDef> currentConceptStates = dcsToAdd.get(GLOBAL_STATE_ID).getConceptStates().getStateDefinition();
+		if(!currentConceptStates.contains(conceptStateDef))
+			currentConceptStates.add(conceptStateDef);
 	}
 
 	/**
@@ -69,7 +102,7 @@ public class DescriptiveConceptHandler extends Observable implements Handler, Ob
 			TreeNode<Structure> structureNode = iter.next();
 			Structure structure = structureNode.getElement();
 			DescriptiveConcept dc = sddFactory.createDescriptiveConcept();
-			dc.setId(structure.getName());
+			dc.setId(DC_PREFIX.concat(structure.getName()));
 			Representation rep = ConversionUtil.makeRep(structure.getName());
 			dc.setRepresentation(rep);
 			dcsToAdd.put(dc.getId(), dc);

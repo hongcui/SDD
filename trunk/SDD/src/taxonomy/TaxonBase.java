@@ -167,7 +167,7 @@ public class TaxonBase implements ITaxon {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void normalizeCharacterNameMaps(Map<String, IState> charStateMap,
+	private void normalizeCharacterNameMaps(Map<String, List<IState>> charStateMap,
 			Map<String, String> modifierMap) {
 		for(String s : charStateMap.keySet()) {
 			String normalized = normalizeString(s);
