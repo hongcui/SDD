@@ -1,10 +1,8 @@
 package conversion;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -14,10 +12,12 @@ import java.util.TreeMap;
 import javax.xml.namespace.QName;
 
 import sdd.AbstractCharacterDefinition;
+import sdd.AbstractRef;
 import sdd.CategoricalCharacter;
 import sdd.CharacterLocalStateDef;
 import sdd.CharacterSet;
 import sdd.CharacterStateSeq;
+import sdd.ConceptStateRef;
 import sdd.LabelText;
 import sdd.ObjectFactory;
 import sdd.QuantitativeCharMapping;
@@ -52,6 +52,8 @@ public class CharacterSetHandler extends Observable implements Handler,
 	private Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> matrix;
 	/** SDD CharacterSet that gets attached to main Dataset. */
 	private CharacterSet characterSet;
+	/** Keeps track of state references to be used for later characters. */
+	private Map<String, AbstractRef> stateRefs;
 
 	/**
 	 * Creates a new CharacterSetHandler.  Adds characters from 
@@ -61,6 +63,7 @@ public class CharacterSetHandler extends Observable implements Handler,
 		this.matrix = new HashMap<String, 
 				Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 		this.characterSet = sddFactory.createCharacterSet();
+		this.stateRefs = new TreeMap<String, AbstractRef>();
 	}
 
 	/**
@@ -108,8 +111,11 @@ public class CharacterSetHandler extends Observable implements Handler,
 				if(state instanceof SingletonState) {
 					//if it's some categorical character
 					if(stateValue instanceof String) {
-						character = makeSingleCategoricalCharState(localStateDef,
-								fullCharName, stateValue);
+						Map<CategoricalCharacter, CharacterLocalStateDef> charStatePair = 
+								makeSingleCategoricalCharState(fullCharName, 
+																stateValue);
+						character = charStatePair.keySet().iterator().next();
+						localStateDef = charStatePair.get(character);
 					}	//otherwise, it's numeric
 					else if(TypeUtil.isNumeric(stateValue)) {
 						character = makeSingleQuantitativeCharState(localStateDef,
@@ -146,15 +152,12 @@ public class CharacterSetHandler extends Observable implements Handler,
 
 	/**
 	 * Makes a single categorical character state definition.
-	 * @param character
-	 * @param localStateDef Will get initialized by the time this function returns.
 	 * @param fullCharName
 	 * @param stateValue
-	 * @param stateRep
 	 * @return sdd CategoricalCharacter for addition to CharacterSet.
 	 */
-	private CategoricalCharacter makeSingleCategoricalCharState(
-			CharacterLocalStateDef localStateDef, String fullCharName, Object stateValue) {
+	private Map<CategoricalCharacter, CharacterLocalStateDef> makeSingleCategoricalCharState(
+			String fullCharName, Object stateValue) {
 		Representation stateRep = 
 				ConversionUtil.makeRep(stateValue.toString());
 		String stateName = stateValue.toString();
@@ -162,12 +165,58 @@ public class CharacterSetHandler extends Observable implements Handler,
 		character.setId(fullCharName);
 		//need to start with an empty state seq in this categorical char
 		CharacterStateSeq stateSeq = sddFactory.createCharacterStateSeq();
-		((CategoricalCharacter) character).setStates(stateSeq);
-		localStateDef = sddFactory.createCharacterLocalStateDef();
+		character.setStates(stateSeq);
+		CharacterLocalStateDef localStateDef = sddFactory.createCharacterLocalStateDef();
 		localStateDef.setId(STATE_ID_PREFIX.concat(stateName));
 		localStateDef.setRepresentation(stateRep);
-		resolveGlobal(character, localStateDef, stateName);
-		return character;
+		attachStateCategorical(character, localStateDef, stateName);
+		Map<CategoricalCharacter, CharacterLocalStateDef> charStatePair =
+				new HashMap<CategoricalCharacter, CharacterLocalStateDef>();
+		charStatePair.put(character, localStateDef);
+		return charStatePair;
+	}
+	
+	/**
+	 * 
+	 * @param character The CategoricalCharacter to which a state will be attached.
+	 * @param localStateDef The local State definition (might end up being a State Reference).
+	 * @param stateName The name of the state.
+	 */
+	private void attachStateCategorical(CategoricalCharacter character,
+			CharacterLocalStateDef localStateDef, String stateName) {
+		//We first have to check if there's another character that uses this
+		//same state.  If we remove this character from the matrix, is there 
+		//another one that still maps to the state in question?  If so,
+		//we need this state globally.
+		Map<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>> copy = 
+				new HashMap<String, Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
+		copy.putAll(this.matrix);
+		boolean flaggedGlobal = false;
+		for(Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> taxonMap 
+				: copy.values()) {
+			taxonMap.remove(character);	//remove this character from each taxon mapping
+			for(Set<CharacterLocalStateDef> stateSet : taxonMap.values()) {
+				if(!flaggedGlobal && stateSet.contains(localStateDef)) {
+					System.out.println("<DEBUG>Found global state: " +
+							stateName);
+					//then we need this state globally
+					AbstractRef stateRef = stateRefs.get(stateName);
+					character.getStates().
+						getStateDefinitionOrStateReference().add(stateRef);
+					flaggedGlobal = true;
+					break;
+				}
+			}
+		}
+		if(!flaggedGlobal && !stateRefs.containsKey(stateName)) {
+			//haven't seen this before, stays as a local state def.
+			character.getStates().
+				getStateDefinitionOrStateReference().add(localStateDef);
+			//make a ref for this in case we see it later
+			AbstractRef stateRef = sddFactory.createConceptStateRef();
+			stateRef.setRef(localStateDef.getId());
+			stateRefs.put(stateName, stateRef);
+		}
 	}
 	
 	/**
@@ -203,12 +252,6 @@ public class CharacterSetHandler extends Observable implements Handler,
 		putMappingAndRangeOnQuantitativeCharacter(character, state);
 		localStateDef = new QuantitativeStateDef(character.getId(), character);
 		return character;
-	}
-
-	private void resolveGlobal(AbstractCharacterDefinition character,
-			CharacterLocalStateDef localStateDef, String stateName) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**
