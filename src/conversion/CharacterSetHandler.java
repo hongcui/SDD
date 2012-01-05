@@ -18,6 +18,8 @@ import sdd.CategoricalCharacter;
 import sdd.CharacterLocalStateDef;
 import sdd.CharacterSet;
 import sdd.CharacterStateSeq;
+import sdd.ConceptStateDef;
+import sdd.ConceptStateRef;
 import sdd.LabelText;
 import sdd.ObjectFactory;
 import sdd.QuantitativeCharMapping;
@@ -54,6 +56,8 @@ public class CharacterSetHandler extends Observable implements Handler,
 	private CharacterSet characterSet;
 	/** Keeps track of state references to be used for later characters. */
 	private Map<String, AbstractRef> stateRefs;
+	/** Keeps track of global states from Descriptive Concept. */
+	private Map<String, ConceptStateRef> globalStates;
 
 	/**
 	 * Creates a new CharacterSetHandler.  Adds characters from 
@@ -64,6 +68,7 @@ public class CharacterSetHandler extends Observable implements Handler,
 				Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>>>();
 		this.characterSet = sddFactory.createCharacterSet();
 		this.stateRefs = new TreeMap<String, AbstractRef>();
+		this.globalStates = new HashMap<String, ConceptStateRef>();
 	}
 	
 	/**
@@ -100,6 +105,15 @@ public class CharacterSetHandler extends Observable implements Handler,
 			handler.getDataset().setCharacters(characterSet);
 			TreeNode<ITaxon> node = (TreeNode<ITaxon>) arg;
 			addCharactersToCharacterSet(node);
+		}
+		if(observable instanceof DescriptiveConceptHandler &&
+				arg instanceof ConceptStateDef) {
+			//getting passed back a global state from DCHandler
+			//add it to the global states mapping
+			ConceptStateDef globalStateDef = (ConceptStateDef) arg;
+			ConceptStateRef globalStateRef = sddFactory.createConceptStateRef();
+			globalStateRef.setRef(globalStateDef.getId());
+			globalStates.put(globalStateDef.getId(), globalStateRef);
 		}
 	}
 
@@ -346,32 +360,40 @@ public class CharacterSetHandler extends Observable implements Handler,
 		//make this a TreeMap to get characters listed alphabetically.
 		Map<String, AbstractCharacterDefinition> charsToAdd =
 				new TreeMap<String, AbstractCharacterDefinition>();
+		
 		for(String taxon : matrix.keySet()) {
 			Map<AbstractCharacterDefinition, Set<CharacterLocalStateDef>> charStateMap = matrix.get(taxon);
 			for(AbstractCharacterDefinition charDef : charStateMap.keySet()) {
-				if(charDef.getId().equals("stem_architecture"))
-					System.out.println(charDef);
 				if(!charsToAdd.containsKey(charDef.getId()))
 						charsToAdd.put(charDef.getId(), charDef);
 				else {	//merge categorical characters
 					AbstractCharacterDefinition character = 
 							charsToAdd.get(charDef.getId());
-//					System.out.println("Merging character: " + character);
 					if(character instanceof CategoricalCharacter) {
 						CategoricalCharacter tempChar = (CategoricalCharacter) charDef;
 						mergeWithoutDuplicates((CategoricalCharacter) character, tempChar);
 					}
+					else if(character instanceof QuantitativeCharacter) {
+						QuantitativeCharacter tempChar = (QuantitativeCharacter) charDef;
+						mergeWithoutDuplicates((QuantitativeCharacter) character, tempChar);
+					}
 				}
+				//now resolve global states of Categorical Characters
+				AbstractCharacterDefinition character =
+						charsToAdd.get(charDef.getId());
+				if(character instanceof CategoricalCharacter)
+					resolveGlobalStates((CategoricalCharacter)character);
 			}
 		}
 		characterSet.getCategoricalCharacterOrQuantitativeCharacterOrTextCharacter().
 			addAll(charsToAdd.values());
 	}
-	
+
 	/**
 	 * Merges a temp character's states into a "keeper" character's states,
 	 * disallowing duplicate refs or duplicate local state defs (task of removing
-	 * defs from state set when appropriate state reference exists).
+	 * defs from state set when appropriate state reference exists belongs to
+	 * different function).
 	 * @param keeper
 	 * @param temp
 	 */
@@ -382,6 +404,58 @@ public class CharacterSetHandler extends Observable implements Handler,
 			if(!statesToKeep.contains(tempState))
 				statesToKeep.add(tempState);
 		}
+	}
+	
+	/**
+	 * Merges a temp quant. character's state into the keeper quant. characters.
+	 * Does this by expanding lower and upper range as far as necessary for
+	 * both characters.
+	 * @param keeper
+	 * @param temp
+	 */
+	private void mergeWithoutDuplicates(QuantitativeCharacter keeper, QuantitativeCharacter temp) {
+		List<QuantitativeCharMapping> keeperMappings = keeper.getMappings().getMapping();
+		List<QuantitativeCharMapping> tempMappings = temp.getMappings().getMapping();
+		Double min = Double.POSITIVE_INFINITY;
+		Double max = Double.NEGATIVE_INFINITY;
+		for(QuantitativeCharMapping mapping : keeperMappings) {
+			if(mapping.getFrom().getLower() < min)
+				min = mapping.getFrom().getLower();
+			if(mapping.getFrom().getUpper() > max)
+				max = mapping.getFrom().getUpper();
+		}
+		for(QuantitativeCharMapping mapping : tempMappings) {
+			if(mapping.getFrom().getLower() < min)
+				min = mapping.getFrom().getLower();
+			if(mapping.getFrom().getUpper() > max)
+				max = mapping.getFrom().getUpper();
+		}
+		keeperMappings.get(0).getFrom().setLower(min);
+		keeperMappings.get(0).getFrom().setUpper(max);
+	}
+	
+	/**
+	 * 
+	 * @param character
+	 */
+	private void resolveGlobalStates(CategoricalCharacter character) {
+		List<Object> states = character.getStates().
+				getStateDefinitionOrStateReference();
+		Set<Object> statesToKeep = new HashSet<Object>();
+		for(Object state : states) {
+			if(state instanceof CharacterLocalStateDef) {
+				CharacterLocalStateDef stateDef = (CharacterLocalStateDef) state;
+				if(globalStates.containsKey(stateDef.getId()))
+					statesToKeep.add(globalStates.get(stateDef.getId()));
+				else
+					statesToKeep.add(stateDef);
+			}
+			else if(state instanceof ConceptStateRef) {
+				statesToKeep.add(state);
+			}
+		}
+		states.clear();
+		states.addAll(statesToKeep);
 	}
 
 	/**

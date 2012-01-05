@@ -88,6 +88,7 @@ public class DescriptiveConceptHandler extends Observable implements Handler, Ob
 		List<ConceptStateDef> currentConceptStates = dcsToAdd.get(GLOBAL_STATE_ID).getConceptStates().getStateDefinition();
 		if(!currentConceptStates.contains(conceptStateDef))
 			currentConceptStates.add(conceptStateDef);
+		publish(conceptStateDef);
 	}
 
 	/**
@@ -118,6 +119,11 @@ public class DescriptiveConceptHandler extends Observable implements Handler, Ob
 	public void publish(Structure structure) {
 		this.setChanged();
 		this.notifyObservers(structure);
+	}
+	
+	private void publish(ConceptStateDef conceptStateDef) {
+		this.setChanged();
+		this.notifyObservers(conceptStateDef);		
 	}
 
 	/** 

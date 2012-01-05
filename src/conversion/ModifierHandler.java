@@ -62,7 +62,8 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 						if(! seenModifiers.contains(state.getModifier())) {
 							modifierDef = sddFactory.createModifierDef();
 							modifierDef.setId(ID_PREFIX.concat(
-									state.getModifier().replace(" ", "_")));
+									state.getModifier().replace(" ", "_").
+									replace(";", "")));
 							Representation rep = 
 									ConversionUtil.makeRep(state.getModifier());
 							modifierDef.setRepresentation(rep);
