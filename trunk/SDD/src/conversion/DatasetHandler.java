@@ -34,6 +34,7 @@ public class DatasetHandler extends Observable implements Handler {
 		this.hierarchy = hierarchy;
 		this.sddFactory = new sdd.ObjectFactory();
 		this.dataset = sddFactory.createDataset();
+		this.dataset.setLang("en-us");
 		this.taxa = new LinkedList<ITaxon>();
 	}
 	

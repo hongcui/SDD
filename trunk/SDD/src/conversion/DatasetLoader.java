@@ -10,7 +10,7 @@ import sdd.Datasets;
 import taxonomy.TaxonHierarchy;
 
 /**
- * This is the entry class for converting SDD documents.
+ * This is the entry-point class for converting SDD documents.
  * @author alex
  *
  */
@@ -59,6 +59,8 @@ public class DatasetLoader {
 		this.characterSetHandler = new CharacterSetHandler();
 		//character set handler subscribes to the dataset handler
 		datasetHandler.addObserver(characterSetHandler);
+		//the CSHandler needs to subscribe to DCHandler to learn of global concept state defs
+		dcHandler.addObserver(characterSetHandler);
 		//dcHandler needs to subscribe to the characterSetHandler
 		characterSetHandler.addObserver(dcHandler);
 		
@@ -78,8 +80,8 @@ public class DatasetLoader {
 	 */
 	public void taxonHierarchyToSDD(String filename) {
 		this.datasetsHandler.handle();
-		this.datasetHandler.handle();
-		this.dcHandler.handle();
+		this.datasetHandler.handle();	//this is the point at which most parsing/conversion happens
+		this.dcHandler.handle();	//from here on, just plugging finished products into sets
 		this.characterSetHandler.handle();
 		Datasets root = this.datasetsHandler.getDatasets();
 		root.getDataset().add(this.datasetHandler.getDataset());
