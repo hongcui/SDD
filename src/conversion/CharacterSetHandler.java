@@ -89,6 +89,19 @@ public class CharacterSetHandler extends Observable implements Handler,
 		this.setChanged();
 		this.notifyObservers(localStateDef);		
 	}
+	
+	/**
+	 * Notify CharacterTreeHandler of character and associated data.
+	 * @param node
+	 * @param character
+	 * @param structureNode
+	 */
+	private void publish(TreeNode<ITaxon> node,
+			AbstractCharacterDefinition character,
+			TreeNode<Structure> structureNode) {
+		this.setChanged();
+		this.notifyObservers(new TaxonCharacterStructureTriple(node, character, structureNode));
+	}
 
 	/**
 	 * This updates when the DatasetHandler processes a new ITaxon.
@@ -183,6 +196,7 @@ public class CharacterSetHandler extends Observable implements Handler,
 						charStateDescMap.put(character, new HashSet<CharacterLocalStateDef>());
 					charStateDescMap.get(character).add(localStateDef);
 				}
+				publish(node, character, structureNode);
 			}
 		}
 	}

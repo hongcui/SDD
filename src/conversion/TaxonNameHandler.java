@@ -35,7 +35,7 @@ public class TaxonNameHandler extends Observable implements Observer, Handler {
 	
 	/**
 	 * Called when a new Taxon Name has been added.  TaxonHierarchyObserver
-	 * is subscribed to this.
+	 * is subscribed to this, as well as the CTHandler.
 	 */
 	public void publish(Object arg) {
 		this.setChanged();
@@ -83,6 +83,7 @@ public class TaxonNameHandler extends Observable implements Observer, Handler {
 		taxonNameCore.setRepresentation(rep);
 		taxonNameCore.setRank(taxonomicRank);
 		this.taxonNameSet.getTaxonName().add(taxonNameCore);
+		publish(taxonNameCore);
 	}
 
 	@Override

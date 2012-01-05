@@ -25,6 +25,7 @@ public class DatasetLoader {
 	private DescriptiveConceptHandler dcHandler;
 	private ModifierHandler modifierHandler;
 	private CharacterSetHandler characterSetHandler;
+	private CharacterTreeHandler characterTreeHandler;
 	
 	/**
 	 * Constructs new entry-class object.
@@ -64,6 +65,16 @@ public class DatasetLoader {
 		//dcHandler needs to subscribe to the characterSetHandler
 		characterSetHandler.addObserver(dcHandler);
 		
+		this.characterTreeHandler = new CharacterTreeHandler();
+		//needs to subscribe to DatasetHandler to attach charTreeSet
+		datasetHandler.addObserver(characterTreeHandler);
+		//this needs to subscribe to the TaxonNameHandler to build new, empty trees.
+		taxonNameHandler.addObserver(characterTreeHandler);
+		//needs to see DCHandler to add concept nodes to the trees
+		dcHandler.addObserver(characterTreeHandler);
+		//needs to hear from CharacterSetHandler to add char nodes to trees
+		characterSetHandler.addObserver(characterTreeHandler);
+		
 		try {
 			this.sddContext = JAXBContext.newInstance(sdd.ObjectFactory.class);
 		} catch (JAXBException e) {
@@ -81,7 +92,7 @@ public class DatasetLoader {
 	public void taxonHierarchyToSDD(String filename) {
 		this.datasetsHandler.handle();
 		this.datasetHandler.handle();	//this is the point at which most parsing/conversion happens
-		this.dcHandler.handle();	//from here on, just plugging finished products into sets
+		this.dcHandler.handle();	//from here on, just plugging finished products into sets (or post-processing)
 		this.characterSetHandler.handle();
 		Datasets root = this.datasetsHandler.getDatasets();
 		root.getDataset().add(this.datasetHandler.getDataset());

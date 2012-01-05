@@ -108,9 +108,11 @@ public class DescriptiveConceptHandler extends Observable implements Handler, Ob
 			dc.setRepresentation(rep);
 			dcsToAdd.put(dc.getId(), dc);
 			publish(structure);	//Tell ModifierHandler about this structure.
+			publish(new TaxonConceptStructureTriple(node, dc, structureNode));
 		}
 	}
 	
+
 	/**
 	 * This should notify the ModifierHandler when a new DescriptiveConcept
 	 * has been encountered.
@@ -124,6 +126,15 @@ public class DescriptiveConceptHandler extends Observable implements Handler, Ob
 	private void publish(ConceptStateDef conceptStateDef) {
 		this.setChanged();
 		this.notifyObservers(conceptStateDef);		
+	}
+	
+	/**
+	 * Notify the CharacterTreeHandler of a new descriptive concept.
+	 * @param taxonConceptPair
+	 */
+	private void publish(TaxonConceptStructureTriple taxonConceptPair) {
+		this.setChanged();
+		this.notifyObservers(taxonConceptPair);
 	}
 
 	/** 
