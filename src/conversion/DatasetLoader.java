@@ -26,6 +26,7 @@ public class DatasetLoader {
 	private ModifierHandler modifierHandler;
 	private CharacterSetHandler characterSetHandler;
 	private CharacterTreeHandler characterTreeHandler;
+	private CodedDescriptionHandler codedDescriptionHandler;
 	
 	/**
 	 * Constructs new entry-class object.
@@ -77,6 +78,11 @@ public class DatasetLoader {
 		//needs to hear from CharacterSetHandler to add char nodes to trees
 		characterSetHandler.addObserver(characterTreeHandler);
 		
+		this.codedDescriptionHandler = new CodedDescriptionHandler();
+		//coded desc handler needs to hear about new taxon names and 
+		//create new descriptions for them
+		taxonNameHandler.addObserver(codedDescriptionHandler);
+		
 		try {
 			this.sddContext = JAXBContext.newInstance(sdd.ObjectFactory.class);
 		} catch (JAXBException e) {
@@ -96,9 +102,15 @@ public class DatasetLoader {
 		this.datasetHandler.handle();	//this is the point at which most parsing/conversion happens
 		this.dcHandler.handle();	//from here on, just plugging finished products into sets (or post-processing)
 		this.characterSetHandler.handle();
+		
 		//at this point, we have all of the Descriptive Terminology
 		//The easiest thing to do now is just grab the matrix from the
-		//CharacterSetHandler and insert a CodedDescription
+		//CharacterSetHandler and insert a CodedDescription via the CDHandler
+		this.codedDescriptionHandler.addSummaryDataToCodedDescriptions(
+				characterSetHandler.getMatrix(), 
+				modifierHandler.getMatrixModifiers());
+		
+		//now just marshall the datasets out
 		Datasets root = this.datasetsHandler.getDatasets();
 		root.getDataset().add(this.datasetHandler.getDataset());
 		
