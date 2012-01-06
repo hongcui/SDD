@@ -285,10 +285,10 @@ public class CharacterSetHandler extends Observable implements Handler,
 			stateRef.setRef(localStateDef.getId());
 			stateRefs.put(stateName, stateRef);
 		}
-//		else if(!flaggedGlobal){
-//			if(!currentStates.contains(stateRefs.get(stateName)))
-//				currentStates.add(stateRefs.get(stateName));
-//		}
+		else if(!flaggedGlobal){
+			if(!currentStates.contains(stateRefs.get(stateName)))
+				currentStates.add(stateRefs.get(stateName));
+		}
 	}
 
 	/**
