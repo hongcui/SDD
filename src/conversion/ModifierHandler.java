@@ -1,11 +1,12 @@
 package conversion;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
-import sdd.AbstractRef;
+import sdd.AbstractCharacterDefinition;
+import sdd.CharacterLocalStateDef;
 import sdd.DescriptiveConcept;
 import sdd.LabelText;
 import sdd.ModifierDef;
@@ -14,6 +15,7 @@ import sdd.Representation;
 import states.IState;
 import util.ConversionUtil;
 import annotationSchema.jaxb.Structure;
+import conversion.datapassing.TaxonCharacterStateTriple;
 
 /**
  * Class that handles the modifiers DescriptiveConcept.
@@ -27,11 +29,15 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 	private static final String ID_PREFIX = "mod_";
 	private DescriptiveConcept dcModifiers;
 	private static sdd.ObjectFactory sddFactory = new sdd.ObjectFactory();
-	private Set<String> seenModifiers;
+	private Map<String, ModifierDef> seenModifiers;
+	/** Maps matrix taxon-character-state "triples" to modifier defs. */
+	private Map<TaxonCharacterStateTriple, ModifierDef> matrixModifiers;
 	
 	public ModifierHandler() {
 		this.dcModifiers = sddFactory.createDescriptiveConcept();
-		this.seenModifiers = new HashSet<String>();
+		this.seenModifiers = new HashMap<String, ModifierDef>();
+		this.matrixModifiers = 
+				new HashMap<TaxonCharacterStateTriple, ModifierDef>();
 		ModifierSeq modifierSeq = sddFactory.createModifierSeq();
 		dcModifiers.setModifiers(modifierSeq);
 		Representation repModifiers = sddFactory.createRepresentation();
@@ -49,6 +55,7 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 	 * @param arg The new structure.
 	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void update(Observable observable, Object arg) {
 		if(observable instanceof DescriptiveConceptHandler && 
@@ -59,7 +66,7 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 				for(IState state : structure.getCharStateMap().get(charName)) {
 					if(state.getModifier() != null) {
 						ModifierDef modifierDef;
-						if(! seenModifiers.contains(state.getModifier())) {
+						if(! seenModifiers.containsKey(state.getModifier())) {
 							modifierDef = sddFactory.createModifierDef();
 							modifierDef.setId(ID_PREFIX.concat(
 									state.getModifier().replace(" ", "_").
@@ -69,7 +76,7 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 							modifierDef.setRepresentation(rep);
 							//add to modifier sequence
 							dcModifiers.getModifiers().getModifier().add(modifierDef);
-							seenModifiers.add(state.getModifier());
+							seenModifiers.put(state.getModifier(), modifierDef);
 							publish(dcModifiers);
 						}
 					}
@@ -77,8 +84,16 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 			}
 		}
 		else if(observable instanceof CharacterSetHandler &&
-				arg instanceof AbstractRef) {
-			AbstractRef ref = (AbstractRef) arg;
+				arg instanceof Map) {
+			//then we're getting passed a triple->IState map
+			IState state =
+					((Map<TaxonCharacterStateTriple, IState>) arg).values().iterator().next();
+			if(state.getModifier() != null) {
+				TaxonCharacterStateTriple triple =
+						((Map<TaxonCharacterStateTriple, IState>) arg).keySet().iterator().next();
+				ModifierDef modDef = seenModifiers.get(state.getModifier());
+				matrixModifiers.put(triple, modDef);
+			}
 		}
 	}
 	
@@ -99,6 +114,20 @@ public class ModifierHandler extends Observable implements Handler, Observer {
 	@Override
 	public void handle() {
 
+	}
+
+	/**
+	 * @return the seenModifiers
+	 */
+	public Map<String, ModifierDef> getSeenModifiers() {
+		return seenModifiers;
+	}
+
+	/**
+	 * @return the matrixModifiers
+	 */
+	public Map<TaxonCharacterStateTriple, ModifierDef> getMatrixModifiers() {
+		return matrixModifiers;
 	}
 
 }

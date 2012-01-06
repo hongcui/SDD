@@ -64,6 +64,8 @@ public class DatasetLoader {
 		dcHandler.addObserver(characterSetHandler);
 		//dcHandler needs to subscribe to the characterSetHandler
 		characterSetHandler.addObserver(dcHandler);
+		//modifier handler needs to see triple->modifier data
+		characterSetHandler.addObserver(modifierHandler);
 		
 		this.characterTreeHandler = new CharacterTreeHandler();
 		//needs to subscribe to DatasetHandler to attach charTreeSet
@@ -94,6 +96,9 @@ public class DatasetLoader {
 		this.datasetHandler.handle();	//this is the point at which most parsing/conversion happens
 		this.dcHandler.handle();	//from here on, just plugging finished products into sets (or post-processing)
 		this.characterSetHandler.handle();
+		//at this point, we have all of the Descriptive Terminology
+		//The easiest thing to do now is just grab the matrix from the
+		//CharacterSetHandler and insert a CodedDescription
 		Datasets root = this.datasetsHandler.getDatasets();
 		root.getDataset().add(this.datasetHandler.getDataset());
 		

@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import conversion.datapassing.TaxonConceptStructureTriple;
+
 import sdd.AbstractRef;
 import sdd.ConceptStateDef;
 import sdd.ConceptStateSeq;
