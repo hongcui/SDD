@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import conversion.datapassing.TaxonCharacterStructureTriple;
+import conversion.datapassing.TaxonConceptStructureTriple;
+
 import sdd.AbstractCharacterDefinition;
 import sdd.CharTreeAbstractNode;
 import sdd.CharTreeCharacter;

@@ -36,6 +36,8 @@ import util.ConversionUtil;
 import util.QuantitativeStateDef;
 import util.TypeUtil;
 import annotationSchema.jaxb.Structure;
+import conversion.datapassing.TaxonCharacterStateTriple;
+import conversion.datapassing.TaxonCharacterStructureTriple;
 
 /**
  * This class handles the addition of characters from a char name->state mapping
@@ -82,15 +84,6 @@ public class CharacterSetHandler extends Observable implements Handler,
 	}
 	
 	/**
-	 * Notifies the Modifier Handler.
-	 * @param localStateDef
-	 */
-	private void publish(CharacterLocalStateDef localStateDef) {
-		this.setChanged();
-		this.notifyObservers(localStateDef);		
-	}
-	
-	/**
 	 * Notify CharacterTreeHandler of character and associated data.
 	 * @param node
 	 * @param character
@@ -101,6 +94,23 @@ public class CharacterSetHandler extends Observable implements Handler,
 			TreeNode<Structure> structureNode) {
 		this.setChanged();
 		this.notifyObservers(new TaxonCharacterStructureTriple(node, character, structureNode));
+	}
+	
+	/**
+	 * Notify the ModifierHandler of any states requiring a modifier.
+	 * @param name
+	 * @param character
+	 * @param localStateDef
+	 */
+	private void publish(String name, AbstractCharacterDefinition character,
+			CharacterLocalStateDef localStateDef, IState state) {
+		TaxonCharacterStateTriple triple = 
+				new TaxonCharacterStateTriple(name, character, localStateDef);
+		Map<TaxonCharacterStateTriple, IState> possibleModifier =
+				new HashMap<TaxonCharacterStateTriple, IState>();
+		possibleModifier.put(triple, state);
+		this.setChanged();
+		this.notifyObservers(possibleModifier);
 	}
 
 	/**
@@ -162,7 +172,8 @@ public class CharacterSetHandler extends Observable implements Handler,
 							if(character == null)
 								character = makeSingleCategoricalCharacter(fullCharName);
 							localStateDef = makeSingleCategoricalState(stateValue);
-							attachStateCategorical((CategoricalCharacter) character, localStateDef, stateName);
+							attachStateCategorical((CategoricalCharacter) character, 
+									localStateDef, stateName);
 						}	//otherwise, it's numeric
 						else if(TypeUtil.isNumeric(stateValue)) {
 							if(character == null)
@@ -195,7 +206,9 @@ public class CharacterSetHandler extends Observable implements Handler,
 					if(!charStateDescMap.containsKey(character))
 						charStateDescMap.put(character, new HashSet<CharacterLocalStateDef>());
 					charStateDescMap.get(character).add(localStateDef);
+					publish(node.getElement().getName(), character, localStateDef, state);
 				}
+				//publish to CharacterTreeHandler
 				publish(node, character, structureNode);
 			}
 		}
@@ -267,7 +280,6 @@ public class CharacterSetHandler extends Observable implements Handler,
 			//haven't seen this before, stays as a local state def.
 			if(!currentStates.contains(localStateDef))
 				currentStates.add(localStateDef);
-			publish(localStateDef);
 			//make a ref for this in case we see it later
 			AbstractRef stateRef = sddFactory.createConceptStateRef();
 			stateRef.setRef(localStateDef.getId());
