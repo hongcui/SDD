@@ -124,64 +124,64 @@ public class RDFConverter {
 	 */
 	@SuppressWarnings({ "rawtypes" })
 	private void addCharactersToModel(Model taxonModel, Resource subject,
-			Map<String, IState> map) {
+			Map<String, List<IState>> map) {
 		for(String s : map.keySet()) {
-			IState state = map.get(s);
-			if(state instanceof RangeState) {	//break this into two char names
-				Property predicateFrom = 
-					new PropertyImpl(rdfProps.getProperty("prefix.character")
-							.concat(s.concat("_from")));
-				Property predicateTo = 
-					new PropertyImpl(rdfProps.getProperty("prefix.character")
-							.concat(s.concat("_to")));
-				Literal stateObjectFrom = taxonModel.createTypedLiteral(state.getMap().get("from value"));
-				Statement stmtFrom = new StatementImpl(subject, predicateFrom, stateObjectFrom);
-				taxonModel.add(stmtFrom);
-				Literal stateObjectTo = taxonModel.createTypedLiteral(state.getMap().get("to value"));
-				Statement stmtTo = new StatementImpl(subject, predicateTo, stateObjectTo);
-				taxonModel.add(stmtTo);
-				if(state.getModifier() != null) {
-					addModifier(taxonModel, stmtFrom, state);
-					addModifier(taxonModel, stmtTo, state);
+			for(IState state : map.get(s)) {
+				if(state instanceof RangeState) {	//break this into two char names
+					Property predicateFrom = 
+						new PropertyImpl(rdfProps.getProperty("prefix.character")
+								.concat(s.concat("_from")));
+					Property predicateTo = 
+						new PropertyImpl(rdfProps.getProperty("prefix.character")
+								.concat(s.concat("_to")));
+					Literal stateObjectFrom = taxonModel.createTypedLiteral(state.getMap().get("from value"));
+					Statement stmtFrom = new StatementImpl(subject, predicateFrom, stateObjectFrom);
+					taxonModel.add(stmtFrom);
+					Literal stateObjectTo = taxonModel.createTypedLiteral(state.getMap().get("to value"));
+					Statement stmtTo = new StatementImpl(subject, predicateTo, stateObjectTo);
+					taxonModel.add(stmtTo);
+					if(state.getModifier() != null) {
+//						addModifier(taxonModel, stmtFrom, state);
+//						addModifier(taxonModel, stmtTo, state);
+					}
+					if(state.getConstraint() != null) {
+						addConstraint(taxonModel, stmtFrom, state);
+						addConstraint(taxonModel, stmtTo, state);
+					}
+					if(state.getFromUnit() != null) {
+						Property unitPredicate =
+							new PropertyImpl(rdfProps.getProperty("prefix.property")
+									.concat(s + "_from_unit"));
+						taxonModel.add(subject, unitPredicate,
+								taxonModel.createTypedLiteral(state.getFromUnit()));
+					}
+					if(state.getToUnit() != null) {
+						Property unitPredicate =
+							new PropertyImpl(rdfProps.getProperty("prefix.property")
+									.concat(s + "_to_unit"));
+						taxonModel.add(subject, unitPredicate,
+								taxonModel.createTypedLiteral(state.getToUnit()));
+					}
 				}
-				if(state.getConstraint() != null) {
-					addConstraint(taxonModel, stmtFrom, state);
-					addConstraint(taxonModel, stmtTo, state);
-				}
-				if(state.getFromUnit() != null) {
-					Property unitPredicate =
-						new PropertyImpl(rdfProps.getProperty("prefix.property")
-								.concat(s + "_from_unit"));
-					taxonModel.add(subject, unitPredicate,
-							taxonModel.createTypedLiteral(state.getFromUnit()));
-				}
-				if(state.getToUnit() != null) {
-					Property unitPredicate =
-						new PropertyImpl(rdfProps.getProperty("prefix.property")
-								.concat(s + "_to_unit"));
-					taxonModel.add(subject, unitPredicate,
-							taxonModel.createTypedLiteral(state.getToUnit()));
+				else {
+					Property predicate = 
+						new PropertyImpl(rdfProps.getProperty("prefix.character").concat(s));
+					Statement stmt = new StatementImpl(subject, predicate,
+							taxonModel.createTypedLiteral(state.getMap().get("value")));
+					taxonModel.add(stmt);
+					if(state.getModifier() != null)
+//						addModifier(taxonModel, stmt, state);
+					if(state.getConstraint() != null)
+						addConstraint(taxonModel, stmt, state);
+					if(state.getFromUnit() != null) {
+						Property unitPredicate =
+							new PropertyImpl(rdfProps.getProperty("prefix.property")
+									.concat(s + "_unit"));
+						taxonModel.add(subject, unitPredicate,
+								taxonModel.createTypedLiteral(state.getFromUnit()));
+					}
 				}
 			}
-			else {
-				Property predicate = 
-					new PropertyImpl(rdfProps.getProperty("prefix.character").concat(s));
-				Statement stmt = new StatementImpl(subject, predicate,
-						taxonModel.createTypedLiteral(state.getMap().get("value")));
-				taxonModel.add(stmt);
-				if(state.getModifier() != null)
-					addModifier(taxonModel, stmt, state);
-				if(state.getConstraint() != null)
-					addConstraint(taxonModel, stmt, state);
-				if(state.getFromUnit() != null) {
-					Property unitPredicate =
-						new PropertyImpl(rdfProps.getProperty("prefix.property")
-								.concat(s + "_unit"));
-					taxonModel.add(subject, unitPredicate,
-							taxonModel.createTypedLiteral(state.getFromUnit()));
-				}
-			}
-			
 		}
 	}
 
