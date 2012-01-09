@@ -26,7 +26,7 @@ public class TestRDFConverter {
 	public void testTaxonToRDF() {
 		TaxonHierarchy h = new TaxonHierarchy(parser.parseTaxon());
 		RDFConverter rdfConverter = new RDFConverter(h);
-		rdfConverter.taxonToRDF(h.getHierarchy().getRoot().getElement(), "output/cirsium.xml");
+		rdfConverter.taxonToRDF(h.getHierarchy().getRoot().getElement(), "output/cirsium-rdf.xml");
 	}
 
 }
