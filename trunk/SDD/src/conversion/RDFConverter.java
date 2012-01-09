@@ -7,12 +7,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import states.IState;
 import states.RangeState;
+import states.SingletonState;
 import taxonomy.ITaxon;
 import taxonomy.TaxonHierarchy;
 import tree.TreeNode;
@@ -141,8 +143,8 @@ public class RDFConverter {
 					Statement stmtTo = new StatementImpl(subject, predicateTo, stateObjectTo);
 					taxonModel.add(stmtTo);
 					if(state.getModifier() != null) {
-//						addModifier(taxonModel, stmtFrom, state);
-//						addModifier(taxonModel, stmtTo, state);
+						addModifier(taxonModel, stmtFrom, state);
+						addModifier(taxonModel, stmtTo, state);
 					}
 					if(state.getConstraint() != null) {
 						addConstraint(taxonModel, stmtFrom, state);
@@ -170,7 +172,7 @@ public class RDFConverter {
 							taxonModel.createTypedLiteral(state.getMap().get("value")));
 					taxonModel.add(stmt);
 					if(state.getModifier() != null)
-//						addModifier(taxonModel, stmt, state);
+						addModifier(taxonModel, stmt, state);
 					if(state.getConstraint() != null)
 						addConstraint(taxonModel, stmt, state);
 					if(state.getFromUnit() != null) {
@@ -220,8 +222,8 @@ public class RDFConverter {
 	}
 
 	/**
-	 * Attach a modifier to the RDF model.  This means making a reified statement, for which 'modifier' is the predicate
-	 * and the value of modifier is the object.
+	 * Attach a modifier to the RDF model.  This means making a reified statement, 
+	 * for which 'modifier' is the predicate and the value of modifier is the object.
 	 * @param taxonModel
 	 * @param statement The statement to reify.
 	 * @param state
@@ -229,12 +231,15 @@ public class RDFConverter {
 	private void addModifier(Model taxonModel, Statement statement,	IState state) {
 		Property modifierPredicate = new PropertyImpl(rdfProps.getProperty("prefix.modifier"));
 		Literal modifier = taxonModel.createTypedLiteral(state.getModifier());
-		taxonModel.add(taxonModel.createReifiedStatement(
-				rdfProps.getProperty("prefix.reified").
-					concat(statement.getSubject().getLocalName()).
-					concat("_"+statement.getPredicate().getLocalName()), statement),
+		String statementString = rdfProps.getProperty("prefix.reified").
+			concat(statement.getSubject().getLocalName()).
+			concat("_"+statement.getPredicate().getLocalName().
+			concat("_"+state.getMap().get(SingletonState.KEY).toString()));
+		Statement modifierStatement = new StatementImpl(
+				taxonModel.createReifiedStatement(statementString, statement),
 				modifierPredicate,
-				modifier);	
+				modifier);
+		taxonModel.add(modifierStatement);
 		taxonModel.remove(statement);
 	}
 
