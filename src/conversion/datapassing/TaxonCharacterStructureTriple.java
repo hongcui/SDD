@@ -1,6 +1,5 @@
 package conversion.datapassing;
 
-import com.sun.net.httpserver.Filter.Chain;
 
 import sdd.AbstractCharacterDefinition;
 import taxonomy.ITaxon;

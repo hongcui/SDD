@@ -30,7 +30,7 @@ import annotationSchema.jaxb.Structure;
  */
 public class TaxonCharacterMatrix {
 
-	private Map<String, Map<ITaxon, IState>> table;
+	private Map<String, Map<ITaxon, List<IState>>> table;
 	private TaxonHierarchy hierarchy;
 	
 	public TaxonCharacterMatrix(TaxonHierarchy th) {
@@ -42,8 +42,8 @@ public class TaxonCharacterMatrix {
 	 * Fills in a table that represents a taxon-by-character matrix.
 	 * @return
 	 */
-	private Map<String, Map<ITaxon, IState>> createTable() {
-		Map<String, Map<ITaxon, IState>> map = new TreeMap<String, Map<ITaxon,IState>>();
+	private Map<String, Map<ITaxon, List<IState>>> createTable() {
+		Map<String, Map<ITaxon, List<IState>>> map = new TreeMap<String, Map<ITaxon,List<IState>>>();
 		Iterator<TreeNode<ITaxon>> iter = this.hierarchy.getHierarchy().iterator();
 		List<ITaxon> allTaxa = new ArrayList<ITaxon>();
 		while(iter.hasNext()) {
@@ -54,16 +54,16 @@ public class TaxonCharacterMatrix {
 			while(structIter.hasNext()) {
 				TreeNode<Structure> structNode = structIter.next();
 				Structure structure = structNode.getElement();
-				Map<String, IState> charStateMap = structure.getCharStateMap();
+				Map<String, List<IState>> charStateMap = structure.getCharStateMap();
 				for(String charName : charStateMap.keySet()) {
 					String fullName = resolveFullCharacterName(charName, structNode);
-					IState state = charStateMap.get(charName);
+					List<IState> states = charStateMap.get(charName);
 					if(map.containsKey(fullName)) {
-						map.get(fullName).put(taxon, state);
+						map.get(fullName).put(taxon, states);
 					}
 					else {
-						Map<ITaxon, IState> subMap = new HashMap<ITaxon, IState>();
-						subMap.put(taxon, state);
+						Map<ITaxon, List<IState>> subMap = new HashMap<ITaxon, List<IState>>();
+						subMap.put(taxon, states);
 						map.put(fullName, subMap);
 					}
 				}
@@ -79,10 +79,10 @@ public class TaxonCharacterMatrix {
 	 * @param map
 	 * @param allTaxa
 	 */
-	private void postProcessTable(Map<String, Map<ITaxon, IState>> map,
+	private void postProcessTable(Map<String, Map<ITaxon, List<IState>>> map,
 			List<ITaxon> allTaxa) {
 		for(String ch : map.keySet()) {
-			Map<ITaxon, IState> taxonToState = map.get(ch);
+			Map<ITaxon, List<IState>> taxonToState = map.get(ch);
 			if(taxonToState.size() != allTaxa.size()) {	//then begin "inheriting" character states from higher taxa
 				for(ITaxon taxon : allTaxa) {
 					TreeNode<ITaxon> taxonNode = this.hierarchy.findTaxonByName(taxon.getName(), taxon.getTaxonRank());
@@ -90,29 +90,49 @@ public class TaxonCharacterMatrix {
 						if (taxonNode.getParent() != null) {
 							ITaxon parentTaxon = taxonNode.getParent().getElement();
 							if (taxonToState.containsKey(parentTaxon)) { //if a parent taxon is in the map, go grab states from it
-								IState parentState = taxonToState.get(parentTaxon);
-								taxonToState.put(taxon, parentState);
+								List<IState> parentStates = taxonToState.get(parentTaxon);
+								taxonToState.put(taxon, parentStates);
 							}
 							else {	//if the parent is not in the map, add an empty state for the parent
-								taxonToState.put(parentTaxon, new EmptyState<String>());
-								taxonToState.put(taxon, new EmptyState<String>());
+								List<IState> parentList = new ArrayList<IState>();
+								parentList.add(new EmptyState<String>());
+								taxonToState.put(parentTaxon, parentList);
+								List<IState> childList = new ArrayList<IState>();
+								childList.add(new EmptyState<String>());
+								taxonToState.put(taxon, childList);
 							}
 						}
-						else
-							taxonToState.put(taxon, new EmptyState<String>());
+						else {
+							List<IState> childList = new ArrayList<IState>();
+							childList.add(new EmptyState<String>());
+							taxonToState.put(taxon, childList);
+						}
+							
 					}	//end if taxon not mapped to some state.
 				}
 			}
 			//now, take care of instances where singleton states are mixed with range states
 			Set<Class> stateTypes = new HashSet<Class>();
-			for(IState state : taxonToState.values()) 
-				stateTypes.add(state.getClass());
-			if(stateTypes.size() > 1 && stateTypes.contains(SingletonState.class)) { 	//then promote the singleton states to range states
+			for(List<IState> stateList : taxonToState.values())
+				for(IState state : stateList)
+					stateTypes.add(state.getClass());
+			if(stateTypes.size() > 1 && stateTypes.contains(SingletonState.class)) { 	
+				//then promote the singleton states to range states
 				for(ITaxon t : taxonToState.keySet()) {
-					IState state = taxonToState.get(t);
-					if(state instanceof SingletonState)
-						taxonToState.put(t, state.promote());
+					List<IState> states = taxonToState.get(t);
+					//lists maintaining states for addition/removal
+					List<IState> toAdd = new ArrayList<IState>();
+					List<IState> toRemove = new ArrayList<IState>();
+					for(IState state : states) {
+						if(state instanceof SingletonState) {
+							toAdd.add(state.promote());
+							toRemove.add(state);
+						}
+					}
+					states.addAll(toAdd);
+					states.removeAll(toRemove);
 				}
+				
 			}
 //			else if(stateTypes.contains(SingletonState.class) 
 //					&& stateTypes.contains(EmptyState.class) && 
@@ -165,22 +185,22 @@ public class TaxonCharacterMatrix {
 		Map<ITaxon, List<String>> rows = new TreeMap<ITaxon, List<String>>(new TaxonComparator());
 		for(String charName : table.keySet()) {
 			header.add(charName);
-			Map<ITaxon, IState> taxonToState = table.get(charName);
+			Map<ITaxon, List<IState>> taxonToState = table.get(charName);
 			boolean needsHeaderExpansion = true;
 			for(ITaxon taxon : taxonToState.keySet()) {
-				IState state = taxonToState.get(taxon);	//here, we rely on the supposition that we'll never see two different state types for the same character across a range of taxa.
+				List<IState> stateList = taxonToState.get(taxon);	//here, we rely on the supposition that we'll never see two different state types for the same character across a range of taxa.
 				if(rows.containsKey(taxon)) {
 					List<String> row = rows.get(taxon);
 					if(row == null) {
 						row = new ArrayList<String>();
 						row.add(taxon.getName());
 					}
-					needsHeaderExpansion = addStateToRow(state, row, header, charName, needsHeaderExpansion);
+					needsHeaderExpansion = addStateToRow(stateList, row, header, charName, needsHeaderExpansion);
 				}
 				else {
 					List<String> row = new ArrayList<String>();
 					row.add(taxon.getName());	//The first element of a row is the name of the taxon.
-					needsHeaderExpansion = addStateToRow(state, row, header, charName, needsHeaderExpansion);
+					needsHeaderExpansion = addStateToRow(stateList, row, header, charName, needsHeaderExpansion);
 					rows.put(taxon, row);
 				}
 			}
@@ -247,58 +267,77 @@ public class TaxonCharacterMatrix {
 	/**
 	 * This method resolves how to put a state object into a matrix.  If it's a range state, we need to list two characters
 	 * and states (from and to) instead of one.  This also requires inserting additional characters into the header list.
-	 * @param state State object to resolve to matrix entries.
+	 * @param stateList State object to resolve to matrix entries.
 	 * @param row The row (for a taxon) in question.
 	 * @param header The header string list.
 	 * @param charName The name of the original character, before resolution.
 	 */
 	@SuppressWarnings("rawtypes")
-	private boolean addStateToRow(IState state, List<String> row, List<String> header, String charName, boolean needsHeaderExpansion) {
+	private boolean addStateToRow(List<IState> stateList, List<String> row, 
+			List<String> header, String charName, boolean needsHeaderExpansion) {
 		if(needsHeaderExpansion) {
 			int originalIndex = header.indexOf(charName);
-			if (state instanceof SingletonState) {
-				row.add(state.getMap().get("value").toString());
-				if(state.getFromUnit() != null) {
-					header.add(originalIndex+1, charName+"_unit");
-					row.add(state.getFromUnit());
+			StringBuilder stateString = new StringBuilder();
+			for(IState state : stateList) {
+				String suffix = "";
+				if (stateList.indexOf(state) < stateList.size()-1)
+					suffix = "|";
+				if (state instanceof SingletonState) {
+					stateString.append(state.getMap().get("value").toString() + suffix);
+					if(state.getFromUnit() != null && (!header.contains(charName+"_unit"))) {
+						header.add(originalIndex+1, charName+"_unit");
+						stateString.append(state.getFromUnit() + suffix);
+					}
+				}
+				else {	//handle EmptyState and RangeState identically
+					Object from = state.getMap().get("from value");
+					Object to = state.getMap().get("to value");
+					if (!header.contains(charName+"_from"))
+						header.set(originalIndex, charName+"_from");
+					if (!header.contains(charName+"_to"))
+						header.add(originalIndex+1, charName+"_to");
+					if (!header.contains(charName+"_from_unit"))
+						header.add(originalIndex+2, charName+"_from_unit");
+					if (!header.contains(charName+"_to_unit"))
+						header.add(originalIndex+3, charName+"_to_unit");
+					if(from == null)
+						from = "";
+					if(to == null)
+						to = "";
+					stateString.append(from.toString()+ suffix);
+					stateString.append(to.toString()+ suffix);
+					stateString.append(state.getFromUnit()+ suffix);
+					stateString.append(state.getToUnit()+ suffix);
 				}
 			}
-			else {	//handle EmptyState and RangeState identically
-				Object from = state.getMap().get("from value");
-				Object to = state.getMap().get("to value");
-				header.set(originalIndex, charName+"_from");
-				header.add(originalIndex+1, charName+"_to");
-				header.add(originalIndex+2, charName+"_from_unit");
-				header.add(originalIndex+3, charName+"_to_unit");
-				if(from == null)
-					from = "";
-				if(to == null)
-					to = "";
-				row.add(from.toString());
-				row.add(to.toString());
-				row.add(state.getFromUnit());
-				row.add(state.getToUnit());
-			}
+			row.add(stateString.toString());
 		}
 		else {
-			if (state instanceof SingletonState) {
-				row.add(state.getMap().get("value").toString());
-				if(state.getFromUnit() != null) {
-					row.add(state.getFromUnit());
+			StringBuilder stateString = new StringBuilder();
+			for(IState state : stateList) {
+				String suffix = "";
+				if (stateList.indexOf(state) < stateList.size()-1)
+					suffix = "|";
+				if (stateList instanceof SingletonState) {
+					stateString.append(state.getMap().get("value").toString() + suffix);
+					if(state.getFromUnit() != null) {
+						stateString.append(state.getFromUnit() + suffix);
+					}
+				}
+				else {
+					Object from = state.getMap().get("from value");
+					Object to = state.getMap().get("to value");
+					if(from == null)
+						from = "";
+					if(to == null)
+						to = "";
+					stateString.append(from.toString() + suffix);
+					stateString.append(to.toString() + suffix);
+					stateString.append(state.getFromUnit() + suffix);
+					stateString.append(state.getToUnit() + suffix);
 				}
 			}
-			else {
-				Object from = state.getMap().get("from value");
-				Object to = state.getMap().get("to value");
-				if(from == null)
-					from = "";
-				if(to == null)
-					to = "";
-				row.add(from.toString());
-				row.add(to.toString());
-				row.add(state.getFromUnit());
-				row.add(state.getToUnit());
-			}
+			row.add(stateString.toString());
 		}
 		return false;
 	}
@@ -308,7 +347,7 @@ public class TaxonCharacterMatrix {
 	 * to maps from taxa to states.
 	 * @return the table
 	 */
-	public Map<String, Map<ITaxon, IState>> getTable() {
+	public Map<String, Map<ITaxon, List<IState>>> getTable() {
 		return table;
 	}
 
@@ -325,7 +364,7 @@ public class TaxonCharacterMatrix {
 	 */
 	public void printSimple() {
 		for(String s : this.table.keySet()) {
-			Map<ITaxon, IState> map = table.get(s);
+			Map<ITaxon, List<IState>> map = table.get(s);
 			for(ITaxon taxon : map.keySet()) {
 				System.out.println("Character:"+s+", Taxon:"+taxon.getName()+", "+map.get(taxon).toString());
 			}
