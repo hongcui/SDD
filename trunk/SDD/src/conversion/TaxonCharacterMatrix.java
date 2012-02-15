@@ -263,6 +263,21 @@ public class TaxonCharacterMatrix {
 		System.out.println(header.size());
 		
 	}
+	
+	/**
+	 * Expands the character names in the table to account for range states
+	 * and units.
+	 */
+	private void expandTable() {
+		Map<String, Map<ITaxon, List<IState>>> toAdd = 
+				new HashMap<String, Map<ITaxon,List<IState>>>();
+		for (String charName : this.table.keySet()) {
+			//map of taxon -> states for this character
+			Map<ITaxon, List<IState>> taxonToStates = this.table.get(charName);
+			
+		}
+			
+	}
 
 	/**
 	 * This method resolves how to put a state object into a matrix.  If it's a range state, we need to list two characters
