@@ -11,7 +11,7 @@ import annotationSchema.jaxb.Structure;
  *
  * @param <T>
  */
-public class SingletonState<T> implements IState<T> {
+public class SingletonState<T> extends BaseState implements IState<T>{
 	
 	public static final String KEY = "value";
 	private Map<String, T> map;
@@ -26,6 +26,11 @@ public class SingletonState<T> implements IState<T> {
 		this.map = new HashMap<String, T>();
 		this.map.put("value", value);
 		this.unit = null;
+		try {
+			convertUnitToStandard();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	/**
@@ -103,6 +108,34 @@ public class SingletonState<T> implements IState<T> {
 		promoted.addConstraintId(constraintId);
 		promoted.addModifier(modifier);
 		return promoted;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void convertUnitToStandard() throws Exception {
+		if(this.unit != null) {
+			try {
+				Double value = Double.parseDouble(this.map.get(KEY).toString());
+				if (unit.toLowerCase().equals("mm"))
+					value *= this.millimeter;
+				else if (unit.toLowerCase().equals("cm"))
+					value *= this.centimeter;
+				else if (unit.toLowerCase().equals("km"))
+					value *= this.kilometer;
+				else if (unit.toLowerCase().equals("kg"))
+					value *= this.kilogram;
+				else if (unit.toLowerCase().equals("mg"))
+					value *= this.milligram;
+				else if (unit.toLowerCase().equals("cg"))
+					value *= this.centigram;
+				else
+					throw new Exception("Could not find unit for conversion: " + unit);
+				map.put(KEY, (T) value);
+			}
+			catch (NumberFormatException e) {
+				System.out.println("Could not parse as double: " 
+						+ map.get(KEY).toString() + ", even though unit exists!");
+			}
+		}
 	}
 
 	/* (non-Javadoc)

@@ -5,16 +5,18 @@ import java.util.Map;
 
 import annotationSchema.jaxb.Structure;
 
-public class EmptyState<T> implements IState<T> {
+public class EmptyState<T> extends BaseState implements IState<T> {
 	
+	public static final String KEY_FROM = "from value";
+	public static final String KEY_TO = "to value";
 	private Map<String, T> map;
 	private String fromUnit, toUnit, modifier, constraint;
 	private Structure constraintId;
 	
 	public EmptyState() {
 		this.map = new HashMap<String, T>();
-		this.map.put("from value", (T) "");
-		this.map.put("to value", (T) "");
+		this.map.put(KEY_FROM, (T) "");
+		this.map.put(KEY_TO, (T) "");
 		this.fromUnit = "";
 		this.toUnit = "";
 	}
@@ -76,6 +78,57 @@ public class EmptyState<T> implements IState<T> {
 	public IState demote() {
 		IState demoted = new SingletonState(map.get("from value"), fromUnit);
 		return demoted;
+	}
+	
+	private void convertUnitToStandard() throws Exception {
+		if(this.fromUnit != null) {
+			try {
+				Double value = Double.parseDouble(this.map.get(KEY_FROM).toString());
+				if (fromUnit.toLowerCase().equals("mm"))
+					value *= this.millimeter;
+				else if (fromUnit.toLowerCase().equals("cm"))
+					value *= this.centimeter;
+				else if (fromUnit.toLowerCase().equals("km"))
+					value *= this.kilometer;
+				else if (fromUnit.toLowerCase().equals("kg"))
+					value *= this.kilogram;
+				else if (fromUnit.toLowerCase().equals("mg"))
+					value *= this.milligram;
+				else if (fromUnit.toLowerCase().equals("cg"))
+					value *= this.centigram;
+				else
+					throw new Exception("Could not find unit for conversion: " + fromUnit);
+				map.put(KEY_FROM, (T) value);
+			}
+			catch (NumberFormatException e) {
+				System.out.println("Could not parse as double: " 
+						+ map.get(KEY_FROM).toString() + ", even though from_unit exists!");
+			}
+		}
+		if(this.toUnit != null) {
+			try {
+				Double value = Double.parseDouble(this.map.get(KEY_TO).toString());
+				if (toUnit.toLowerCase().equals("mm"))
+						value *= this.millimeter;
+				else if (toUnit.toLowerCase().equals("cm"))
+					value *= this.centimeter;
+				else if (toUnit.toLowerCase().equals("km"))
+					value *= this.kilometer;
+				else if (toUnit.toLowerCase().equals("kg"))
+					value *= this.kilogram;
+				else if (toUnit.toLowerCase().equals("mg"))
+					value *= this.milligram;
+				else if (toUnit.toLowerCase().equals("cg"))
+					value *= this.centigram;
+				else
+					throw new Exception("Could not find to unit for conversion: " + toUnit);
+				map.put(KEY_TO, (T) value);
+			}
+			catch (NumberFormatException e) {
+				System.out.println("Could not parse as double: " 
+						+ map.get(KEY_FROM).toString() + ", even though to_unit exists!");
+			}
+		}
 	}
 
 	/* (non-Javadoc)

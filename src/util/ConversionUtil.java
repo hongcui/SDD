@@ -1,5 +1,8 @@
 package util;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import sdd.LabelText;
 import sdd.ObjectFactory;
 import sdd.Representation;
@@ -47,5 +50,24 @@ public class ConversionUtil {
 		labelText.setValue(value);
 		rep.getRepresentationGroup().add(labelText);
 		return rep;
+	}
+	
+	/**
+	 * Joins string reps of a collection of objects together, separated
+	 * by a given delimiter.  Courtesy of stack overflow.
+	 * @param objects The collection of objects to join strings of together.
+	 * @param delimiter Separator to place b/w strings.
+	 * @return
+	 */
+	public static String join(Collection<?> objects, String delimiter) {
+		StringBuilder builder = new StringBuilder();
+		Iterator<?> iter = objects.iterator();
+		while (iter.hasNext()) {
+			builder.append(iter.next());
+			if (!iter.hasNext())
+				break;
+			builder.append(delimiter);
+		}
+		return builder.toString();
 	}
 }
