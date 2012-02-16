@@ -36,7 +36,7 @@ public class TaxonCharacterMatrixTest {
 		TaxonCharacterMatrix matrix = new TaxonCharacterMatrix(th);
 //		Map<String, Map<ITaxon, List<IState>>> map = matrix.getTable();
 		matrix.printSimple();
-//		matrix.generateMatrixFile("output/achillea.txt");
+		matrix.generateMatrixFile("output/achillea.txt");
 //		matrix.generateMatrixFile("output/cirsium.txt");
 //		matrix.generateMatrixFile("output/cynareae-genus.txt");
 	}

@@ -1,7 +1,5 @@
 package conversion.test;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 
 import org.junit.After;
@@ -14,7 +12,6 @@ import taxonomy.TaxonHierarchy;
 import taxonomy.TaxonRank;
 import conversion.DatasetLoader;
 import conversion.DescriptionParser;
-import conversion.SDDConverter;
 import dao.FilenameTaxonDao;
 
 public class TestSDDConverter {
