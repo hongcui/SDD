@@ -24,6 +24,7 @@ import dao.FilenameTaxonDao;
 
 public class DescriptionParser {
 
+	private static final String WHOLE_ORGANISM_STRUCTURE_ID = "whole_organism";
 	private Properties props;
 	private JAXBContext annotationContext;
 	private String taxonName;
@@ -85,7 +86,7 @@ public class DescriptionParser {
 						structure.setStatementId(statement.getId());
 						processCharacters(structure);
 						//the whole organism structure should come first
-						if (structure.getName().equals("whole_organism"))
+						if (structure.getName().equals(WHOLE_ORGANISM_STRUCTURE_ID))
 							taxon.getStructureTree().setRoot(
 									new TreeNode<Structure>(structure));
 						else

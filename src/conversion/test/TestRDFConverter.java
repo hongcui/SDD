@@ -14,7 +14,7 @@ public class TestRDFConverter {
 	DescriptionParser parser;
 	@Before
 	public void setUp() throws Exception {
-		parser = new DescriptionParser("cirsium", TaxonRank.GENUS);
+		parser = new DescriptionParser("", TaxonRank.GENUS);
 	}
 
 	@After

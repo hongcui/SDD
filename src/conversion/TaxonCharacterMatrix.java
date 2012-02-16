@@ -21,6 +21,7 @@ import taxonomy.ITaxon;
 import taxonomy.TaxonComparator;
 import taxonomy.TaxonHierarchy;
 import tree.TreeNode;
+import util.ConversionUtil;
 import annotationSchema.jaxb.Structure;
 
 /**
@@ -189,21 +190,50 @@ public class TaxonCharacterMatrix {
 		for(String charName : table.keySet()) {
 			header.add(charName);
 			Map<ITaxon, List<IState>> taxonToState = table.get(charName);
-			boolean needsHeaderExpansion = true;
 			for(ITaxon taxon : taxonToState.keySet()) {
-				List<IState> stateList = taxonToState.get(taxon);	//here, we rely on the supposition that we'll never see two different state types for the same character across a range of taxa.
+				List<IState> stateList = taxonToState.get(taxon);	
 				if(rows.containsKey(taxon)) {
 					List<String> row = rows.get(taxon);
 					if(row == null) {
 						row = new ArrayList<String>();
 						row.add(taxon.getName());
 					}
-					needsHeaderExpansion = addStateToRow(stateList, row, header, charName, needsHeaderExpansion);
+					List<String> stateStrings = new ArrayList<String>();
+					for(IState state : stateList) {
+						if(state instanceof SingletonState) {
+							String value = state.getMap().get(SingletonState.KEY).toString();
+							stateStrings.add(value);
+						}
+						else {
+							String value = "";
+							if(charName.endsWith(FROM_SUFFIX))
+								value = state.getMap().get(RangeState.KEY_FROM).toString();
+							else
+								value = state.getMap().get(RangeState.KEY_TO).toString();
+							stateStrings.add(value);
+						}
+					}
+					row.add(ConversionUtil.join(stateStrings, "|"));
 				}
 				else {
 					List<String> row = new ArrayList<String>();
 					row.add(taxon.getName());	//The first element of a row is the name of the taxon.
-					needsHeaderExpansion = addStateToRow(stateList, row, header, charName, needsHeaderExpansion);
+					List<String> stateStrings = new ArrayList<String>();
+					for(IState state : stateList) {
+						if(state instanceof SingletonState) {
+							String value = state.getMap().get(SingletonState.KEY).toString();
+							stateStrings.add(value);
+						}
+						else {
+							String value = "";
+							if(charName.endsWith(FROM_SUFFIX))
+								value = state.getMap().get(RangeState.KEY_FROM).toString();
+							else
+								value = state.getMap().get(RangeState.KEY_TO).toString();
+							stateStrings.add(value);
+						}
+					}
+					row.add(ConversionUtil.join(stateStrings, "|"));
 					rows.put(taxon, row);
 				}
 			}
@@ -226,11 +256,11 @@ public class TaxonCharacterMatrix {
 	 */
 	private void constructMatrix(BufferedWriter out, List<String> header,
 			Map<ITaxon, List<String>> rows, String delimiter) throws IOException{
-		postProcessRows(header, rows);
+//		postProcessRows(header, rows);
 		for(String h : header)
 			out.write(h+delimiter);
 		for(ITaxon t : rows.keySet()) {
-			out.write("\n");
+			out.newLine();
 			List<String> row = rows.get(t);
 			for(String s : row)
 				out.write(s+delimiter);
@@ -271,6 +301,7 @@ public class TaxonCharacterMatrix {
 	 * Expands the character names in the table to account for range states
 	 * and units.
 	 */
+	@SuppressWarnings("rawtypes")
 	private void expandTable() {
 		//expand range states into new characters using this map
 		Map<String, Map<ITaxon, List<IState>>> toAdd = 
