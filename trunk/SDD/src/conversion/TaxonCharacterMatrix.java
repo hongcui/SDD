@@ -30,12 +30,15 @@ import annotationSchema.jaxb.Structure;
  */
 public class TaxonCharacterMatrix {
 
+	public static final String FROM_SUFFIX = "_from";
+	public static final String TO_SUFFIX = "_to";
 	private Map<String, Map<ITaxon, List<IState>>> table;
 	private TaxonHierarchy hierarchy;
 	
 	public TaxonCharacterMatrix(TaxonHierarchy th) {
 		this.hierarchy = th;
 		this.table = createTable();
+		expandTable();
 	}
 
 	/**
@@ -269,14 +272,131 @@ public class TaxonCharacterMatrix {
 	 * and units.
 	 */
 	private void expandTable() {
+		//expand range states into new characters using this map
 		Map<String, Map<ITaxon, List<IState>>> toAdd = 
+				new HashMap<String, Map<ITaxon,List<IState>>>();
+		//and remove the expanded range states from the original character
+		Map<String, Map<ITaxon, List<IState>>> toRemove = 
 				new HashMap<String, Map<ITaxon,List<IState>>>();
 		for (String charName : this.table.keySet()) {
 			//map of taxon -> states for this character
 			Map<ITaxon, List<IState>> taxonToStates = this.table.get(charName);
-			
+			//flag to indicate if some taxon requires expanding the table for this character
+			boolean wasExpanded = false;
+			for (ITaxon taxon : taxonToStates.keySet()) {
+				List<IState> stateList = taxonToStates.get(taxon);
+				for(IState state : stateList) {
+					String charNameFrom = charName + FROM_SUFFIX;
+					String charNameTo = charName + TO_SUFFIX;
+					if(!(state instanceof SingletonState)) {
+						//then there's a range involved.
+						List<IState> tempStates = new ArrayList<IState>();
+						tempStates.add(state);
+						if (!toAdd.containsKey(charNameFrom)) {
+							//no entry for from character at all
+							Map<ITaxon, List<IState>> tempMap = new HashMap<ITaxon, List<IState>>();
+							tempMap.put(taxon, tempStates);
+							toAdd.put(charNameFrom, tempMap);
+						}
+						else {
+							//there is a from character entry...
+							Map<ITaxon, List<IState>> tempMap = toAdd.get(charNameFrom);
+							if(!tempMap.containsKey(taxon)) {
+								//...but not for this taxon, or...
+								tempMap.put(taxon, tempStates);
+							}
+							else {
+								//...there is an entry for this taxon
+								tempMap = toAdd.get(charNameFrom);
+								tempMap.get(taxon).add(state);
+							}
+						}
+						if(!toAdd.containsKey(charNameTo)) {
+							//no entry for to character at all
+							Map<ITaxon, List<IState>> tempMap = new HashMap<ITaxon, List<IState>>();
+							tempMap.put(taxon, tempStates);
+							toAdd.put(charNameTo, tempMap);
+						}
+						else {
+							//there is a to character entry...
+							Map<ITaxon, List<IState>> tempMap = toAdd.get(charNameTo);
+							if(!tempMap.containsKey(taxon)) {
+								//...but not for this taxon, or...
+								tempMap.put(taxon, tempStates);
+							}
+							else {
+								//...there is an entry for this taxon
+								tempMap = toAdd.get(charNameTo);
+								tempMap.get(taxon).add(state);
+							}
+						}
+						//now mark this state for removal from original character
+						if(toRemove.containsKey(charName)) {
+							Map<ITaxon, List<IState>> taxonMap = toRemove.get(charName);
+							if(taxonMap.containsKey(taxon))
+								taxonMap.get(taxon).add(state);
+							else
+								taxonMap.put(taxon, tempStates);
+						}
+						else {
+							Map<ITaxon, List<IState>> taxonRemoval = new HashMap<ITaxon, List<IState>>();
+							taxonRemoval.put(taxon, tempStates);
+							toRemove.put(charName, taxonRemoval);
+						}
+						wasExpanded = true;
+					}
+					else if (wasExpanded) {
+						//this is the case where we're looking at a single state
+						//but expanded a range state in a previous taxon
+						//for this character.
+						List<IState> tempStates = new ArrayList<IState>();
+						tempStates.add(new EmptyState());
+						if(toAdd.containsKey(charNameFrom)) {
+							Map<ITaxon, List<IState>> taxonMap = toAdd.get(charNameFrom);
+							if(taxonMap.containsKey(taxon))
+								taxonMap.get(taxon).add(new EmptyState());
+							else
+								taxonMap.put(taxon, tempStates);
+						}
+						else {
+							Map<ITaxon, List<IState>> tempMap = new HashMap<ITaxon, List<IState>>();
+							tempMap.put(taxon, tempStates);
+							toAdd.put(charNameTo, tempMap);
+						}
+						if(toAdd.containsKey(charNameTo)) {
+							Map<ITaxon, List<IState>> taxonMap = toAdd.get(charNameTo);
+							if(taxonMap.containsKey(taxon))
+								taxonMap.get(taxon).add(new EmptyState());
+							else
+								taxonMap.put(taxon, tempStates);
+						}
+					}
+				}
+			}
+		} //end giant for loop
+		//now add expanded char/states and remove those marked
+		table.putAll(toAdd);
+		for(String charName : toRemove.keySet()) {
+			for(ITaxon taxon : toRemove.get(charName).keySet()) {
+				List<IState> removableStates = toRemove.get(charName).get(taxon);
+				List<IState> existingStates = table.get(charName).get(taxon);
+				existingStates.removeAll(removableStates);
+			}
 		}
-			
+		//and lastly, clean out any characters that have empty
+		//state lists for each taxon
+		List<String> charsToRemove = new ArrayList<String>();
+		for(String charName : table.keySet()) {
+			int count = 0;
+			for(ITaxon taxon : table.get(charName).keySet()) {
+				List<IState> existingStates = table.get(charName).get(taxon);
+				count += existingStates.size();
+			}
+			if (count == 0)
+				charsToRemove.add(charName);
+		}
+		for(String ch : charsToRemove)
+			table.remove(ch);
 	}
 
 	/**
