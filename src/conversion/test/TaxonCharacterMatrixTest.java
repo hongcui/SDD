@@ -34,9 +34,9 @@ public class TaxonCharacterMatrixTest {
 //		TaxonHierarchy th = makeHierarchyTwoLevel("cynareae", TaxonRank.TRIBE, TaxonRank.GENUS);
 		th.printSimple();
 		TaxonCharacterMatrix matrix = new TaxonCharacterMatrix(th);
-		Map<String, Map<ITaxon, List<IState>>> map = matrix.getTable();
+//		Map<String, Map<ITaxon, List<IState>>> map = matrix.getTable();
 		matrix.printSimple();
-		matrix.generateMatrixFile("output/achillea.txt");
+//		matrix.generateMatrixFile("output/achillea.txt");
 //		matrix.generateMatrixFile("output/cirsium.txt");
 //		matrix.generateMatrixFile("output/cynareae-genus.txt");
 	}
