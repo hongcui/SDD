@@ -16,6 +16,7 @@ import taxonomy.TaxonFactory;
 import taxonomy.TaxonRank;
 import tree.TreeNode;
 import annotationSchema.jaxb.Description;
+import annotationSchema.jaxb.ObjectFactory;
 import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Statement;
 import annotationSchema.jaxb.Structure;
@@ -95,7 +96,8 @@ public class DescriptionParser {
 						relations.add((Relation) o);
 					}
 				} //end relation/structure list
-				if (relations.isEmpty())
+				if (relations.isEmpty()) {
+					checkForNullRoot(taxon);
 					try {
 						taxon.getStructureTree().getRoot()
 								.addChildren(localStructPool);
@@ -104,6 +106,7 @@ public class DescriptionParser {
 						System.out.println(taxon.getStructureTree().getRoot());
 						System.out.println(localStructPool.toString());
 					}
+				}
 				else
 					placeStructuresAccordingToRelations(taxon, localStructPool,
 							relations);
@@ -137,6 +140,8 @@ public class DescriptionParser {
 	 */
 	private void placeStructuresAccordingToRelations(ITaxon taxon,
 			List<Structure> localStructPool, List<Relation> relations) {
+		//first, make sure this taxon has a non-null root.
+		checkForNullRoot(taxon);
 		List<TreeNode<Structure>> branches = new ArrayList<TreeNode<Structure>>();
 		for(Relation relation : relations) {
 			try {
@@ -178,6 +183,24 @@ public class DescriptionParser {
 		}
 	}
 	
+	/**
+	 * Checks if this taxon has a null root.  If it does, we create a kind of
+	 * "dummy" root node, which has a Structure as an element, named according
+	 * to WHOLE_ORGANISM_STRUCTURE_ID.
+	 * @param taxon
+	 */
+	private void checkForNullRoot(ITaxon taxon) {
+		if (taxon.getStructureTree().getRoot() == null) {
+			ObjectFactory fact = new ObjectFactory();
+			Structure structure = fact.createStructure();
+			structure.setName(WHOLE_ORGANISM_STRUCTURE_ID);
+			structure.setId("dummy_id");
+			TreeNode<Structure> node = new TreeNode<Structure>(structure);
+			taxon.getStructureTree().setRoot(node);
+		}
+		
+	}
+
 	/**
 	 * Looks through a list of nodes for a node having the given Structure as the element and
 	 * returns that node if present, null otherwise.

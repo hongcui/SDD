@@ -14,7 +14,7 @@ public class TestRDFConverter {
 	DescriptionParser parser;
 	@Before
 	public void setUp() throws Exception {
-		parser = new DescriptionParser("thermopola", TaxonRank.SUBSPECIES);
+		parser = new DescriptionParser("argentea", TaxonRank.SPECIES);
 	}
 
 	@After
@@ -26,7 +26,7 @@ public class TestRDFConverter {
 	public void testTaxonToRDF() {
 		TaxonHierarchy h = new TaxonHierarchy(parser.parseTaxon());
 		RDFConverter rdfConverter = new RDFConverter(h);
-		rdfConverter.taxonToRDF(h.getHierarchy().getRoot().getElement(), "output/thermopola-rdf.xml");
+		rdfConverter.taxonToRDF(h.getHierarchy().getRoot().getElement(), "output/argentea-rdf.xml");
 	}
 
 }
