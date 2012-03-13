@@ -154,10 +154,10 @@ public class RDFConverter {
 						addModifier(taxonModel, state, characterDatum, hasState, stateDatum);
 						addModifier(taxonModel, state, characterDatum, hasState, stateDatum);
 					}
-//					if(state.getConstraint() != null) {
-//						addConstraint(taxonModel, stmtFrom, state);
-//						addConstraint(taxonModel, stmtTo, state);
-//					}
+					if(state.getConstraint() != null) {
+						addConstraint(taxonModel, state, characterDatum, hasState, stateDatum);
+						addConstraint(taxonModel, state, characterDatum, hasState, stateDatum);
+					}
 					
 					//circa March 2012, all numeric states are normalized to same units
 //					if(state.getFromUnit() != null) {
@@ -190,8 +190,8 @@ public class RDFConverter {
 					taxonModel.add(stmt);
 					if(state.getModifier() != null)
 						addModifier(taxonModel, state, characterDatum, hasState, stateDatum);
-//					if(state.getConstraint() != null)
-//						addConstraint(taxonModel, stmt, state);
+					if(state.getConstraint() != null)
+						addConstraint(taxonModel, state, characterDatum, hasState, stateDatum);
 					
 					//circa March 2012, all numeric states are normalized to same units
 //					if(state.getFromUnit() != null) {
@@ -213,29 +213,31 @@ public class RDFConverter {
 	 * @param statement The statement to reify.
 	 * @param state
 	 */
-	private void addConstraint(Model taxonModel, Statement statement, IState state) {
+	private void addConstraint(Model taxonModel, IState state,
+			Resource characterDatum, Property property, Resource stateDatum) {
 		Property constraintPredicate = new PropertyImpl(rdfProps.getProperty("prefix.constraint"));
 		Literal constraint = taxonModel.createTypedLiteral(state.getConstraint());
-		ReifiedStatement reifStmt = taxonModel.createReifiedStatement(
-				rdfProps.getProperty("prefix.reified").
-					concat(statement.getSubject().getLocalName()).
-					concat("_"+statement.getPredicate().getLocalName()), statement);
-		Statement stmt1 = new StatementImpl(reifStmt, constraintPredicate, constraint);
-		Structure constraintId = state.getConstraintId();
-
-		ReifiedStatement reifStmtAgain = taxonModel.createReifiedStatement(
-				rdfProps.getProperty("prefix.reified").
-				concat(reifStmt.getLocalName()).concat("_double_reified"), stmt1);
-		Property constrainedBy = new PropertyImpl(rdfProps.getProperty("prefix.constrained_by"));
-		Resource cId = taxonModel.createResource(rdfProps.getProperty("prefix.structure").concat(constraintId.getName()));
-		taxonModel.add(reifStmtAgain, constrainedBy, cId);
+		Statement statement = new StatementImpl(characterDatum, property, stateDatum);
+		ReifiedStatement reifStmt = taxonModel.createReifiedStatement(statement);
+		Statement constraintStmt = taxonModel.createStatement(reifStmt, constraintPredicate, constraint);
+		taxonModel.add(constraintStmt);
 		
-		if(constraintId.getConstraintType() != null) {
-			Property typeProp = new PropertyImpl(rdfProps.getProperty("prefix.constraint_type"));
-			Literal constraintType = taxonModel.createTypedLiteral(constraintId.getConstraintType());
-			taxonModel.add(cId, typeProp, constraintType);
-		}
-		taxonModel.remove(stmt1);
+//		Statement stmt1 = new StatementImpl(reifStmt, constraintPredicate, constraint);
+//		Structure constraintId = state.getConstraintId();
+//
+//		ReifiedStatement reifStmtAgain = taxonModel.createReifiedStatement(
+//				rdfProps.getProperty("prefix.reified").
+//				concat(reifStmt.getLocalName()).concat("_double_reified"), stmt1);
+//		Property constrainedBy = new PropertyImpl(rdfProps.getProperty("prefix.constrained_by"));
+//		Resource cId = taxonModel.createResource(rdfProps.getProperty("prefix.structure").concat(constraintId.getName()));
+//		taxonModel.add(reifStmtAgain, constrainedBy, cId);
+//		
+//		if(constraintId.getConstraintType() != null) {
+//			Property typeProp = new PropertyImpl(rdfProps.getProperty("prefix.constraint_type"));
+//			Literal constraintType = taxonModel.createTypedLiteral(constraintId.getConstraintType());
+//			taxonModel.add(cId, typeProp, constraintType);
+//		}
+//		taxonModel.remove(stmt1);
 		taxonModel.remove(statement);
 //		
 	}
