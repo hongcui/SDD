@@ -254,11 +254,21 @@ public class TaxonBase implements ITaxon {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
+	public String toStringAll() {
 		return this.getClass().getName() + "[name=" + name
 				+ ", taxonRank=" + taxonRank + ", charMap=" + charMap
 				+ ", \nstructureTree=" + structureTree + "]";
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		sb.append(this.getClass().getName()).append(": ");
+		sb.append("name=").append(name);
+		sb.append(", taxonRank=").append(taxonRank);
+		sb.append("]");
+		return sb.toString();
 	}
 	
 }

@@ -189,6 +189,7 @@ public class TaxonCharacterMatrix {
 		Map<ITaxon, List<String>> rows = new TreeMap<ITaxon, List<String>>(new TaxonComparator());
 		for(String charName : table.keySet()) {
 			header.add(charName);
+			System.out.println(charName);
 			Map<ITaxon, List<IState>> taxonToState = table.get(charName);
 			for(ITaxon taxon : taxonToState.keySet()) {
 				List<IState> stateList = taxonToState.get(taxon);	
@@ -213,6 +214,11 @@ public class TaxonCharacterMatrix {
 							stateStrings.add(value);
 						}
 					}
+					//peel off any empty strings from rows of length > 1
+					if(stateStrings.size() > 1) {
+						stateStrings.remove("");
+						stateStrings.remove(null);
+					}
 					row.add(ConversionUtil.join(stateStrings, "|"));
 				}
 				else {
@@ -230,8 +236,13 @@ public class TaxonCharacterMatrix {
 								value = state.getMap().get(RangeState.KEY_FROM).toString();
 							else
 								value = state.getMap().get(RangeState.KEY_TO).toString();
-							stateStrings.add(value);
+							stateStrings.add(value.trim());
 						}
+					}
+					//peel off any empty strings from rows of length > 1
+					if(stateStrings.size() > 1) {
+						stateStrings.remove("");
+						stateStrings.remove(null);
 					}
 					row.add(ConversionUtil.join(stateStrings, "|"));
 					rows.put(taxon, row);
@@ -267,35 +278,6 @@ public class TaxonCharacterMatrix {
 		}
 		out.close();		
 	}
-
-	/**
-	 * Cuts out any columns that have all empty/null entries.
-	 * @param header
-	 * @param rows
-	 */
-	private void postProcessRows(List<String> header,
-			Map<ITaxon, List<String>> rows) {
-		List<Integer> cutList = new ArrayList<Integer>();
-		for(String s : header) {
-			int i = header.indexOf(s);
-			boolean cut = true;
-			for(List<String> list : rows.values()) {
-				if(!(list.get(i) == null || list.get(i).trim().isEmpty() || list.get(i).equals(" ")))
-					cut = false;
-			}
-			if(cut)
-				cutList.add(i);
-		}
-		int offset = 0;
-		for(int i : cutList) {
-			for(List<String> list : rows.values())
-				list.remove(i-offset);
-			header.remove(i-offset);
-			offset++;
-		}
-		System.out.println(header.size());
-		
-	}
 	
 	/**
 	 * Expands the character names in the table to account for range states
@@ -321,11 +303,11 @@ public class TaxonCharacterMatrix {
 					String charNameTo = charName + TO_SUFFIX;
 					if(!(state instanceof SingletonState)) {
 						//then there's a range involved.
-						List<IState> tempStates = new ArrayList<IState>();
-						tempStates.add(state);
 						if (!toAdd.containsKey(charNameFrom)) {
 							//no entry for from character at all
 							Map<ITaxon, List<IState>> tempMap = new HashMap<ITaxon, List<IState>>();
+							List<IState> tempStates = new ArrayList<IState>();
+							tempStates.add(state);
 							tempMap.put(taxon, tempStates);
 							toAdd.put(charNameFrom, tempMap);
 						}
@@ -334,17 +316,20 @@ public class TaxonCharacterMatrix {
 							Map<ITaxon, List<IState>> tempMap = toAdd.get(charNameFrom);
 							if(!tempMap.containsKey(taxon)) {
 								//...but not for this taxon, or...
+								List<IState> tempStates = new ArrayList<IState>();
+								tempStates.add(state);
 								tempMap.put(taxon, tempStates);
 							}
 							else {
 								//...there is an entry for this taxon
-								tempMap = toAdd.get(charNameFrom);
 								tempMap.get(taxon).add(state);
 							}
 						}
 						if(!toAdd.containsKey(charNameTo)) {
 							//no entry for to character at all
 							Map<ITaxon, List<IState>> tempMap = new HashMap<ITaxon, List<IState>>();
+							List<IState> tempStates = new ArrayList<IState>();
+							tempStates.add(state);
 							tempMap.put(taxon, tempStates);
 							toAdd.put(charNameTo, tempMap);
 						}
@@ -353,11 +338,12 @@ public class TaxonCharacterMatrix {
 							Map<ITaxon, List<IState>> tempMap = toAdd.get(charNameTo);
 							if(!tempMap.containsKey(taxon)) {
 								//...but not for this taxon, or...
+								List<IState> tempStates = new ArrayList<IState>();
+								tempStates.add(state);
 								tempMap.put(taxon, tempStates);
 							}
 							else {
 								//...there is an entry for this taxon
-								tempMap = toAdd.get(charNameTo);
 								tempMap.get(taxon).add(state);
 							}
 						}
@@ -366,11 +352,16 @@ public class TaxonCharacterMatrix {
 							Map<ITaxon, List<IState>> taxonMap = toRemove.get(charName);
 							if(taxonMap.containsKey(taxon))
 								taxonMap.get(taxon).add(state);
-							else
+							else {
+								List<IState> tempStates = new ArrayList<IState>();
+								tempStates.add(state);
 								taxonMap.put(taxon, tempStates);
+							}
 						}
 						else {
 							Map<ITaxon, List<IState>> taxonRemoval = new HashMap<ITaxon, List<IState>>();
+							List<IState> tempStates = new ArrayList<IState>();
+							tempStates.add(state);
 							taxonRemoval.put(taxon, tempStates);
 							toRemove.put(charName, taxonRemoval);
 						}
@@ -428,84 +419,6 @@ public class TaxonCharacterMatrix {
 		}
 		for(String ch : charsToRemove)
 			table.remove(ch);
-	}
-
-	/**
-	 * This method resolves how to put a state object into a matrix.  If it's a range state, we need to list two characters
-	 * and states (from and to) instead of one.  This also requires inserting additional characters into the header list.
-	 * @param stateList State object to resolve to matrix entries.
-	 * @param row The row (for a taxon) in question.
-	 * @param header The header string list.
-	 * @param charName The name of the original character, before resolution.
-	 */
-	@SuppressWarnings("rawtypes")
-	private boolean addStateToRow(List<IState> stateList, List<String> row, 
-			List<String> header, String charName, boolean needsHeaderExpansion) {
-		if(needsHeaderExpansion) {
-			int originalIndex = header.indexOf(charName);
-			StringBuilder stateString = new StringBuilder();
-			for(IState state : stateList) {
-				String suffix = "";
-				if (stateList.indexOf(state) < stateList.size()-1)
-					suffix = "|";
-				if (state instanceof SingletonState) {
-					stateString.append(state.getMap().get("value").toString() + suffix);
-					if(state.getFromUnit() != null && (!header.contains(charName+"_unit"))) {
-						header.add(originalIndex+1, charName+"_unit");
-						stateString.append(state.getFromUnit() + suffix);
-					}
-				}
-				else {	//handle EmptyState and RangeState identically
-					Object from = state.getMap().get("from value");
-					Object to = state.getMap().get("to value");
-					if (!header.contains(charName+"_from"))
-						header.set(originalIndex, charName+"_from");
-					if (!header.contains(charName+"_to"))
-						header.add(originalIndex+1, charName+"_to");
-					if (!header.contains(charName+"_from_unit"))
-						header.add(originalIndex+2, charName+"_from_unit");
-					if (!header.contains(charName+"_to_unit"))
-						header.add(originalIndex+3, charName+"_to_unit");
-					if(from == null)
-						from = "";
-					if(to == null)
-						to = "";
-					stateString.append(from.toString()+ suffix);
-					stateString.append(to.toString()+ suffix);
-					stateString.append(state.getFromUnit()+ suffix);
-					stateString.append(state.getToUnit()+ suffix);
-				}
-			}
-			row.add(stateString.toString());
-		}
-		else {
-			StringBuilder stateString = new StringBuilder();
-			for(IState state : stateList) {
-				String suffix = "";
-				if (stateList.indexOf(state) < stateList.size()-1)
-					suffix = "|";
-				if (stateList instanceof SingletonState) {
-					stateString.append(state.getMap().get("value").toString() + suffix);
-					if(state.getFromUnit() != null) {
-						stateString.append(state.getFromUnit() + suffix);
-					}
-				}
-				else {
-					Object from = state.getMap().get("from value");
-					Object to = state.getMap().get("to value");
-					if(from == null)
-						from = "";
-					if(to == null)
-						to = "";
-					stateString.append(from.toString() + suffix);
-					stateString.append(to.toString() + suffix);
-					stateString.append(state.getFromUnit() + suffix);
-					stateString.append(state.getToUnit() + suffix);
-				}
-			}
-			row.add(stateString.toString());
-		}
-		return false;
 	}
 
 	/**

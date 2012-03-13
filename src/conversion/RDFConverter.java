@@ -7,17 +7,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import states.EmptyState;
 import states.IState;
 import states.RangeState;
 import states.SingletonState;
 import taxonomy.ITaxon;
 import taxonomy.TaxonHierarchy;
 import tree.TreeNode;
+import util.ConversionUtil;
 import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
 
@@ -30,7 +31,6 @@ import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.impl.PropertyImpl;
-import com.hp.hpl.jena.rdf.model.impl.ReifiedStatementImpl;
 import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 
 /**
@@ -41,11 +41,15 @@ import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 public class RDFConverter {
 
 	private TaxonHierarchy hierarchy;
-	private RDFProperties rdfProps;
+	private final RDFProperties rdfProps = new RDFProperties();;
+	private final Property hasCharacter = new PropertyImpl(rdfProps.getProperty("hasCharacter"));
+	private final Property hasState = new PropertyImpl(rdfProps.getProperty("hasState"));
+	private final Property stateValue = new PropertyImpl(rdfProps.getProperty("stateValue"));
+	private final Property stateValueFrom = new PropertyImpl(rdfProps.getProperty("stateValueFrom"));
+	private final Property stateValueTo = new PropertyImpl(rdfProps.getProperty("stateValueTo"));
 	
 	public RDFConverter(TaxonHierarchy hierarchy) {
 		this.hierarchy = hierarchy;
-		rdfProps = new RDFProperties();
 	}
 	
 	/**
@@ -114,7 +118,7 @@ public class RDFConverter {
 						.concat(child.getElement().getName()));
 				taxonModel.add(fromResource, property, toResource);
 			}
-			addCharactersToModel(taxonModel, fromResource, structure.getCharStateMap());
+			addCharactersToModel(taxonModel, fromResource, node, structure.getCharStateMap());
 		}
 	}
 
@@ -125,63 +129,78 @@ public class RDFConverter {
 	 * @param map Map from character name to state
 	 */
 	@SuppressWarnings({ "rawtypes" })
-	private void addCharactersToModel(Model taxonModel, Resource subject,
-			Map<String, List<IState>> map) {
+	private void addCharactersToModel(Model taxonModel, Resource subject, 
+			TreeNode<Structure> node, Map<String, List<IState>> map) {
 		for(String s : map.keySet()) {
+			String fullCharName = ConversionUtil.resolveFullCharacterName(s, node);
 			for(IState state : map.get(s)) {
-				if(state instanceof RangeState) {	//break this into two char names
-					Property predicateFrom = 
-						new PropertyImpl(rdfProps.getProperty("prefix.character")
-								.concat(s.concat("_from")));
-					Property predicateTo = 
-						new PropertyImpl(rdfProps.getProperty("prefix.character")
-								.concat(s.concat("_to")));
+				if(state instanceof RangeState || state instanceof EmptyState) {	
+					//first, define an RDF resource representing the character
+					Resource characterDatum = taxonModel.createResource(rdfProps.getProperty("prefix.character").concat(fullCharName));
+					//we'll also need a blank node for the state datum
+					Resource stateDatum = taxonModel.createResource();
+					//now make a statement that the subject (structure) has this character
+					subject.addProperty(hasCharacter, characterDatum);
+					//and also a statement that this character has a state
+					characterDatum.addProperty(hasState, stateDatum);
+					//place the state values as objects in a statement with the state datum
 					Literal stateObjectFrom = taxonModel.createTypedLiteral(state.getMap().get("from value"));
-					Statement stmtFrom = new StatementImpl(subject, predicateFrom, stateObjectFrom);
+					Statement stmtFrom = new StatementImpl(stateDatum, stateValueFrom, stateObjectFrom);
 					taxonModel.add(stmtFrom);
 					Literal stateObjectTo = taxonModel.createTypedLiteral(state.getMap().get("to value"));
-					Statement stmtTo = new StatementImpl(subject, predicateTo, stateObjectTo);
+					Statement stmtTo = new StatementImpl(stateDatum, stateValueTo, stateObjectTo);
 					taxonModel.add(stmtTo);
 					if(state.getModifier() != null) {
-						addModifier(taxonModel, stmtFrom, state);
-						addModifier(taxonModel, stmtTo, state);
+						addModifier(taxonModel, state, characterDatum, hasState, stateDatum);
+						addModifier(taxonModel, state, characterDatum, hasState, stateDatum);
 					}
-					if(state.getConstraint() != null) {
-						addConstraint(taxonModel, stmtFrom, state);
-						addConstraint(taxonModel, stmtTo, state);
-					}
-					if(state.getFromUnit() != null) {
-						Property unitPredicate =
-							new PropertyImpl(rdfProps.getProperty("prefix.property")
-									.concat(s + "_from_unit"));
-						taxonModel.add(subject, unitPredicate,
-								taxonModel.createTypedLiteral(state.getFromUnit()));
-					}
-					if(state.getToUnit() != null) {
-						Property unitPredicate =
-							new PropertyImpl(rdfProps.getProperty("prefix.property")
-									.concat(s + "_to_unit"));
-						taxonModel.add(subject, unitPredicate,
-								taxonModel.createTypedLiteral(state.getToUnit()));
-					}
+//					if(state.getConstraint() != null) {
+//						addConstraint(taxonModel, stmtFrom, state);
+//						addConstraint(taxonModel, stmtTo, state);
+//					}
+					
+					//circa March 2012, all numeric states are normalized to same units
+//					if(state.getFromUnit() != null) {
+//						Property unitPredicate =
+//							new PropertyImpl(rdfProps.getProperty("prefix.property")
+//									.concat(s + "_from_unit"));
+//						taxonModel.add(subject, unitPredicate,
+//								taxonModel.createTypedLiteral(state.getFromUnit()));
+//					}
+//					if(state.getToUnit() != null) {
+//						Property unitPredicate =
+//							new PropertyImpl(rdfProps.getProperty("prefix.property")
+//									.concat(s + "_to_unit"));
+//						taxonModel.add(subject, unitPredicate,
+//								taxonModel.createTypedLiteral(state.getToUnit()));
+//					}
 				}
 				else {
-					Property predicate = 
-						new PropertyImpl(rdfProps.getProperty("prefix.character").concat(s));
-					Statement stmt = new StatementImpl(subject, predicate,
-							taxonModel.createTypedLiteral(state.getMap().get("value")));
+					//first, define an RDF resource representing the character
+					Resource characterDatum = taxonModel.createResource(rdfProps.getProperty("prefix.character").concat(fullCharName));
+					//we'll also need a blank node for the state datum
+					Resource stateDatum = taxonModel.createResource();
+					//now make a statement that the subject (structure) has this character
+					subject.addProperty(hasCharacter, characterDatum);
+					//and also a statement that this character has a state
+					characterDatum.addProperty(hasState, stateDatum);
+					//place the state values as objects in a statement with the state datum
+					Literal stateObject = taxonModel.createTypedLiteral(state.getMap().get("value"));
+					Statement stmt = new StatementImpl(stateDatum, stateValue, stateObject);
 					taxonModel.add(stmt);
 					if(state.getModifier() != null)
-						addModifier(taxonModel, stmt, state);
-					if(state.getConstraint() != null)
-						addConstraint(taxonModel, stmt, state);
-					if(state.getFromUnit() != null) {
-						Property unitPredicate =
-							new PropertyImpl(rdfProps.getProperty("prefix.property")
-									.concat(s + "_unit"));
-						taxonModel.add(subject, unitPredicate,
-								taxonModel.createTypedLiteral(state.getFromUnit()));
-					}
+						addModifier(taxonModel, state, characterDatum, hasState, stateDatum);
+//					if(state.getConstraint() != null)
+//						addConstraint(taxonModel, stmt, state);
+					
+					//circa March 2012, all numeric states are normalized to same units
+//					if(state.getFromUnit() != null) {
+//						Property unitPredicate =
+//							new PropertyImpl(rdfProps.getProperty("prefix.property")
+//									.concat(s + "_unit"));
+//						taxonModel.add(subject, unitPredicate,
+//								taxonModel.createTypedLiteral(state.getFromUnit()));
+//					}
 				}
 			}
 		}
@@ -218,7 +237,7 @@ public class RDFConverter {
 		}
 		taxonModel.remove(stmt1);
 		taxonModel.remove(statement);
-		
+//		
 	}
 
 	/**
@@ -228,15 +247,22 @@ public class RDFConverter {
 	 * @param statement The statement to reify.
 	 * @param state
 	 */
-	private void addModifier(Model taxonModel, Statement statement,	IState state) {
+	private void addModifier(Model taxonModel, IState state,
+			Resource characterDatum, Property property, Resource stateDatum) {
+		String key = "";
+		if(state instanceof SingletonState)
+			key = SingletonState.KEY;
+		else
+			key = RangeState.KEY_FROM;
 		Property modifierPredicate = new PropertyImpl(rdfProps.getProperty("prefix.modifier"));
 		Literal modifier = taxonModel.createTypedLiteral(state.getModifier());
-		String statementString = rdfProps.getProperty("prefix.reified").
-			concat(statement.getSubject().getLocalName()).
-			concat("_"+statement.getPredicate().getLocalName().
-			concat("_"+state.getMap().get(SingletonState.KEY).toString()));
+//		String statementString = rdfProps.getProperty("prefix.reified").
+//			concat(characterDatum.getLocalName()).
+//			concat("_"+property.getLocalName()).
+//			concat("_"+stateDatum.getLocalName());
+		Statement statement = new StatementImpl(characterDatum, property, stateDatum); 
 		Statement modifierStatement = new StatementImpl(
-				taxonModel.createReifiedStatement(statementString, statement),
+				taxonModel.createReifiedStatement(statement),
 				modifierPredicate,
 				modifier);
 		taxonModel.add(modifierStatement);
