@@ -11,10 +11,12 @@ import conversion.RDFConverter;
 
 public class TestRDFConverter {
 
+	String[] species = {"potentilloides", "cana", "diversifolia", "ruthiae", 
+			"argentea", "capitata", "compacta", "simplex"};
+	
 	DescriptionParser parser;
 	@Before
 	public void setUp() throws Exception {
-		parser = new DescriptionParser("argentea", TaxonRank.SPECIES);
 	}
 
 	@After
@@ -24,9 +26,12 @@ public class TestRDFConverter {
 
 	@Test
 	public void testTaxonToRDF() {
-		TaxonHierarchy h = new TaxonHierarchy(parser.parseTaxon());
-		RDFConverter rdfConverter = new RDFConverter(h);
-		rdfConverter.taxonToRDF(h.getHierarchy().getRoot().getElement(), "output/argentea-rdf.xml");
+		for (String sp : species) {
+			parser = new DescriptionParser(sp, TaxonRank.SPECIES);
+			TaxonHierarchy h = new TaxonHierarchy(parser.parseTaxon());
+			RDFConverter rdfConverter = new RDFConverter(h, parser.getFilename());
+			rdfConverter.taxonToRDF(h.getHierarchy().getRoot().getElement(), "output/"+sp+"-rdf.xml");
+		}
 	}
 
 }

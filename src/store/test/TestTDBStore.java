@@ -37,7 +37,7 @@ public class TestTDBStore {
 	@Test
 	public void testTDBStore() {
 		TaxonHierarchy h = new TaxonHierarchy(parser.parseTaxon());
-		RDFConverter rdfConverter = new RDFConverter(h);
+		RDFConverter rdfConverter = new RDFConverter(h, null);
 		Model cirsiumModel = rdfConverter.taxonToRDF(h.getHierarchy().getRoot().getElement());
 		TDBStore store = new TDBStore(props.getProperty("tdb.store.path"), cirsiumModel);
 		String queryStr = "PREFIX biosem: <http://cs.umb.edu/biosemantics/> SELECT ?x ?y ?z WHERE { ?x ?y ?z . }";
