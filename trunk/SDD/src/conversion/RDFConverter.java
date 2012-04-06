@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import util.ConversionUtil;
 import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -41,15 +43,37 @@ import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 public class RDFConverter {
 
 	private TaxonHierarchy hierarchy;
-	private final RDFProperties rdfProps = new RDFProperties();;
-	private final Property hasCharacter = new PropertyImpl(rdfProps.getProperty("hasCharacter"));
-	private final Property hasState = new PropertyImpl(rdfProps.getProperty("hasState"));
-	private final Property stateValue = new PropertyImpl(rdfProps.getProperty("stateValue"));
-	private final Property stateValueFrom = new PropertyImpl(rdfProps.getProperty("stateValueFrom"));
-	private final Property stateValueTo = new PropertyImpl(rdfProps.getProperty("stateValueTo"));
+	private Model taxonModel;
+	private OntModel biolModel;
+	private OntModel descModel;
+	private String xmlBase;
+	private final RDFProperties rdfProps = new RDFProperties();
+	private final String propNS = rdfProps.getProperty("prefix.property");
+	private final String biolNS = rdfProps.getProperty("biol");
+	private final String structureNS = rdfProps.getProperty("prefix.structure");
+	private final String characterNS = rdfProps.getProperty("prefix.character");
+	private final String modifierNS = rdfProps.getProperty("prefix.modifier");
+	private final String constraintNS = rdfProps.getProperty("prefix.constraint");
+		
+	private final Property hasSubstructure = new PropertyImpl(propNS+"#hasSubstructure");
+	private final Property hasCharacter = new PropertyImpl(propNS+"#hasCharacter");
+	private final Property hasState = new PropertyImpl(propNS+"#hasState");
+	private final Property stateValue = new PropertyImpl(propNS+"#stateValue");
+	private final Property stateValueFrom = new PropertyImpl(propNS+"#stateValueFrom");
+	private final Property stateValueTo = new PropertyImpl(propNS+"#stateValueTo");
 	
-	public RDFConverter(TaxonHierarchy hierarchy) {
+	
+	public RDFConverter(TaxonHierarchy hierarchy, String filename) {
 		this.hierarchy = hierarchy;
+		taxonModel = ModelFactory.createDefaultModel();
+		biolModel = ModelFactory.createOntologyModel();
+		descModel = ModelFactory.createOntologyModel();
+		biolModel.read(biolNS);
+		xmlBase = "http://cs.umb.edu/biosemantics/"+filename;
+		taxonModel.setNsPrefix("", xmlBase);
+//		taxonModel.setNsPrefix("biosem", "http://cs.umb.edu/biosemantics/");
+//		taxonModel.setNsPrefix("biol", biolNS);
+//		taxonModel.setNsPrefix("bsprop", propNS);
 	}
 	
 	/**
@@ -58,11 +82,9 @@ public class RDFConverter {
 	 * @param filename Name of file to output RDF/XML to.
 	 */
 	public void taxonToRDF(ITaxon taxon, String filename) {
-		Model taxonModel = ModelFactory.createDefaultModel();
-		addTaxonomyVocabularyStatements(taxonModel, taxon);
 		Iterator<TreeNode<Structure>> structures = taxon.getStructureTree().iterator();
-		addStructuresToModel(taxonModel, structures);
-		addRelationsToModel(taxonModel, taxon.getRelations());
+		addStructuresToModel(taxon, structures);
+		addRelationsToModel(taxon.getRelations());
 		writeRDF(taxonModel, filename);
 	}
 	
@@ -72,32 +94,10 @@ public class RDFConverter {
 	 * @return The corresponding RDF model.
 	 */
 	public Model taxonToRDF(ITaxon taxon) {
-		Model taxonModel = ModelFactory.createDefaultModel();
-		addTaxonomyVocabularyStatements(taxonModel, taxon);
 		Iterator<TreeNode<Structure>> structures = taxon.getStructureTree().iterator();
-		addStructuresToModel(taxonModel, structures);
-		addRelationsToModel(taxonModel, taxon.getRelations());
+		addStructuresToModel(taxon, structures);
+		addRelationsToModel(taxon.getRelations());
 		return taxonModel;
-	}
-
-	/**
-	 * Adds some taxonomy vocabulary triples to the taxon model.  Vocabulary defined by
-	 * http://purl.org/NET/biol/ns#
-	 * @param taxonModel
-	 * @param taxon
-	 */
-	private void addTaxonomyVocabularyStatements(Model taxonModel,
-			ITaxon taxon) {
-		Structure wholeOrganism = taxon.getStructureTree().getRoot().getElement();
-		Resource organismResource = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
-				.concat(wholeOrganism.getName()));
-		Property hasTaxonomy = new PropertyImpl(rdfProps.getProperty("biol").concat("hasTaxonomy"));
-		Resource taxonomy = taxonModel.getResource(rdfProps.getProperty("biol").concat("Taxonomy"));
-		Property name = new PropertyImpl(rdfProps.getProperty("biol").concat("name"));
-		Property classification = new PropertyImpl(rdfProps.getProperty("biol").concat(taxon.getTaxonRank().toString().toLowerCase()));
-		taxonModel.add(organismResource, hasTaxonomy, taxonomy);
-		taxonModel.add(taxonomy, name, taxon.getName());
-		taxonModel.add(taxonomy, classification, taxon.getName());
 	}
 
 	/**
@@ -105,17 +105,27 @@ public class RDFConverter {
 	 * @param taxonModel
 	 * @param structures
 	 */
-	private void addStructuresToModel(Model taxonModel,
-			Iterator<TreeNode<Structure>> structures) {
+	private void addStructuresToModel(ITaxon taxon,	Iterator<TreeNode<Structure>> structures) {
 		while(structures.hasNext()) {
 			TreeNode<Structure> node = structures.next();
 			Structure structure = node.getElement();
-			Resource fromResource = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
-					.concat(structure.getName()));
-			Property property = new PropertyImpl(rdfProps.getProperty("prefix.property").concat("has_substructure"));
+			Resource fromType = descModel.createResource(structureNS+"#"+structure.getName());
+			Resource fromResource = taxonModel.createResource("#"+structure.getName(), fromType);
+			if (structure.getName().equals("whole_organism")) {
+				//the whole organism gets a taxonomy attached.
+				Property hasTaxonomy = new PropertyImpl(biolNS+"#hasTaxonomy");
+				//the taxonomy is of type purl.org/NET/biol/ns#Taxonomy
+				Resource taxonomy = taxonModel.createResource("#taxonomy", biolModel.getResource(biolNS+"#Taxonomy")); 
+				Property name = new PropertyImpl(biolNS+"#name");
+				Property classification = new PropertyImpl(biolNS+"#"+taxon.getTaxonRank().toString().toLowerCase());
+				taxonModel.add(fromResource, hasTaxonomy, taxonomy);
+				taxonModel.add(taxonomy, name, taxon.getName());
+				taxonModel.add(taxonomy, classification, taxon.getName());
+			}
+			Property property = new PropertyImpl(propNS+"#hasSubstructure");
 			for(TreeNode<Structure> child : node.getChildren()) {
-				Resource toResource = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
-						.concat(child.getElement().getName()));
+				Resource toType = descModel.createResource(structureNS+"#"+child.getElement().getName());
+				Resource toResource = taxonModel.createResource("#"+child.getElement().getName(), toType);
 				taxonModel.add(fromResource, property, toResource);
 			}
 			addCharactersToModel(taxonModel, fromResource, node, structure.getCharStateMap());
@@ -133,16 +143,19 @@ public class RDFConverter {
 			TreeNode<Structure> node, Map<String, List<IState>> map) {
 		for(String s : map.keySet()) {
 			String fullCharName = ConversionUtil.resolveFullCharacterName(s, node);
+			//first, define an RDF resource representing the character
+			Resource characterType = descModel.createResource(characterNS+"#"+fullCharName);
+			Resource characterDatum = taxonModel.createResource("#"+fullCharName, characterType);
+			//now make a statement that the subject (structure) has this character
+			subject.addProperty(hasCharacter, characterDatum);
+			
 			for(IState state : map.get(s)) {
+				//we'll also need a blank node for the state datum
+				Resource stateDatum = taxonModel.createResource();
+				//and also a statement that this character has a state
+				characterDatum.addProperty(hasState, stateDatum);
+				
 				if(state instanceof RangeState || state instanceof EmptyState) {	
-					//first, define an RDF resource representing the character
-					Resource characterDatum = taxonModel.createResource(rdfProps.getProperty("prefix.character").concat(fullCharName));
-					//we'll also need a blank node for the state datum
-					Resource stateDatum = taxonModel.createResource();
-					//now make a statement that the subject (structure) has this character
-					subject.addProperty(hasCharacter, characterDatum);
-					//and also a statement that this character has a state
-					characterDatum.addProperty(hasState, stateDatum);
 					//place the state values as objects in a statement with the state datum
 					Literal stateObjectFrom = taxonModel.createTypedLiteral(state.getMap().get("from value"));
 					Statement stmtFrom = new StatementImpl(stateDatum, stateValueFrom, stateObjectFrom);
@@ -176,14 +189,6 @@ public class RDFConverter {
 //					}
 				}
 				else {
-					//first, define an RDF resource representing the character
-					Resource characterDatum = taxonModel.createResource(rdfProps.getProperty("prefix.character").concat(fullCharName));
-					//we'll also need a blank node for the state datum
-					Resource stateDatum = taxonModel.createResource();
-					//now make a statement that the subject (structure) has this character
-					subject.addProperty(hasCharacter, characterDatum);
-					//and also a statement that this character has a state
-					characterDatum.addProperty(hasState, stateDatum);
 					//place the state values as objects in a statement with the state datum
 					Literal stateObject = taxonModel.createTypedLiteral(state.getMap().get("value"));
 					Statement stmt = new StatementImpl(stateDatum, stateValue, stateObject);
@@ -215,7 +220,7 @@ public class RDFConverter {
 	 */
 	private void addConstraint(Model taxonModel, IState state,
 			Resource characterDatum, Property property, Resource stateDatum) {
-		Property constraintPredicate = new PropertyImpl(rdfProps.getProperty("prefix.constraint"));
+		Property constraintPredicate = new PropertyImpl(constraintNS);
 		Literal constraint = taxonModel.createTypedLiteral(state.getConstraint());
 		Statement statement = new StatementImpl(characterDatum, property, stateDatum);
 		ReifiedStatement reifStmt = taxonModel.createReifiedStatement(statement);
@@ -238,7 +243,7 @@ public class RDFConverter {
 //			taxonModel.add(cId, typeProp, constraintType);
 //		}
 //		taxonModel.remove(stmt1);
-		taxonModel.remove(statement);
+//		taxonModel.remove(statement);
 //		
 	}
 
@@ -256,7 +261,7 @@ public class RDFConverter {
 			key = SingletonState.KEY;
 		else
 			key = RangeState.KEY_FROM;
-		Property modifierPredicate = new PropertyImpl(rdfProps.getProperty("prefix.modifier"));
+		Property modifierPredicate = new PropertyImpl(modifierNS);
 		Literal modifier = taxonModel.createTypedLiteral(state.getModifier());
 //		String statementString = rdfProps.getProperty("prefix.reified").
 //			concat(characterDatum.getLocalName()).
@@ -268,7 +273,7 @@ public class RDFConverter {
 				modifierPredicate,
 				modifier);
 		taxonModel.add(modifierStatement);
-		taxonModel.remove(statement);
+//		taxonModel.remove(statement);
 	}
 
 	/**
@@ -276,14 +281,11 @@ public class RDFConverter {
 	 * @param taxonModel
 	 * @param relations
 	 */
-	private void addRelationsToModel(Model taxonModel, List<Relation> relations) {
+	private void addRelationsToModel(List<Relation> relations) {
 		for(Relation r : relations) {
-			Resource from = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
-					.concat(((Structure)r.getFrom().get(0)).getName()));
-			Resource to = taxonModel.getResource(rdfProps.getProperty("prefix.structure")
-					.concat(((Structure)r.getTo().get(0)).getName()));
-			Property predicate = new PropertyImpl(rdfProps.getProperty("prefix.property")
-					.concat(r.getName()));
+			Resource from = taxonModel.getResource("#"+((Structure)r.getFrom().get(0)).getName());
+			Resource to = taxonModel.getResource("#"+((Structure)r.getTo().get(0)).getName());
+			Property predicate = new PropertyImpl(propNS+"#"+r.getName());
 			taxonModel.add(from, predicate, to);
 		}
 	}
@@ -296,6 +298,7 @@ public class RDFConverter {
 	private void writeRDF(Model m, String filename) {
 		RDFWriter writer = m.getWriter("RDF/XML");
 		writer.setProperty("allowBadURIs", "true");
+		writer.setProperty("xmlbase", xmlBase);
 		OutputStream out = null;
 		try {
 			out = new FileOutputStream(filename);

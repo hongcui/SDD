@@ -31,6 +31,7 @@ public class DescriptionParser {
 	private String taxonName;
 	private TaxonRank taxonRank;
 	private FilenameTaxonDao filenameTaxonDao;
+	private String filename;
 	
 	/**
 	 * Creates a new DescriptionParser object (loads a jaxb context
@@ -54,7 +55,7 @@ public class DescriptionParser {
 		ITaxon taxon = TaxonFactory.getTaxonObject(taxonRank, taxonName);
 		try {
 			Unmarshaller unmarshaller = annotationContext.createUnmarshaller();
-			String filename = filenameTaxonDao.getFilenameForDescription(taxonRank, taxonName);
+			this.filename = filenameTaxonDao.getFilenameForDescription(taxonRank, taxonName);
 			String path = props.getProperty("input.path") + filename;
 			Treatment treatment = (Treatment) unmarshaller.unmarshal(new File(path));
 			Description description = treatment.getDescription();
@@ -236,5 +237,12 @@ public class DescriptionParser {
 
 	public void setTaxonRank(TaxonRank taxonRank) {
 		this.taxonRank = taxonRank;
+	}
+
+	/**
+	 * @return the filename
+	 */
+	public String getFilename() {
+		return filename;
 	}
 }
