@@ -1,0 +1,104 @@
+= Implementation Details =
+
+This section provides a brief overview of the packages that comprise the 
+"biosemantics-SDD" project and the ways in which they interact.  I'll try
+to proceed in a "bottom-up" fashion, in terms of functionality.
+
+== The annotationSchema.jaxb package ==
+
+This package contains the jaxb class bindings for each of the different 
+elements in the "characterAnnotationSchema", i.e. the XML Schema that 
+describes the format of the taxonomic XML descriptions.  This is more or less
+set in stone at this point, pending changes to the schema.
+
+== The tree package ==
+
+This contains an implementation of an n-ary tree.  We need this to help
+represent our internal notion (internal to this java project) of what a 
+taxonomy is.
+
+== The taxonomy package ==
+
+First, we have a notion of TaxonRank, an ordered representation of the 
+standard Kingdom, Phyllum, Class, ..., Genus, Species, Subspeices, Variety.
+There is a unique taxon class associated with each member of this ordering.
+
+Any taxon object (really a description of some organism at a stated taxonomic
+rank) extends the TaxonBase class and implements the ITaxon
+interface.  TaxonBase objects are composed of the following:
+  * taxonRank, which indicates the rank of the taxonomic description 
+for this Taxon.
+  * charMap, which maps Structure objects to character->state maps.  We can 
+think of this as holding the taxon-character matrix for the description.
+  * structureTree, a tree describing the morpholocial structure of the
+organism.  This makes use of the aforementioned n-ary tree implementation.
+Each node of the tree is a Structure object, where the root node is the 
+whole organism (if a given description contains no "whole organism" element,
+we make up a dummy one and set it as the root) and the child of any node
+is morphologically a part of its parent.
+  * relations, a list of Relation objects.  Relations can be between Characters
+or Structures.
+  * statementTextMap, a mapping between statement ids and the text from 
+the original descriptions (from which the marked-up description was parsed).
+
+A collection of taxon objects, say all in the same family, can be held
+together in a TaxonHierarchy.  This is my simple representation of 
+what biologists probably mean when they say "taxonomy".  Again, we make
+use of an n-ary tree, where each node in the tree is a taxon object, and nodes
+in the same level are descriptions of taxa at the same rank.  The root node
+is the highest taxon and children of a node are at a lower rank in the same
+taxonomic tree as their parents.
+
+== The conversion package ==
+
+With a basic framework in-hand, we can actually start doing stuff here in
+the conversion package.  The "lowest level" here is the DescriptionParser
+class.  The goal of a DescriptionParser object is to take a given
+taxonomic name and rank (these have to match what's in our database of
+descriptions for given taxon names and ranks) and return a new ITaxon object.
+For example:
+
+{{{
+DescriptionParser parser = new DescriptionParser("achillea", TaxonRank.GENUS);
+ITaxon taxon = parser.parseTaxon();
+}}}
+
+For an example of how to create a TaxonHierarchy using DescriptionParser 
+objects, see TestDescriptionParser.java in the conversion.text package.
+
+
+=== RDF Conversion ===
+
+The work of converting between descriptions (via ITaxon objects) and 
+RDF format is done in the RDFConverter.  We use the Jena framework 
+(http://jena.apache.org/) to process and write RDF in XML.  A lot of the 
+fields of the RDFConverter class are simply there to hold namespaces
+or Jena Property (i.e. the "predicate" part of the subject-predicate-object
+triple) objects.
+
+The main unit of the Jena framework is the model - the RDF graph in which
+Resources/Property objects are created/kept.  We make use of 3 models in 
+the RDFConverter:
+  * taxonModel, which is a Default model and where we store triples describing
+the taxon-character-state triples.
+  * descModel, which contains Resources for describing, for example, the type
+of a particular resource in the taxonModel (type is something like structure
+or character).
+  * biolModel, which contains resources for describing taxonomic details
+(e.g. the taxonomic rank).  I'm currently (circa June 2012) using 
+http://purl.org/NET/biol/ns as the RDF namespace for this model, but this 
+really needs to be changed to something more robust (and maintained).
+
+Both descModel and biolModel are OntologyModel objects (they both relate
+to ontological uses for our data).
+
+
+=== SDD Conversion ===
+
+Every class in this package outside of the DescriptionParser, RDFConverter,
+TaxonCharacterMatrix, and Properties classes is for use in converting
+descriptions to SDD.
+
+=== DescriptionProperties and RDFProperties ===
+
+Just some standard java Properties classes.
