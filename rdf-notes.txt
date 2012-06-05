@@ -1,0 +1,39 @@
+#summary Notes on generating RDF from marked-up data.
+
+= Introduction =
+
+Big idea: we want to convert marked-up biodiversity literature into RDF in
+such a way that:
+  * We can write SPARQL queries against a database of RDF graphs that answer
+useful questions for practioners, both within and across taxonomic scopes.
+  * The meaning of the marked-up data is preserved in the RDF representation.
+
+
+= Details =
+
+We'll discuss here some issues that have come up in generating RDF and our 
+solutions/thoughts for those issues.
+
+== Motivating Example ==
+
+Let's say we're dealing with the genus Sphairomeria.  There are about 8 species
+in this genus.  Now let's say that a botanist wants to lookup the position
+of the leaves for everything in this genus (and imagine that we have an RDF
+graph that contains triples relating to only this genus).  So we have a 
+structure, "leaf", a character "insertion_or_position", and optionally a 
+modifier associated with each character-state value.
+
+Now, when we first started producing RDF, we had some namespaces like
+biosem:http://cs.umb.edu/biosemantics/
+
+as toy examples, and we might have tried to express a triple about the 
+leaf insertion/position of the species S. argentea as follows:
+
+biosem:whole_organism	biosem:hasSubstructure	   biosem:structure#leaf
+biosem:structure#leaf	biosem:character#leaf_insertion_or_position "cauline"
+
+And is there's a modifier like "mostly" associated with this character-state,
+we would just use reification on the second of these triples, with the 
+predicate biosem:modifier and the object "mostly".  This isn't a terrible
+representation of what we're going for, but in practice, one would quickly
+find it to be inadequate.
