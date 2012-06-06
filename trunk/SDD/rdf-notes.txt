@@ -24,16 +24,182 @@ structure, "leaf", a character "insertion_or_position", and optionally a
 modifier associated with each character-state value.
 
 Now, when we first started producing RDF, we had some namespaces like
-biosem:http://cs.umb.edu/biosemantics/
-
-as toy examples, and we might have tried to express a triple about the 
-leaf insertion/position of the species S. argentea as follows:
+biosem:http://cs.umb.edu/biosemantics/ as a toy example, and we might have 
+tried to express a triple about the leaf insertion/position of the species
+S. argentea as follows:
 
 biosem:whole_organism	biosem:hasSubstructure	   biosem:structure#leaf
 biosem:structure#leaf	biosem:character#leaf_insertion_or_position "cauline"
 
-And is there's a modifier like "mostly" associated with this character-state,
+And if there's a modifier like "mostly" associated with this character-state,
 we would just use reification on the second of these triples, with the 
 predicate biosem:modifier and the object "mostly".  This isn't a terrible
 representation of what we're going for, but in practice, one would quickly
 find it to be inadequate.
+
+=== Expressing states in RDF ===
+
+For expressing relatively simple character-state assertions, like
+the insertion or position of a leaf having state "cauline", the triple
+biosem:structure#leaf	biosem:character#leaf_insertion_or_position "cauline"
+works fine.  But what if we want to express some type of ranged state, e.g. that
+the size of a plant's involucre is in the range 3-5mm?  We originally tried the
+following approach:
+biosem:involucre biosem:involucre_size_from 3
+biosem:involucre biosem:involucre_size_to 5
+biosem:involucre_size_from biosem:has_unit mm
+biosem:involucre_size_to biosem:has_unit mm
+
+The main problem with this is that there's no way to infer (e.g. via a SPARQL
+query) that involucre_size_from and involucre_size_to are really talking about
+the same character, involucre_size.  In this type of modeling, the extremes of 
+any range are coerced into two new characters, effectively replacing the
+original character.  
+
+Furthermore, when looking at units, there's no way in this
+simple representation to glean the meaning of millimeter (vs. say centimeter,
+or gallon, or anything else).  One "quick fix" that we've implemented is 
+to convert all units to standard kilograms-meters-seconds when building our
+TaxonHierarchy model in Java.  Then we can just include some piece of metadata
+in our RDF documents stating that all numerical measurements are done in these
+standard units.  One more step that we need to include here, either in creating
+our ontology of terms on the FNA side, or perhaps on the Boston side, is to
+indicate the type of thing that a given character measures (size might measure
+distance or weight, depending on the context).
+
+Since we're fairly well-convinced that dealing with units in the above manner
+should be sufficient, let's get back to the original problem: we need a way
+to express that something like size_from and size_to are really talking about
+the same state.  The solution is to represent the state itself as an anonymous
+resource, as follows:
+
+biosem:involucre biosem:involucre_size genid:UA4
+genid:UA4 biosem:property#stateValueFrom 0.005
+genid:UA4 biosem:property#stateValueTo 0.003
+
+=== Combining Information From Multiple Descriptions ===
+
+Now let's assume that we have RDF graphs for both S. argentea and S. ruthiae.
+Suppose we'd like to combine these into a single RDF model and write a query
+that answers the leaf insertion/position of both S. argentea and S. ruthiae.
+How might this look?  Our original inclination is that a structure in a single
+RDF model is represented by the resource biosem:structure#leaf, and a character
+like insertion_or_position as biosem:character#leaf_insertion_or_position
+(quick aside: notice that we always talk about a character in the context of
+the morphological structure the character is describing.  This is because 
+the insertion_or_position of a leaf is fundamentally a different character 
+than, say, the insertion_or_position of a blade).
+
+What happens if we take this approach and try to combine two RDF models, one
+for S. ruthiae and one for S. argentea?  We get the following:
+
+structure#whole_organism prop#hasSubstructure structure#leaf
+structure#whole_organism prop#hasTaxonomy taxonomy1
+structure#whole_organism prop#hasTaxonomy taxonomy2
+
+Uh-oh: right away, we run into a problem where one organism has two taxonomies!
+This is because we started out by looking at RDF descriptions of taxa in 
+seclusion.  We really need some way to indicate the the whole_organism of 
+S.argentea and the whole_organism of S. ruthiae are really two instances of the
+same concept.  What do we need to do this?  We need first some notion of the 
+"type" whole_organism.  This is where we use our ontology model - we
+define a new type resource: biosem:structure#whole_organism.  Now, we
+need some unique way to define the resources for the instances of whole_organism
+for S. argentea and S. ruthiae.  Every parsed description (the output of Hong's
+parser) resides in a unique document.  For example, the descriptions of 
+S. argentea and S. ruthiae are contained in the documents 842.xml and 843.xml,
+respectively.  We can use this in our biosem namespace to get the unambiguous
+triples:
+
+biosem:842.xml#whole_organism rdf:type biosem:structure#whole_organism
+biosem:843.xml#whole_organism rdf:type biosem:structure#whole_organism
+
+We can then express the taxonomic information as follows:
+
+biosem:842.xml#whole_organism bio:hasTaxonomy biosem:842.xml#taxonomy
+biosem:842.xml#taxonomy	      rdf:type	      bio:Taxonomy
+biosem:842.xml#taxonomy	      bio:species     bio:argentea
+
+...and similarly for S. ruthiae (843.xml).
+
+Now we can take this method of identifying instances of types with resources
+named according to the description document name further down the line into
+the realms of characters:
+
+biosem:842.xml#whole_organism biosem:prop#hasSubstructure biosem:842.xml#leaf
+biosem:842.xml#leaf rdf:type biosem:structure#leaf
+    biosem:prop#hasCharacter biosem:842.xml#leaf_insertion_or_position
+biosem:842.xml#leaf_insertion_or_position 
+    rdf:type biosem:character#leaf_insertion_or_position
+    biosem:prop#hasState genid:UA21
+genid:UA21 biosem:prop#stateValue basal
+
+Now, if we want apply some modifier like "mostly" to this character-state,
+we can do the following:
+
+genid:UA20 rdf:subject biosem:842.xml#leaf_insertion_or_position
+genid:UA20 rdf:object genid:UA21
+genid:UA20 rdf:type rdf:statement
+genid:UA20 rdf:predicate biosem:prop#hasState
+genid:UA20 biosem:modifier mostly
+
+In this manner, we apply the modifier only to the S. argentea instance of the
+character leaf_insertion_or_position and the state basal.
+
+=== Sample SPARQL Query ===
+
+Using the above framework, we can construct a SPARQL query to answer a question
+like "Show me the state of the insertion_or_position of the leaf structure
+and any associated modifiers for everything in the Sphairomeria genus."
+
+SPARQL's optional pattern matching device makes short work of the "any
+associated modifier" part of this question:
+
+PREFIX biol: <http://purl.org/NET/biol/ns#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix prop: <http://cs.umb.edu/biosemantics/property#>
+prefix char: <http://cs.umb.edu/biosemantics/character#>
+prefix biosem: <http://cs.umb.edu/biosemantics/>
+prefix fn:  <http://www.w3.org/2005/xpath-functions#>
+SELECT ?taxonName (fn:concat (?value, "") as ?val) (fn:concat
+(?modifier, "") as ?mod)
+WHERE  {
+       ?taxon biol:hasTaxonomy ?taxonomy .
+       ?taxonomy biol:name ?taxonName .
+       ?taxon prop:hasSubstructure ?s1 .
+       ?s1 prop:hasCharacter ?c1 .
+       ?c1 rdf:type char:leaf_insertion_or_position .
+       ?c1 prop:hasState ?state .
+       ?state prop:stateValue ?value .
+       optional {?blank rdf:subject ?c1 .
+       ?blank rdf:object ?state .
+       ?blank biosem:modifier ?modifier}
+       }
+
+With RDF models for each species combined into one and placed in a triple store,
+this query gives us the following result:
+
+-------------------------------------------
+| taxonName        | val       | mod      |
+===========================================
+| "potentilloides" | "cauline" |          |
+| "potentilloides" | "basal"   |          |
+| "ruthiae"        | "cauline" | "mostly" |
+| "diversifolia"   | "cauline" | "mostly" |
+| "argentea"       | "basal"   | "mostly" |
+| "simplex"        | "basal"   | "mostly" |
+| "compacta"       | "basal"   | "mostly" |
+| "capitata"       | "basal"   | "mostly" |
+-------------------------------------------
+
+Notice that our framework handles polymorphic characters in an intuitive manner:
+we answer a value for each state out of the set of states that a polymorphic
+character obtains.
+
+=== To Do ===
+
+If we're writing a SPARQL endpoint for biologist (or whoever) to use,
+we need to deal with the fact that some states have values pointed at by
+"stateValue" predicates, whereas others are pointed at by range pairs
+"stateValueFrom" and "stateValueTo".  This might just mean that any SPARQL
+query generation method we use really writes two queries for any state.
