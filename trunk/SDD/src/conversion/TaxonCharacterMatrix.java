@@ -185,7 +185,7 @@ public class TaxonCharacterMatrix {
 			e.printStackTrace();
 		}
 		List<String> header = new ArrayList<String>();
-		header.add("");	//leave the first entry blank in the matrix.
+		header.add("Name");
 		Map<ITaxon, List<String>> rows = new TreeMap<ITaxon, List<String>>(new TaxonComparator());
 		for(String charName : table.keySet()) {
 			header.add(charName);
