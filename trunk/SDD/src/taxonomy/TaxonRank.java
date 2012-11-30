@@ -9,7 +9,36 @@ package taxonomy;
  * @author Alex
  *
  */
+
 public enum TaxonRank {
+	VARIETY,
+	SUBSPECIES,
+	SPECIES,
+	SUBSECTION,
+	SECTION,
+	SUBGENUS,
+	GENUS,
+	SUBTRIBE,
+	TRIBE,
+	SUBFAMILY,
+	FAMILY,
+	SUPERFAMILY,
+	SUBORDER,
+	ORDER,
+	SUPERORDER,
+	SUBCLASS,
+	CLASS,
+	SUPERCLASS,
+	SUBDIVSION,
+	DIVISION,
+	SUPERDIVISION,
+	SUBPHYLUM,
+	PHYLLUM,
+	KINGDOM,
+	DOMAIN
+}
+
+/*public enum TaxonRank {
 	VARIETY,
 	SUBSPECIES,
 	SPECIES,
@@ -25,4 +54,4 @@ public enum TaxonRank {
 	CLASS,
 	PHYLLUM,
 	KINGDOM	
-}
+}*/
