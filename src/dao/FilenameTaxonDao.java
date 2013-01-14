@@ -18,7 +18,8 @@ import taxonomy.TaxonRank;
  *
  */
 public class FilenameTaxonDao extends BaseDao{
-	
+	//DatabaseProperties dp = this.getProperties(); 
+	//String dbname = (String) dp.get("filename-database");
 	private String database = this.getProperties().getProperty("filename-database");
 	private String tablename = this.getProperties().getProperty("filename-table-name");
 	
@@ -49,7 +50,7 @@ public class FilenameTaxonDao extends BaseDao{
 		try {
 			conn = getConnection(database);
 			Statement s = conn.createStatement();
-			rs = s.executeQuery("SELECT * FROM " + this.tablename +
+			rs = s.executeQuery("SELECT * FROM " + this.database+"."+this.tablename +
 					" WHERE filename = '" + filename +"';");
 			while(rs.next()) {
 				result.put("family", rs.getString("family"));
@@ -89,7 +90,7 @@ public class FilenameTaxonDao extends BaseDao{
 		try {
 			conn = getConnection(database);
 			Statement s = conn.createStatement();
-			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE "
+			rs = s.executeQuery("SELECT filename FROM "+this.database+"."+this.tablename+" WHERE "
 					+ taxon + " = '" + name +"';");
 			while(rs.next()) {
 				result.add(rs.getString("filename"));
@@ -118,7 +119,7 @@ public class FilenameTaxonDao extends BaseDao{
 		try {
 			conn = getConnection(database);
 			Statement s = conn.createStatement();
-			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE family = '" + familyName 
+			rs = s.executeQuery("SELECT filename FROM "+this.database+"."+this.tablename+" WHERE family = '" + familyName 
 					+"' and subfamily = '' and tribe = '' and subtribe = '' and genus = '' "
 					+"and subgenus = '' and section = '' and subsection = '' "
 					+"and species = '' and subspecies = '' and variety = '' ;");
@@ -156,7 +157,7 @@ public class FilenameTaxonDao extends BaseDao{
 		try {
 			conn = getConnection(database);
 			Statement s = conn.createStatement();
-			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE " + whereClause + ";");
+			rs = s.executeQuery("SELECT filename FROM "+this.database+"."+this.tablename+" WHERE " + whereClause + ";");
 			while(rs.next()) {
 				result = rs.getString("filename");
 			}
@@ -193,7 +194,7 @@ public class FilenameTaxonDao extends BaseDao{
 		try {
 			conn = getConnection(database);
 			Statement s = conn.createStatement();
-			rs = s.executeQuery("SELECT filename FROM fnav19_filename2taxon WHERE " +  whereClause);
+			rs = s.executeQuery("SELECT filename FROM "+this.database+"."+this.tablename+" WHERE " +  whereClause);
 			while(rs.next()) {
 				filenames.add(rs.getString("filename"));
 			}

@@ -30,13 +30,14 @@ public class TaxonCharacterMatrixTest {
 
 	@Test
 	public final void testTaxonCharacterMatrix() {
-		TaxonHierarchy th = makeHierarchyGenus("achillea");
-//		TaxonHierarchy th = makeHierarchyTwoLevel("cynareae", TaxonRank.TRIBE, TaxonRank.GENUS);
+		//TaxonHierarchy th = makeHierarchyGenus("achillea");
+		TaxonHierarchy th = makeHierarchyTwoLevel("arenaria", TaxonRank.GENUS, TaxonRank.VARIETY);
 		th.printSimple();
 		TaxonCharacterMatrix matrix = new TaxonCharacterMatrix(th);
 //		Map<String, Map<ITaxon, List<IState>>> map = matrix.getTable();
 //		matrix.printSimple();
-		matrix.generateMatrixFile("output/achillea.txt");
+		                           
+		matrix.generateMatrixFile("C:\\Documents and Settings\\Hong Updates\\Desktop\\2012BiosemanticsWorkshopTest\\FNAv5Caryophyllaceae\\target\\final\\matrix.txt");
 //		matrix.generateMatrixFile("output/cirsium.txt");
 //		matrix.generateMatrixFile("output/cynareae-genus.txt");
 	}

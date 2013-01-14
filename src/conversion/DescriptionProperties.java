@@ -26,6 +26,9 @@ public class DescriptionProperties extends Properties {
 		super();
 		FileInputStream fis = null;
 		try {
+    		//String dp = System.getProperty("user.dir").replaceFirst("parsing-gui$", "")+"SDD\\src\\conversion\\description.properties";   		
+   			//fis = new FileInputStream(dp);
+
 			fis = new FileInputStream("src/conversion/description.properties");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

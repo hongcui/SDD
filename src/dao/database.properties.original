@@ -1,0 +1,12 @@
+user = root
+password = root
+driver = com.mysql.jdbc.Driver
+url = jdbc:mysql://localhost:3306/
+singular-plural-database = markedupdatasets
+singular-plural-table-name = treatise_o_test_singularplural
+filename-database = markedupdatasets
+filename-table-name = treatise_o_test_filename2taxon
+#singular-plural-database = singularpluralorgannames
+#singular-plural-table-name = singularplural_fnav19
+#filename-database = toboston
+#filename-table-name = fnav19_filename2taxon
