@@ -16,7 +16,9 @@ public class DatabaseProperties extends Properties {
 		super();
 		FileInputStream fis = null;
 		try {
-			fis = new FileInputStream("src/dao/database.properties");
+    		//String dbp = System.getProperty("user.dir").replaceFirst("parsing-gui$", "")+"SDD\\src\\dao\\database.properties";   		
+			//fis = new FileInputStream(dbp);
+    		fis = new FileInputStream("src/dao/database.properties");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -11,6 +11,7 @@ public class BaseDao {
 	private static final String USER = (String) props.get("user");
 	private static final String PASSWORD = (String) props.get("password");
 	private static final String DRIVER = (String) props.get("driver");
+	//private static final String database = (String) props.get("filename-database");
 	
 	/**
 	 * Gets a new connection to a MySQL database.

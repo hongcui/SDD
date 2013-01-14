@@ -1,0 +1,8 @@
+jaxb.annotation.directory = /bin/annotationSchema/jaxb
+#input.path = Z:\\COURSES\\ControlledVocabulary\\630Fall2011\\project\\SimpliedXML\\
+input.path = C:\\Documents and Settings\\Hong Updates\\Desktop\\2012BiosemanticsWorkshopTest\\TreatisePartO\\target\\final
+#input.path = C:\\Documents and Settings\\Hong Updates\\Desktop\\Australia\\fnav19_final\\final\\
+#input.path = C:\\Documents and Settings\\Hong Updates\\Desktop\\Australia\\V4\\target\\final\\
+#input.path = C:\\workspace\\fnav19-final\\final\\
+#input.path = /home/alex/workspace/final/
+
