@@ -1,0 +1,227 @@
+<treatment>
+  <number>7.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>paludicola</species_name>
+    <species_authority>B. L. Robinson</species_authority>
+    <place_of_publication>
+      <publication_title>Proc. Amer. Acad. Arts</publication_title>
+      <place_in_publication>29: 298. 1894</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <common_name>Marsh sandwort</common_name>
+  <TaxonIdentification Status="BASIONYM">
+    <genus_name>Alsine</genus_name>
+    <species_name>palustris</species_name>
+    <species_authority>Kellogg</species_authority>
+    <place_of_publication>
+      <publication_title>Proc. Calif. Acad. Sci.</publication_title>
+      <place_in_publication>3: 61. 1863 (as palustre),</place_in_publication>
+      <other_info>not Arenaria palustre Gay 1845</other_info>
+    </place_of_publication>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Minuartia</genus_name>
+    <species_name>paludicola</species_name>
+    <species_authority>(B. L. Robinson) House</species_authority>
+  </TaxonIdentification>
+  <description>
+    <statement id="109.txt-0">
+      <text>Plants perennial, not matted.</text>
+      <structure id="o252" name="whole_organism">
+        <character name="life_style" value="perennial" />
+        <character name="habit" value="matted" modifier="not" />
+        <character name="life_style" value="plant" />
+      </structure>
+    </statement>
+    <statement id="109.txt-1">
+      <text>Taproots filiform;</text>
+      <structure id="o253" name="taproot">
+        <character name="shape" value="filiform" />
+      </structure>
+    </statement>
+    <statement id="109.txt-2">
+      <text>rhizomes slender, 15+ cm.</text>
+      <structure id="o254" name="rhizome">
+        <character name="size" value="slender" />
+        <character name="size" value="15+" unit="cm" />
+      </structure>
+    </statement>
+    <statement id="109.txt-3">
+      <text>Stems 5–15, weakly erect, green, 25–90 cm;</text>
+      <structure id="o255" name="stem">
+        <character char_type="range_value" name="count" from="5" to="15" />
+        <character name="orientation" value="erect" modifier="weakly" />
+        <character name="coloration" value="green" />
+        <character char_type="range_value" name="size" from="25" from_unit="cm" to="90" to_unit="cm" />
+      </structure>
+    </statement>
+    <statement id="109.txt-4">
+      <text>internodes angular to grooved, 2/3–3 times as long as leaves, shiny, glabrous except for fine hairs at nodes.</text>
+      <structure id="o256" name="internode">
+        <character name="reflectance" value="shiny" />
+        <character name="external_texture" value="glabrous" constraint="except-for hairs" constraintid="o259" />
+      </structure>
+      <structure id="o257" name="time">
+        <character name="architecture" value="grooved" />
+        <character char_type="range_value" name="count" from="2/3" to="3" />
+        <character name="type" value="leaves" modifier="as-long-as" />
+      </structure>
+      <relation id="r23" name="angular to" from="o256" to="o257" negation="false" />
+      <structure id="o258" name="leaf" />
+      <structure id="o259" name="hair">
+        <character name="width" value="fine" />
+      </structure>
+      <structure id="o260" name="node" />
+      <relation id="r24" name="at" from="o259" to="o260" negation="false" />
+    </statement>
+    <statement id="109.txt-5">
+      <text>Leaves connate basally, with scarious sheath 0.2–0.5 mm, sessile;</text>
+      <structure id="o261" name="leaf">
+        <character name="fusion" value="connate" modifier="basally" />
+        <character name="architecture" value="sessile" />
+      </structure>
+      <structure id="o262" name="sheath">
+        <character name="external_texture" value="scarious" />
+        <character char_type="range_value" name="size" from="0.2" from_unit="mm" to="0.5" to_unit="mm" />
+      </structure>
+      <relation id="r25" name="with" from="o261" to="o262" negation="false" />
+    </statement>
+    <statement id="109.txt-6">
+      <text>blade 1-veined (vein prominent abaxially ), linear to linear-lanceolate, 20–55 × 2–7 mm, herbaceous to subsucculent, margins ± flat, scarious, shiny, ciliate, apex acute or acuminate to cuspidate, sometimes pustulate, sparsely pubescent on adaxial surface;</text>
+      <structure id="o263" name="blade">
+        <character name="architecture" value="1-veined" />
+        <character char_type="range_value" name="shape" from="linear" to="linear-lanceolate" />
+        <character name="shape" value="linear" />
+        <character name="shape" value="linear-lanceolate" />
+        <character char_type="range_value" name="length" from="20" from_unit="mm" to="55" to_unit="mm" />
+        <character char_type="range_value" name="width" from="2" from_unit="mm" to="7" to_unit="mm" />
+        <character char_type="range_value" name="internal_texture" from="herbaceous" to="subsucculent" />
+        <character name="internal_texture" value="herbaceous" />
+        <character name="internal_texture" value="subsucculent" />
+      </structure>
+      <structure id="o264" name="vein">
+        <character name="prominence" value="prominent" modifier="abaxially" />
+      </structure>
+      <structure id="o265" name="margin">
+        <character name="prominence_or_shape" value="flat" modifier="more or less" />
+        <character name="external_texture" value="scarious" />
+        <character name="reflectance" value="shiny" />
+        <character name="architecture_or_shape" value="ciliate" />
+      </structure>
+      <structure id="o266" name="apex">
+        <character char_type="range_value" name="shape" from="acute" to="cuspidate" />
+        <character char_type="range_value" name="shape" from="acuminate" to="cuspidate" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="acuminate" />
+        <character name="shape" value="cuspidate" />
+        <character name="relief" value="pustulate" modifier="sometimes" />
+      </structure>
+      <structure id="o267" name="surface" constraint="adaxial" />
+      <relation id="r26" name="on" from="o266" to="o267" negation="false" />
+    </statement>
+    <statement id="109.txt-7">
+      <text>axillary leaf clusters absent.</text>
+      <structure id="o268" name="leaf" constraint="axillary">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="109.txt-8">
+      <text>Inflorescences axillary, solitary flowers.</text>
+      <structure id="o269" name="inflorescence">
+        <character name="position" value="axillary" />
+      </structure>
+      <structure id="o270" name="flower">
+        <character name="arrangement_or_habit" value="solitary" />
+      </structure>
+    </statement>
+    <statement id="109.txt-9">
+      <text>Pedicels reflexed in fruit, 20–50 mm, glabrous.</text>
+      <structure id="o271" name="pedicel">
+        <character name="orientation" value="reflexed" constraint="in fruit" constraintid="o272" />
+        <character char_type="range_value" name="size" from="20" from_unit="mm" to="50" to_unit="mm" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+      <structure id="o272" name="fruit" />
+    </statement>
+    <statement id="109.txt-10">
+      <text>Flowers:</text>
+      <structure id="o273" name="flower" />
+    </statement>
+    <statement id="109.txt-11">
+      <text>sepals green, obscurely 1-veined, not keeled, broadly elliptic (herbaceous portion narrowly elliptic ), 2.8–3.5 mm, to ca. 4 mm in fruit, apex obtuse to rounded, not pustulate, minutely ciliate basally;</text>
+      <structure id="o274" name="sepal">
+        <character name="coloration" value="green" />
+        <character name="architecture" value="1-veined" modifier="obscurely" />
+        <character name="shape" value="keeled" modifier="not" />
+        <character name="arrangement_or_shape" value="elliptic" modifier="broadly" />
+        <character char_type="range_value" name="size" from="2.8" from_unit="mm" to="3.5" to_unit="mm" />
+        <character char_type="range_value" name="size" from="0" from_unit="mm" to="4" to_unit="mm" constraint="in fruit" constraintid="o276" />
+      </structure>
+      <structure id="o275" name="portion">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="arrangement_or_shape" value="elliptic" modifier="narrowly" />
+      </structure>
+      <structure id="o276" name="fruit" />
+      <structure id="o277" name="apex">
+        <character char_type="range_value" name="shape" from="obtuse" to="rounded" />
+        <character name="shape" value="obtuse" />
+        <character name="shape" value="rounded" />
+        <character name="relief" value="pustulate" modifier="not" />
+        <character name="architecture_or_shape" value="ciliate" modifier="minutely;basally" />
+      </structure>
+    </statement>
+    <statement id="109.txt-12">
+      <text>petals ovate, 5–6 mm, 11/2–2 times as long as sepals, apex rounded.</text>
+      <structure id="o278" name="petal">
+        <character name="shape" value="ovate" />
+        <character char_type="range_value" name="size" from="5" from_unit="mm" to="6" to_unit="mm" />
+        <character char_type="range_value" name="size" from="11/2" to="2" constraint="times as-long-as sepals" constraintid="o279" />
+      </structure>
+      <structure id="o279" name="sepal" />
+      <structure id="o280" name="apex">
+        <character name="shape" value="rounded" />
+      </structure>
+    </statement>
+    <statement id="109.txt-13">
+      <text>Capsules tightly enclosed by calyx, ovoid, 4 mm, ca. equaling sepals.</text>
+      <structure id="o281" name="capsule">
+        <character name="position" value="enclosed" modifier="tightly" constraint="by calyx" constraintid="o282" />
+        <character name="shape" value="ovoid" />
+        <character name="size" value="4" unit="mm" />
+      </structure>
+      <structure id="o282" name="calyx" />
+      <structure id="o283" name="sepal" />
+      <relation id="r27" name="equaling" from="o281" to="o283" negation="false" />
+    </statement>
+    <statement id="109.txt-14">
+      <text>Seeds 15–20, dark brown, reniform, compressed, 0.8–0.9 mm, shiny, smooth.</text>
+      <structure id="o284" name="seed">
+        <character char_type="range_value" name="count" from="15" to="20" />
+        <character name="coloration" value="brown" modifier="dark" />
+        <character name="shape" value="reniform" />
+        <character name="shape" value="compressed" />
+        <character char_type="range_value" name="size" from="0.8" from_unit="mm" to="0.9" to_unit="mm" />
+        <character name="reflectance" value="shiny" />
+        <character name="architecture_or_external_texture_or_relief" value="smooth" />
+      </structure>
+    </statement>
+  </description>
+  <phenology>spring</phenology>
+  <phenology>mar</phenology>
+  <phenology>apr</phenology>
+  <phenology>may</phenology>
+  <phenology>summer</phenology>
+  <phenology>jun</phenology>
+  <phenology>jul</phenology>
+  <phenology>aug</phenology>
+  <habitat>boggy meadows</habitat>
+  <habitat>freshwater marshes</habitat>
+  <conservation>of conservation concern;</conservation>
+  <elevation>0–300 m;</elevation>
+  <us_distribution>Calif.</us_distribution>
+  <global_distribution>c Mexico</global_distribution>
+  <global_distribution>Central America (Guatemala).</global_distribution>
+  <discussion>Arenaria paludicola is federally listed as endangered, and now is known only from a few sites in San Luis Obispo County; urban development and resultant habitat conversion have impacted it significantly. Historical collections of A. paludicola are known from other areas of the California coast and from Washington.</discussion>
+  <discussion>Arenaria paludicola occurs also in Mexico, where it grows (and is sometimes confused) with A. bourgaei Hemsley in lakes and wet areas above 2000 meters; the relationship of these species to each other and to A. lanuginosa requires study.</discussion>
+</treatment>

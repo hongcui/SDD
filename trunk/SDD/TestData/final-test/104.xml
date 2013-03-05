@@ -1,0 +1,87 @@
+<treatment>
+  <number>3a.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>lanuginosa</species_name>
+    <species_authority>(Michaux) Rohrbach</species_authority>
+    <variety_name>lanuginosa</variety_name>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>lanuginosa</species_name>
+    <variety_name>longipedunculata</variety_name>
+    <variety_authority>W. H. Duncan</variety_authority>
+  </TaxonIdentification>
+  <description>
+    <statement id="104.txt-0">
+      <text>Stems often 1–10, prostrate to trailing.</text>
+      <structure id="o145" name="stem">
+        <character char_type="range_value" name="count" from="1" to="10" modifier="often" />
+        <character char_type="range_value" name="habit" from="prostrate" to="trailing" />
+        <character name="habit" value="prostrate" />
+        <character name="habit" value="trailing" />
+      </structure>
+    </statement>
+    <statement id="104.txt-1">
+      <text>Inflorescences axillary, solitary flowers.</text>
+      <structure id="o146" name="inflorescence">
+        <character name="position" value="axillary" />
+      </structure>
+      <structure id="o147" name="flower">
+        <character name="arrangement_or_habit" value="solitary" />
+      </structure>
+    </statement>
+    <statement id="104.txt-2">
+      <text>Pedicels straight to widely divergent, often hooked distally in fruit, 25–40 mm.</text>
+      <structure id="o148" name="pedicel">
+        <character name="course" value="straight" />
+        <character name="arrangement" value="divergent" modifier="widely" />
+        <character name="shape" value="hooked" modifier="often;distally" constraint="in fruit" constraintid="o149" />
+        <character char_type="range_value" name="size" from="25" from_unit="mm" to="40" to_unit="mm" />
+      </structure>
+      <structure id="o149" name="fruit" />
+    </statement>
+    <statement id="104.txt-3">
+      <text>Petals 1/2–3/4 times as long as sepals or absent.</text>
+      <structure id="o151" name="sepal" />
+    </statement>
+    <statement id="104.txt-4">
+      <text>2n = 44 (South America ).</text>
+      <structure id="o150" name="petal">
+        <character char_type="range_value" name="size" from="1/2" to="3/4" constraint="times as-long-as sepals" constraintid="o151" />
+        <character name="count" value="absent" />
+      </structure>
+      <structure name="chromosome" id="o152">
+        <character name="count" value="44" constraint="GEO:south america" />
+      </structure>
+    </statement>
+  </description>
+  <phenology>spring</phenology>
+  <phenology>mar</phenology>
+  <phenology>apr</phenology>
+  <phenology>may</phenology>
+  <phenology>summer</phenology>
+  <phenology>jun</phenology>
+  <phenology>jul</phenology>
+  <phenology>aug</phenology>
+  <habitat>forests</habitat>
+  <habitat>limestone outcrops</habitat>
+  <habitat>moist hummocks</habitat>
+  <habitat>dunes</habitat>
+  <elevation>0–200 m;</elevation>
+  <us_distribution>Ala.</us_distribution>
+  <us_distribution>Fla.</us_distribution>
+  <us_distribution>Ga.</us_distribution>
+  <us_distribution>La.</us_distribution>
+  <us_distribution>Miss.</us_distribution>
+  <us_distribution>N.C.</us_distribution>
+  <us_distribution>S.C.</us_distribution>
+  <us_distribution>Tenn.</us_distribution>
+  <us_distribution>Tex.</us_distribution>
+  <us_distribution>Va.</us_distribution>
+  <global_distribution>Mexico</global_distribution>
+  <global_distribution>Central America</global_distribution>
+  <global_distribution>South America.</global_distribution>
+  <discussion>Variety lanuginosa occurs through much of Mexico, mostly in the mountainous areas. We find material from the southeastern United States to be indistinguishable from many Mexican specimens.</discussion>
+  <discussion>Variety longipedunculata was described from two populations in Georgia and represents plants with particularly long pedicels, 40–50 mm, but this range overlaps that found otherwise in var. lanuginosa.</discussion>
+</treatment>

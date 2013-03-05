@@ -1,0 +1,126 @@
+<treatment>
+  <number>3b.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>lanuginosa</species_name>
+    <species_authority>(Michaux) Rohrbach</species_authority>
+    <variety_name>saxosa</variety_name>
+    <variety_authority>(A. Gray) Zarucchi, R. L. Hartman &amp; Rabeler</variety_authority>
+    <place_of_publication>
+      <publication_title>Sida</publication_title>
+      <place_in_publication>21: 753. 2004</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <TaxonIdentification Status="BASIONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>saxosa</species_name>
+    <species_authority>A. Gray</species_authority>
+    <place_of_publication>
+      <publication_title>Smithsonian Contr. Knowl.</publication_title>
+      <place_in_publication>5(6): 18. 1853</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>confusa</species_name>
+    <species_authority>Rydberg</species_authority>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>lanuginosa</species_name>
+    <subspecies_name>saxosa</subspecies_name>
+    <subspecies_authority>(A. Gray) Maguire</subspecies_authority>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>mearnsii</species_name>
+    <species_authority>Wooton &amp; Standley</species_authority>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>saxosa</species_name>
+    <species_authority>A. Gray</species_authority>
+    <variety_name>cinerascens</variety_name>
+    <variety_authority>B. L. Robinson</variety_authority>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>saxosa</species_name>
+    <species_authority>A. Gray</species_authority>
+    <variety_name>mearnsii</variety_name>
+    <variety_authority>(Wooton &amp; Standley) Kearney &amp; Peebles</variety_authority>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Sperulastrum</genus_name>
+    <species_name>lanuginosum</species_name>
+    <species_authority>Michaux</species_authority>
+    <subspecies_name>saxosum</subspecies_name>
+    <subspecies_authority>(A. Gray) W. A. Weber</subspecies_authority>
+  </TaxonIdentification>
+  <description>
+    <statement id="105.txt-0">
+      <text>Stems 1–80+, erect or ascending to procumbent.</text>
+      <structure id="o153" name="stem">
+        <character char_type="range_value" name="count" from="1" to="80" upper_restricted="false" />
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" />
+        <character name="habit" value="procumbent" />
+      </structure>
+    </statement>
+    <statement id="105.txt-1">
+      <text>Inflorescences proliferating, mostly terminal, leafy, 1–80+-flowered cymes.</text>
+      <structure id="o154" name="inflorescence">
+        <character name="behaviour" value="proliferating" />
+        <character name="position" value="terminal" modifier="mostly" />
+        <character name="architecture" value="leafy" />
+        <character name="architecture" value="1-80+-flowered" />
+      </structure>
+      <structure id="o155" name="cyme" />
+    </statement>
+    <statement id="105.txt-2">
+      <text>Pedicels erect to ascending (often arcuately so )in fruit, 2–25 mm.</text>
+      <structure id="o156" name="pedicel">
+        <character char_type="range_value" name="orientation" from="erect" to="ascending" />
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" constraint="in fruit" constraintid="o157" />
+        <character char_type="range_value" name="size" from="2" from_unit="mm" to="25" to_unit="mm" />
+      </structure>
+      <structure id="o157" name="fruit" />
+    </statement>
+    <statement id="105.txt-3">
+      <text>Petals 3/4–12/5 times as long as sepals.</text>
+      <structure id="o159" name="sepal" />
+    </statement>
+    <statement id="105.txt-4">
+      <text>2n = 40, 44.</text>
+      <structure id="o158" name="petal">
+        <character char_type="range_value" name="size" from="3/4" to="12/5" constraint="times as-long-as sepals" constraintid="o159" />
+      </structure>
+      <structure name="chromosome" id="o160">
+        <character name="count" value="40" />
+        <character name="count" value="44" />
+      </structure>
+    </statement>
+  </description>
+  <phenology>spring</phenology>
+  <phenology>mar</phenology>
+  <phenology>apr</phenology>
+  <phenology>may</phenology>
+  <phenology>summer</phenology>
+  <phenology>jun</phenology>
+  <phenology>jul</phenology>
+  <phenology>aug</phenology>
+  <habitat>forests</habitat>
+  <habitat>stream banks</habitat>
+  <elevation>1000–3100 m;</elevation>
+  <us_distribution>Ariz.</us_distribution>
+  <us_distribution>Calif.</us_distribution>
+  <us_distribution>Colo.</us_distribution>
+  <us_distribution>N.Mex.</us_distribution>
+  <us_distribution>Tex.</us_distribution>
+  <us_distribution>Utah</us_distribution>
+  <global_distribution>Mexico (Baja California).</global_distribution>
+  <global_distribution>Mexico (Chihuahua).</global_distribution>
+  <global_distribution>Mexico (Coahuila).</global_distribution>
+  <discussion>The varietal combination Arenaria lanuginosa var. cinerascens (B. L. Robinson) Shinners, often applied to this taxon, is not correct because the epithet of the earlier autonym A. saxosa var. saxosa has priority.</discussion>
+</treatment>

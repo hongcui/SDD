@@ -1,0 +1,4 @@
+0. import matrices.sql to mysql database
+1. edit description.properties in conversion package so input.path points to final_test folder. 
+2. review database.properties in dao package to either set up your database/user as described or edit the entry to reflect your database/user setup
+3. In TaxonCharacterMatrixTest.java in conversion.test, change "File outputdir" filepath to your output folder. Run TaxonCharacterMatrixTest.java. You will find the output matrix in the output folder when the program completes. 

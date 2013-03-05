@@ -1,0 +1,224 @@
+<treatment>
+  <number>8.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>pseudofrigida</species_name>
+    <species_authority>(Ostenfeld &amp; Dahl) Schischkin &amp; Knorring</species_authority>
+    <place_of_publication>
+      <publication_title>in V. L. Komarov et al., Fl. URSS</publication_title>
+      <place_in_publication>6: 537. 1936</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <TaxonIdentification Status="BASIONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>ciliata</species_name>
+    <species_authority>Linnaeus</species_authority>
+    <subspecies_name>pseudofrigida</subspecies_name>
+    <subspecies_authority>Ostenfeld &amp; Dahl</subspecies_authority>
+    <place_of_publication>
+      <publication_title>Nyt Mag. Naturvidensk.</publication_title>
+      <place_in_publication>55: 217. 1918</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>ciliata</species_name>
+    <variety_name>pseudofrigida</variety_name>
+    <variety_authority>(Ostenfeld &amp; Dahl) B. Boivin</variety_authority>
+  </TaxonIdentification>
+  <description>
+    <statement id="110.txt-0">
+      <text>Plants perennial, forming cush-ions or mats.</text>
+      <structure id="o285" name="whole_organism">
+        <character name="life_style" value="plant" />
+      </structure>
+      <structure id="o286" name="mat">
+        <character name="life_style" value="perennial" />
+      </structure>
+    </statement>
+    <statement id="110.txt-1">
+      <text>Taproots filiform to somewhat thickened.</text>
+      <structure id="o287" name="taproot">
+        <character name="shape" value="filiform" />
+        <character name="width" value="thickened" modifier="somewhat" />
+      </structure>
+    </statement>
+    <statement id="110.txt-2">
+      <text>Stems 20–40+, procumbent, green, 3–14 cm;</text>
+      <structure id="o288" name="stem">
+        <character char_type="range_value" name="count" from="20" to="40" upper_restricted="false" />
+        <character name="habit" value="procumbent" />
+        <character name="coloration" value="green" />
+        <character char_type="range_value" name="size" from="3" from_unit="cm" to="14" to_unit="cm" />
+      </structure>
+    </statement>
+    <statement id="110.txt-3">
+      <text>internodes terete to angular, 1/2–1+ times as long as leaves, shiny, pubescent in lines or throughout, hairs retrorsely curved.</text>
+      <structure id="o289" name="internode">
+        <character char_type="range_value" name="shape" from="terete" to="angular" />
+        <character name="shape" value="terete" />
+        <character name="shape" value="angular" />
+        <character char_type="range_value" name="size" from="1/2" to="1" upper_restricted="false" constraint="times as-long-as leaves" constraintid="o290" />
+        <character name="reflectance" value="shiny" />
+      </structure>
+      <structure id="o290" name="leaf" />
+      <structure id="o291" name="line" />
+      <relation id="r28" name="in" from="o289" to="o291" negation="false" />
+    </statement>
+    <statement id="110.txt-4">
+      <text>Leaves connate basally, with scarious sheath 0.2–0.3 mm, sessile;</text>
+      <structure id="o292" name="leaf">
+        <character name="fusion" value="connate" modifier="basally" />
+        <character name="architecture" value="sessile" />
+      </structure>
+      <structure id="o293" name="sheath">
+        <character name="external_texture" value="scarious" />
+        <character char_type="range_value" name="size" from="0.2" from_unit="mm" to="0.3" to_unit="mm" />
+      </structure>
+      <relation id="r29" name="with" from="o292" to="o293" negation="false" />
+    </statement>
+    <statement id="110.txt-5">
+      <text>blade 1-veined (prominent proximally ), oblanceolate to spatulate, 2–6 × 0.8–1.8 mm, succulent, margins thickened, minutely scarious-granular, ± shiny, ciliate in proximal 1/2, apex ± obtuse, sometimes pustulate, glabrous;</text>
+      <structure id="o294" name="blade">
+        <character name="architecture" value="1-veined" />
+        <character name="prominence" value="prominent" modifier="proximally" />
+        <character char_type="range_value" name="shape" from="oblanceolate" to="spatulate" />
+        <character name="shape" value="oblanceolate" />
+        <character name="shape" value="spatulate" />
+        <character char_type="range_value" name="length" from="2" from_unit="mm" to="6" to_unit="mm" />
+        <character char_type="range_value" name="width" from="0.8" from_unit="mm" to="1.8" to_unit="mm" />
+        <character name="external_texture" value="succulent" />
+      </structure>
+      <structure id="o295" name="margin">
+        <character name="width" value="thickened" />
+        <character name="internal_texture" value="scarious-granular" modifier="minutely" />
+        <character name="reflectance" value="shiny" modifier="more or less" />
+        <character name="architecture_or_shape" value="ciliate" modifier="in proximal 1/2" />
+      </structure>
+      <structure id="o296" name="apex">
+        <character name="shape" value="obtuse" modifier="more or less" />
+        <character name="relief" value="pustulate" modifier="sometimes" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+    </statement>
+    <statement id="110.txt-6">
+      <text>axillary leaf clusters absent.</text>
+      <structure id="o297" name="leaf" constraint="axillary">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="110.txt-7">
+      <text>Inflorescences terminal or axillary, open, leafy, 1–4-flowered cymes in distal leaf axils.</text>
+      <structure id="o298" name="inflorescence">
+        <character name="position" value="terminal" />
+        <character name="position" value="axillary" />
+        <character name="architecture" value="open" />
+        <character name="architecture" value="leafy" />
+        <character name="architecture" value="1-4-flowered" constraint="in leaf axils" constraintid="o300" />
+      </structure>
+      <structure id="o299" name="cyme" />
+      <structure id="o300" name="axil" constraint="distal leaf" />
+    </statement>
+    <statement id="110.txt-8">
+      <text>Pedicels erect or nodding in fruit, 2–12 mm, retrorsely pubescent.</text>
+      <structure id="o301" name="pedicel">
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="nodding" constraint="in fruit" constraintid="o302" />
+        <character char_type="range_value" name="size" from="2" from_unit="mm" to="12" to_unit="mm" />
+      </structure>
+      <structure id="o302" name="fruit" />
+    </statement>
+    <statement id="110.txt-9">
+      <text>Flowers:</text>
+      <structure id="o303" name="flower" />
+    </statement>
+    <statement id="110.txt-10">
+      <text>sepals green or distally purple, 3-veined (2 lateral veins 1/2 times as long as midvein ), sometimes keeled, narrowly lanceolate (herbaceous portion narrowly lanceolate ), 3–4 mm, to ca. 5 mm in fruit, apex ± acute, not pustulate, glabrous or sparsely stipitate-glandular;</text>
+      <structure id="o304" name="sepal">
+        <character name="coloration" value="green" />
+        <character name="coloration" value="purple" modifier="distally" />
+        <character name="architecture" value="3-veined" />
+        <character name="shape" value="keeled" modifier="sometimes" />
+        <character name="shape" value="lanceolate" modifier="narrowly" />
+        <character char_type="range_value" name="size" from="3" from_unit="mm" to="4" to_unit="mm" />
+        <character char_type="range_value" name="size" from="0" from_unit="mm" to="5" to_unit="mm" constraint="in fruit" constraintid="o308" />
+      </structure>
+      <structure id="o305" name="vein" constraint="lateral">
+        <character name="count" value="2" />
+        <character name="size" value="1/2" constraint="times as-long-as midvein" constraintid="o306" />
+      </structure>
+      <structure id="o306" name="midvein" />
+      <structure id="o307" name="portion">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="shape" value="lanceolate" modifier="narrowly" />
+      </structure>
+      <structure id="o308" name="fruit" />
+      <structure id="o309" name="apex">
+        <character name="shape" value="acute" modifier="more or less" />
+        <character name="relief" value="pustulate" modifier="not" />
+        <character name="external_texture" value="glabrous" />
+        <character name="architecture_or_exudation" value="stipitate-glandular" modifier="sparsely" />
+      </structure>
+    </statement>
+    <statement id="110.txt-11">
+      <text>petals obovate, 5–8 mm, 12/3–2 times as long as sepals, apex acute to rounded.</text>
+      <structure id="o310" name="petal">
+        <character name="shape" value="obovate" />
+        <character char_type="range_value" name="size" from="5" from_unit="mm" to="8" to_unit="mm" />
+        <character char_type="range_value" name="size" from="12/3" to="2" constraint="times as-long-as sepals" constraintid="o311" />
+      </structure>
+      <structure id="o311" name="sepal" />
+      <structure id="o312" name="apex">
+        <character char_type="range_value" name="shape" from="acute" to="rounded" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="rounded" />
+      </structure>
+    </statement>
+    <statement id="110.txt-12">
+      <text>Capsules tightly enclosed by calyx, narrowly ellipsoid to cylindric, 3–5 mm, ca. equaling sepals.</text>
+      <structure id="o313" name="capsule">
+        <character name="position" value="enclosed" modifier="tightly" constraint="by calyx" constraintid="o314" />
+        <character char_type="range_value" name="shape" from="narrowly ellipsoid" to="cylindric" />
+        <character name="shape" value="ellipsoid" modifier="narrowly" />
+        <character name="shape" value="cylindric" />
+        <character char_type="range_value" name="size" from="3" from_unit="mm" to="5" to_unit="mm" />
+      </structure>
+      <structure id="o314" name="calyx" />
+      <structure id="o315" name="sepal" />
+      <relation id="r30" name="equaling" from="o313" to="o315" negation="false" />
+    </statement>
+    <statement id="110.txt-13">
+      <text>Seeds 15–20, black to reddish brown, reniform, compressed, 0.8–0.9 mm, shiny, low-tuberculate.</text>
+    </statement>
+    <statement id="110.txt-14">
+      <text>2n = 40.</text>
+      <structure id="o316" name="seed">
+        <character char_type="range_value" name="count" from="15" to="20" />
+        <character char_type="range_value" name="coloration" from="black" to="reddish brown" />
+        <character name="coloration" value="black" />
+        <character name="coloration" value="brown" modifier="reddish" />
+        <character name="shape" value="reniform" />
+        <character name="shape" value="compressed" />
+        <character char_type="range_value" name="size" from="0.8" from_unit="mm" to="0.9" to_unit="mm" />
+        <character name="reflectance" value="shiny" />
+        <character name="relief" value="low-tuberculate" />
+      </structure>
+      <structure name="chromosome" id="o317">
+        <character name="count" value="40" />
+      </structure>
+    </statement>
+  </description>
+  <phenology>spring</phenology>
+  <phenology>mar</phenology>
+  <phenology>apr</phenology>
+  <phenology>may</phenology>
+  <phenology>summer</phenology>
+  <phenology>jun</phenology>
+  <phenology>jul</phenology>
+  <phenology>aug</phenology>
+  <habitat>open, dry to slightly moist sand or gravel</habitat>
+  <elevation>0–50 m;</elevation>
+  <global_distribution>Greenland</global_distribution>
+  <global_distribution>Europe.</global_distribution>
+  <discussion>We follow B. Jonsell (2001) in treating Arenaria pseudofrigida as one of several arctic species that formerly were included in A. ciliata Linnaeus, a species now considered restricted to alpine regions of central Europe.</discussion>
+</treatment>
