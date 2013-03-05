@@ -1,5 +1,6 @@
 package conversion.test;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -30,16 +31,16 @@ public class TaxonCharacterMatrixTest {
 
 	@Test
 	public final void testTaxonCharacterMatrix() {
+		TaxonHierarchy th = makeHierarchyGenus("arenaria");
 		//TaxonHierarchy th = makeHierarchyGenus("achillea");
-		TaxonHierarchy th = makeHierarchyTwoLevel("arenaria", TaxonRank.GENUS, TaxonRank.VARIETY);
+//		TaxonHierarchy th = makeHierarchyTwoLevel("cynareae", TaxonRank.TRIBE, TaxonRank.GENUS);
 		th.printSimple();
 		TaxonCharacterMatrix matrix = new TaxonCharacterMatrix(th);
 //		Map<String, Map<ITaxon, List<IState>>> map = matrix.getTable();
 //		matrix.printSimple();
-		                           
-		matrix.generateMatrixFile("C:\\Documents and Settings\\Hong Updates\\Desktop\\2012BiosemanticsWorkshopTest\\FNAv5Caryophyllaceae\\target\\final\\matrix.txt");
-//		matrix.generateMatrixFile("output/cirsium.txt");
-//		matrix.generateMatrixFile("output/cynareae-genus.txt");
+		File outputdir = new File("C:/Users/updates/CharaParserTest/2012BiosemanticsWorkshopTest/FNAv5Caryophyllaceae/target/matrices");
+		if(!outputdir.exists()) outputdir.mkdir();
+		matrix.generateMatrixFile(new File(outputdir,"arenaria.txt"));
 	}
 	
 	/**
@@ -49,7 +50,7 @@ public class TaxonCharacterMatrixTest {
 		DescriptionParser parser = new DescriptionParser(genusName, TaxonRank.GENUS);
 		ITaxon taxon = parser.parseTaxon();
 		String cirsiumGenusFilename = dao.getFilenameForDescription(TaxonRank.GENUS, genusName);
-		List<String> cirsiumSpecies = dao.getFilenamesForManyDescriptions(TaxonRank.GENUS, genusName, TaxonRank.SPECIES);
+		List<String> cirsiumSpecies = dao.getFilenamesForManyDescriptions(TaxonRank.GENUS, genusName, TaxonRank.SPECIES);//TODO: always stop at SPECIES level?
 		cirsiumSpecies.remove(cirsiumGenusFilename);
 		TaxonHierarchy h = new TaxonHierarchy(taxon);
 		DescriptionParser speciesParser;
@@ -57,6 +58,7 @@ public class TaxonCharacterMatrixTest {
 			String speciesName = dao.getTaxonValues(s).get("species");
 			System.out.println("Species name: " + speciesName);
 			speciesParser = new DescriptionParser(speciesName, TaxonRank.SPECIES);
+			//must have species files
 			ITaxon speciesTaxon = speciesParser.parseTaxon();
 			try {
 				h.addSubTaxon(speciesTaxon);

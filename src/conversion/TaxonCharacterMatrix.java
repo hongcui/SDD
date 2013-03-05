@@ -1,6 +1,7 @@
 package conversion;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -161,6 +162,14 @@ public class TaxonCharacterMatrix {
 	private String resolveFullCharacterName(String shortCharName,
 			TreeNode<Structure> structNode) {
 		String structName = structNode.getElement().getName();
+		//Hong added constraint attribute to structre name
+		String constraint = structNode.getElement().getConstraint();
+		String constraintType = structNode.getElement().getConstraintType();
+		String constraintParentOrgan = structNode.getElement().getConstraintParentOrgan();
+		if(constraint != null) structName = constraint + "_"+structName;
+		if(constraintType != null) structName = constraintType + "_"+structName;
+		if(constraintParentOrgan != null) structName = constraintParentOrgan + "_"+structName;
+		//end Hong
 		String charName = structName + "_" + shortCharName;
 		TreeNode<Structure> parent = structNode.getParent();
 		while(parent != null) {
@@ -174,10 +183,10 @@ public class TaxonCharacterMatrix {
 	
 	/**
 	 * Generates a comma-delimited file holding the taxon-character matrix.
-	 * @param outputFile File name to send output to.
+	 * @param outputFile File to send output to.
 	 */
 	@SuppressWarnings("rawtypes")
-	public void generateMatrixFile(String outputFile) {
+	public void generateMatrixFile(File outputFile) {
 		FileWriter fstream = null;
 		try {
 			fstream = new FileWriter(outputFile);
@@ -203,6 +212,10 @@ public class TaxonCharacterMatrix {
 					for(IState state : stateList) {
 						if(state instanceof SingletonState) {
 							String value = state.getMap().get(SingletonState.KEY).toString();
+							//hong added, to put negations in character state.
+							String modifier  = state.getModifier(); 
+							if(modifier !=null && (modifier.contains("not") || modifier.contains("rarely") || modifier.contains("seldom"))) value = modifier + " "+ value;
+							//ends hong's addition
 							stateStrings.add(value);
 						}
 						else {
@@ -228,6 +241,10 @@ public class TaxonCharacterMatrix {
 					for(IState state : stateList) {
 						if(state instanceof SingletonState) {
 							String value = state.getMap().get(SingletonState.KEY).toString();
+							//hong added, to put negations in character state.
+							String modifier  = state.getModifier(); 
+							if(modifier !=null && (modifier.contains("not") || modifier.contains("rarely") || modifier.contains("seldom"))) value = modifier + " "+ value;
+							//ends hong's addition
 							stateStrings.add(value);
 						}
 						else {
