@@ -66,6 +66,10 @@ public class Structure {
     @XmlID
     @XmlSchemaType(name = "ID")
     protected String id;
+    //Hong added to include constraint attribute in structure element
+    @XmlAttribute(name = "constraint")
+    protected String constraint;
+    //end Hong addition
     @XmlAttribute(name = "constraint_type")
     protected String constraintType;
     @XmlAttribute(name = "constraint_parent_organ")
@@ -170,6 +174,29 @@ public class Structure {
         return constraintType;
     }
 
+    /**
+     * Gets the value of the constraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getConstraint() {
+        return constraint;
+    }
+    /**
+     * Sets the value of the constraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setConstraint(String value) {
+        this.constraint = value;
+    }
+    
     /**
      * Sets the value of the constraintType property.
      * 
@@ -302,6 +329,14 @@ public class Structure {
 		builder.append("Structure [");
 		if (name != null)
 			builder.append("name=").append(name);
+		//Hong added three constraints
+		if (constraint != null)
+			builder.append(",constraint=").append(constraint);
+		if (constraintType != null)
+			builder.append(",constraintType=").append(constraintType);
+		if (constraintParentOrgan != null)
+			builder.append(",constraintParentOrgan=").append(constraintParentOrgan);
+		//end hong's addition
 		if(id != null)
 			builder.append(",id=").append(id);
 		builder.append("]");
@@ -309,4 +344,3 @@ public class Structure {
 	}
 
 }
-
