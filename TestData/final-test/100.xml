@@ -1,0 +1,392 @@
+<treatment>
+  <number>14.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>ARENARIA</genus_name>
+    <genus_authority>Linnaeus</genus_authority>
+    <place_of_publication>
+      <publication_title>Sp. Pl.</publication_title>
+      <place_in_publication>1: 423. 1753</place_in_publication>
+    </place_of_publication>
+    <place_of_publication>
+      <publication_title>Gen. Pl. ed.</publication_title>
+      <place_in_publication>5, 193. 1754</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <etymology>[Latin arena , sand, a common habitat]</etymology>
+  <common_name>Sandwort</common_name>
+  <common_name>sabline</common_name>
+  <author>Ronald L. Hartman</author>
+  <author>Richard K. Rabeler</author>
+  <author>Frederick H. Utech</author>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Spergulastrum</genus_name>
+    <genus_authority>Michaux</genus_authority>
+  </TaxonIdentification>
+  <description>
+    <statement id="100.txt-0">
+      <text>Plants annual or perennial, sometimes densely matted.</text>
+      <structure id="o1" name="whole_organism">
+        <character name="life_style" value="annual" />
+        <character name="life_style" value="perennial" />
+        <character name="habit" value="matted" modifier="sometimes densely" />
+        <character name="life_style" value="plant" />
+      </structure>
+    </statement>
+    <statement id="100.txt-1">
+      <text>Taproots filiform to moderately thickened;</text>
+      <structure id="o2" name="taproot">
+        <character name="shape" value="filiform" />
+      </structure>
+    </statement>
+    <statement id="100.txt-2">
+      <text>rhizomes slender.</text>
+      <structure id="o3" name="rhizome">
+        <character name="size" value="slender" />
+      </structure>
+    </statement>
+    <statement id="100.txt-3">
+      <text>Stems prostrate to ascending or erect, simple or branched, terete to ellipsoid, angular or grooved.</text>
+      <structure id="o4" name="stem">
+        <character char_type="range_value" name="orientation" from="prostrate" to="ascending" />
+        <character char_type="range_value" name="orientation" from="prostrate" to="erect" />
+        <character name="orientation" value="prostrate" />
+        <character name="orientation" value="ascending" />
+        <character name="orientation" value="erect" />
+        <character name="architecture" value="simple" />
+        <character name="architecture" value="branched" />
+        <character char_type="range_value" name="shape" from="terete" to="ellipsoid" />
+        <character name="shape" value="terete" />
+        <character name="shape" value="ellipsoid" />
+        <character name="arrangement_or_shape" value="angular" />
+        <character name="architecture" value="grooved" />
+      </structure>
+    </statement>
+    <statement id="100.txt-4">
+      <text>Leaves mostly connate, mostly sessile, not congested at or near base of flowering stem;</text>
+      <structure id="o5" name="leaf">
+        <character name="fusion" value="connate" modifier="mostly" />
+        <character name="architecture" value="sessile" modifier="mostly" />
+        <character name="architecture_or_arrangement" value="congested" modifier="not" constraint="at or near base of stem" constraintid="o6" />
+      </structure>
+      <structure id="o6" name="stem">
+        <character name="life_stage" value="flowering" />
+      </structure>
+    </statement>
+    <statement id="100.txt-5">
+      <text>blade 1- or 3–5-veined, rarely linear or linear-lanceolate to usually elliptic to ovate or rarely orbiculate, sometimes subsucculent or succulent, apex blunt or obtuse to acute, acuminate, or apiculate.</text>
+      <structure id="o7" name="blade">
+        <character name="architecture" value="1-or-3-5-veined" />
+        <character name="shape" value="linear" modifier="rarely" />
+        <character name="shape" value="linear-lanceolate" />
+        <character name="shape" value="elliptic" modifier="usually" />
+        <character name="shape" value="ovate" />
+        <character name="shape" value="orbiculate" modifier="rarely" />
+        <character name="internal_texture" value="subsucculent" modifier="sometimes" />
+        <character name="external_texture" value="succulent" />
+      </structure>
+      <structure id="o8" name="apex">
+        <character char_type="range_value" name="shape" from="blunt" to="acute" />
+        <character char_type="range_value" name="shape" from="blunt" to="acuminate" />
+        <character char_type="range_value" name="shape" from="blunt" to="apiculate" />
+        <character char_type="range_value" name="shape" from="obtuse" to="acute" />
+        <character char_type="range_value" name="shape" from="obtuse" to="acuminate" />
+        <character char_type="range_value" name="shape" from="obtuse" to="apiculate" />
+        <character name="shape" value="blunt" />
+        <character name="shape" value="obtuse" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="acuminate" />
+        <character name="shape" value="apiculate" />
+      </structure>
+    </statement>
+    <statement id="100.txt-6">
+      <text>Inflorescences terminal or axillary open cymes, or flowers solitary;</text>
+      <structure id="o9" name="inflorescence">
+        <character name="position" value="terminal" />
+        <character name="position" value="axillary" />
+      </structure>
+      <structure id="o10" name="cyme">
+        <character name="architecture" value="open" />
+        <character name="arrangement_or_habit" value="solitary" />
+      </structure>
+      <structure id="o11" name="flower">
+        <character name="arrangement_or_habit" value="solitary" />
+      </structure>
+    </statement>
+    <statement id="100.txt-7">
+      <text>bracts paired, smaller, foliaceous.</text>
+      <structure id="o12" name="bract">
+        <character name="arrangement" value="paired" />
+        <character name="size" value="smaller" />
+        <character name="architecture" value="foliaceous" />
+      </structure>
+    </statement>
+    <statement id="100.txt-8">
+      <text>Pedicels erect or ascending to reflexed in fruit.</text>
+      <structure id="o13" name="pedicel">
+        <character char_type="range_value" name="orientation" from="erect" to="reflexed" />
+        <character char_type="range_value" name="orientation" from="ascending" to="reflexed" />
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" />
+        <character name="orientation" value="reflexed" constraint="in fruit" constraintid="o14" />
+      </structure>
+      <structure id="o14" name="fruit" />
+    </statement>
+    <statement id="100.txt-9">
+      <text>Flowers:</text>
+      <structure id="o15" name="flower" />
+    </statement>
+    <statement id="100.txt-10">
+      <text>perianth and androecium hypogynous;</text>
+      <structure id="o16" name="perianth">
+        <character name="position" value="hypogynous" />
+      </structure>
+      <structure id="o17" name="androecium">
+        <character name="position" value="hypogynous" />
+      </structure>
+    </statement>
+    <statement id="100.txt-11">
+      <text>sepals 5, distinct or barely connate proximally, green or rarely distally purple, lanceolate to broadly ovate, 2–5 mm, margins foliaceous or white and scarious, apex obtuse to rounded or acute to acuminate, not hooded;</text>
+      <structure id="o18" name="sepal">
+        <character name="count" value="5" />
+        <character name="fusion" value="distinct" />
+        <character name="fusion" value="connate" modifier="barely" />
+        <character name="coloration" value="green" />
+        <character name="coloration" value="purple" modifier="rarely distally" />
+        <character char_type="range_value" name="shape" from="lanceolate" to="broadly ovate" />
+        <character name="shape" value="lanceolate" />
+        <character name="shape" value="ovate" modifier="broadly" />
+        <character char_type="range_value" name="size" from="2" from_unit="mm" to="5" to_unit="mm" />
+      </structure>
+      <structure id="o19" name="margin">
+        <character name="architecture" value="foliaceous" />
+        <character name="coloration" value="white" />
+        <character name="external_texture" value="scarious" />
+      </structure>
+      <structure id="o20" name="apex">
+        <character char_type="range_value" name="shape" from="obtuse" to="rounded" />
+        <character char_type="range_value" name="shape" from="acute" to="acuminate" />
+        <character name="shape" value="obtuse" />
+        <character name="shape" value="rounded" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="acuminate" />
+        <character name="architecture" value="hooded" modifier="not" />
+      </structure>
+    </statement>
+    <statement id="100.txt-12">
+      <text>petals 5 or absent, white, not clawed, blade apex entire;</text>
+      <structure id="o21" name="petal">
+        <character name="count" value="5" />
+        <character name="count" value="absent" />
+        <character name="coloration" value="white" />
+        <character name="shape" value="clawed" modifier="not" />
+      </structure>
+      <structure id="o22" name="apex" constraint="blade">
+        <character name="shape" value="entire" />
+      </structure>
+    </statement>
+    <statement id="100.txt-13">
+      <text>nectaries at base of filaments opposite sepals;</text>
+      <structure id="o23" name="nectary" />
+      <structure id="o24" name="base" />
+      <relation id="r1" name="at" from="o23" to="o24" negation="false" />
+      <structure id="o25" name="sepal">
+        <character name="arrangement" value="opposite" />
+      </structure>
+      <relation id="r2" name="part_of" from="o24" to="o25" negation="false" />
+    </statement>
+    <statement id="100.txt-14">
+      <text>stamens 10 (ca .8 in A .livermorensis ), arising from base of ovary;</text>
+      <structure id="o26" name="stamen">
+        <character name="count" value="10" />
+        <character name="orientation" value="arising" constraint="from base" constraintid="o27" />
+      </structure>
+      <structure id="o27" name="base" />
+      <structure id="o28" name="ovary" />
+      <relation id="r3" name="part_of" from="o27" to="o28" negation="false" />
+    </statement>
+    <statement id="100.txt-15">
+      <text>filaments distinct;</text>
+      <structure id="o29" name="filament">
+        <character name="fusion" value="distinct" />
+      </structure>
+    </statement>
+    <statement id="100.txt-16">
+      <text>staminodes absent;</text>
+      <structure id="o30" name="staminode">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="100.txt-17">
+      <text>styles 3, filiform, 0.5–2 mm, glabrous proximally;</text>
+      <structure id="o31" name="style">
+        <character name="count" value="3" />
+        <character name="shape" value="filiform" />
+        <character char_type="range_value" name="size" from="0.5" from_unit="mm" to="2" to_unit="mm" />
+        <character name="external_texture" value="glabrous" modifier="proximally" />
+      </structure>
+    </statement>
+    <statement id="100.txt-18">
+      <text>stigmas 3, linear along adaxial surfaces of styles, papillate (30× ).</text>
+      <structure id="o32" name="stigma">
+        <character name="count" value="3" />
+        <character name="arrangement_or_shape" value="linear" constraint="along surfaces" constraintid="o33" />
+        <character name="relief" value="papillate" />
+      </structure>
+      <structure id="o33" name="surface" constraint="adaxial" />
+      <structure id="o34" name="style" />
+      <relation id="r4" name="part_of" from="o33" to="o34" negation="false" />
+    </statement>
+    <statement id="100.txt-19">
+      <text>Capsules broadly ellipsoid or ovoid to cylindric, opening by 6 ascending to recurved teeth;</text>
+      <structure id="o35" name="capsule">
+        <character char_type="range_value" name="shape" from="broadly ellipsoid" to="cylindric" />
+        <character char_type="range_value" name="shape" from="ovoid" to="cylindric" />
+        <character name="shape" value="ellipsoid" modifier="broadly" />
+        <character name="shape" value="ovoid" />
+        <character name="shape" value="cylindric" />
+      </structure>
+      <structure id="o36" name="opening" />
+      <structure id="o37" name="tooth">
+        <character name="count" value="6" />
+        <character char_type="range_value" name="orientation" from="ascending" to="recurved" />
+        <character name="orientation" value="ascending" />
+        <character name="orientation" value="recurved" />
+      </structure>
+      <relation id="r5" name="by" from="o36" to="o37" negation="false" />
+    </statement>
+    <statement id="100.txt-20">
+      <text>carpophore absent.</text>
+      <structure id="o38" name="carpophore">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="100.txt-21">
+      <text>Seeds [1– ]5–35, brown to dark brown or black, reniform or suborbicular, laterally compressed or not, shiny or dull, smooth, rugulose, or tuberculate, marginal wing absent, appendage absent.</text>
+      <structure id="o39" name="seed">
+        <character char_type="range_value" name="atypical_count" from="1" to="5" to_inclusive="false" />
+        <character char_type="range_value" name="count" from="5" to="35" />
+        <character char_type="range_value" name="coloration" from="brown" to="dark brown" />
+        <character char_type="range_value" name="coloration" from="brown" to="black" />
+        <character name="coloration" value="brown" />
+        <character name="coloration" value="brown" modifier="dark" />
+        <character name="coloration" value="black" />
+        <character name="shape" value="reniform" />
+        <character name="shape" value="suborbicular" />
+        <character name="shape" value="compressed" modifier="laterally" />
+        <character name="shape" value="compressed" modifier="laterally;not" />
+        <character name="reflectance" value="shiny" />
+        <character name="reflectance" value="dull" />
+        <character name="relief" value="smooth" />
+        <character name="relief" value="rugulose" />
+        <character name="relief" value="tuberculate" />
+      </structure>
+      <structure id="o40" name="wing" constraint="marginal">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="100.txt-22">
+      <text>x = [7, 8 ?]10, 11.</text>
+      <structure id="o41" name="appendage">
+        <character name="count" value="absent" />
+      </structure>
+      <structure name="chromosome" id="o42">
+        <character name="count" value="7" />
+        <character name="count" value="8" />
+        <character name="count" value="10" />
+        <character name="count" value="11" />
+      </structure>
+    </statement>
+  </description>
+  <number_of_infrataxa>Species 210 (9 in the flora):</number_of_infrataxa>
+  <global_distribution>north-temperate regions</global_distribution>
+  <global_distribution>w North America (including Mexico)</global_distribution>
+  <global_distribution>Central America</global_distribution>
+  <global_distribution>South America (Andes)</global_distribution>
+  <global_distribution>Eurasian mountains</global_distribution>
+  <global_distribution>Mediterranean region</global_distribution>
+  <global_distribution>Asia Minor.</global_distribution>
+  <discussion>Our treatment of Arenaria follows J. McNeill (1962, 1980b) in segregating Minuartia from Arenaria, while we take an additional step in recognizing Eremogone. While a broad concept of Arenaria is often used in North American works (e.g., B. E. Wofford 1981), splitting Arenaria is supported by morphological and molecular evidence (M. Nepokroeff et al. 2001).</discussion>
+  <discussion>J. McNeill (1962) outlined an infrageneric classification of Arenaria consisting of ten subgenera. The nine species of Arenaria occurring in North America belong to two subgenera (Leiosperma McNeill and Arenaria) and two sections within subg. Arenaria (Rariflorae F. Williams and Arenaria). Based in part on recent molecular evidence (M. Nepokroeff et al. 2001), we are here treating two of McNeill’s subgenera as belonging to the genus Eremogone.</discussion>
+  <key>
+    <key_statement>
+      <statement_id>1.</statement_id>
+      <statement>Plants annual, not mat-forming; stems erect to ascending.</statement>
+      <next_statement_id>2.</next_statement_id>
+    </key_statement>
+    <key_statement>
+      <statement_id>2.</statement_id>
+      <statement>Stems uniformly puberulent; leaf blades 3–5-veined; sepals 3-veined, stipitate-glandular</statement>
+      <determination>9. Arenaria serpyllifolia</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>2.</statement_id>
+      <statement>Stems puberulent in 2 lines; leaf blades 1-veined; sepals 1-veined, glabrous.</statement>
+      <next_statement_id>3.</next_statement_id>
+    </key_statement>
+    <key_statement>
+      <statement_id>3.</statement_id>
+      <statement>Sepals strongly keeled proximally; seeds dark brown to black, shiny, suborbicular, obscurely tuberculate</statement>
+      <determination>6. Arenaria ludens</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>3.</statement_id>
+      <statement>Sepals not keeled; seeds ashy brown, dull, broadly reniform, minutely/prominently rounded-tuberculate</statement>
+      <determination>1. Arenaria benthamii</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>1.</statement_id>
+      <statement>Plants perennial, often mat-forming, usually rhizomatous; stems prostrate, seldom erect or ascending.</statement>
+      <next_statement_id>4.</next_statement_id>
+    </key_statement>
+    <key_statement>
+      <statement_id>4.</statement_id>
+      <statement>Plants cespitose or pulvinate; stems usually shorter than 10 cm; seeds brown to black, rugulose or tuberculate; boreal.</statement>
+      <next_statement_id>5.</next_statement_id>
+    </key_statement>
+    <key_statement>
+      <statement_id>5.</statement_id>
+      <statement>Rhizomes absent; sepals narrowly lanceolate; petals obovate, 1 2 / 3 –2 times as long as sepals; seeds black to reddish brown, low-tuberculate</statement>
+      <determination>8. Arenaria pseudofrigida</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>5.</statement_id>
+      <statement>Rhizomes present, sepals ovate; petals broadly elliptic or oblanceolate, ± 1–1 1 / 2 times as long as sepals; seeds brown, rugulose or faintly so.</statement>
+      <next_statement_id>6.</next_statement_id>
+    </key_statement>
+    <key_statement>
+      <statement_id>6.</statement_id>
+      <statement>Leaf blade margins ciliate proximally; pedicels 10–20 mm; capsules ellipsoid</statement>
+      <determination>5. Arenaria longipedunculata</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>6.</statement_id>
+      <statement>Leaf blade margins smooth; pedicels 1–10 mm; capsules broadly ellipsoid</statement>
+      <determination>2. Arenaria humifusa</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>4.</statement_id>
+      <statement>Plants with stems mostly longer than 10 cm (if matted, then to 4 cm); seeds dark brown or black, shiny, smooth; s, sw United States.</statement>
+      <next_statement_id>7.</next_statement_id>
+    </key_statement>
+    <key_statement>
+      <statement_id>7.</statement_id>
+      <statement>Plants matted, mosslike; leaf blade margins with peglike cilia</statement>
+      <determination>4. Arenaria livermorensis</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>7.</statement_id>
+      <statement>Plants not matted; leaf blade margins glabrous or with hairlike cilia.</statement>
+      <next_statement_id>8.</next_statement_id>
+    </key_statement>
+    <key_statement>
+      <statement_id>8.</statement_id>
+      <statement>Stem internodes and pedicels glabrous; sepals obscurely 1-veined, apices obtuse to rounded; petals 1 1 / 2 –2 times as long as sepals</statement>
+      <determination>7. Arenaria paludicola</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>8.</statement_id>
+      <statement>Stem internodes and pedicels retrorsely-pubescent; sepals 1–3-veined, apices acute to acuminate; petals 1 / 2 –1 2 / 5 times as long as sepals</statement>
+      <determination>3. Arenaria lanuginosa</determination>
+    </key_statement>
+  </key>
+</treatment>

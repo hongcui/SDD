@@ -1,0 +1,207 @@
+<treatment>
+  <number>6.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>ludens</species_name>
+    <species_authority>Shinners</species_authority>
+    <place_of_publication>
+      <publication_title>Sida</publication_title>
+      <place_in_publication>1: 51. 1962</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <common_name>Trans-Pecos sandwort</common_name>
+  <description>
+    <statement id="108.txt-0">
+      <text>Plants annual.</text>
+      <structure id="o221" name="whole_organism">
+        <character name="duration_or_life_style" value="annual" />
+        <character name="life_style" value="plant" />
+      </structure>
+    </statement>
+    <statement id="108.txt-1">
+      <text>Taproots filiform.</text>
+      <structure id="o222" name="taproot">
+        <character name="shape" value="filiform" />
+      </structure>
+    </statement>
+    <statement id="108.txt-2">
+      <text>Stems 1–18+, erect to ascending, green or reddish, 15–30 (–45 )cm;</text>
+      <structure id="o223" name="stem">
+        <character char_type="range_value" name="count" from="1" to="18" upper_restricted="false" />
+        <character char_type="range_value" name="orientation" from="erect" to="ascending" />
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" />
+        <character name="coloration" value="green" />
+        <character name="coloration" value="reddish" />
+        <character char_type="range_value" name="atypical_size" from="30" to="45" from_unit="cm" to_unit="cm" from_inclusive="false" />
+        <character char_type="range_value" name="size" from="15" from_unit="cm" to="30" to_unit="cm" />
+      </structure>
+    </statement>
+    <statement id="108.txt-3">
+      <text>internodes ± terete, 1–10 times as long as leaves, dull, retrorsely pubescent in 2 lines.</text>
+      <structure id="o224" name="internode">
+        <character name="shape" value="terete" modifier="more or less" />
+        <character char_type="range_value" name="size" from="1" to="10" constraint="times as-long-as leaves" constraintid="o225" />
+        <character name="reflectance" value="dull" />
+      </structure>
+      <structure id="o225" name="leaf" />
+      <structure id="o226" name="line">
+        <character name="count" value="2" />
+      </structure>
+      <relation id="r20" name="in" from="o224" to="o226" negation="false" />
+    </statement>
+    <statement id="108.txt-4">
+      <text>Leaves usually connate basally, with narrow, scarious sheath 0.2–0.5 mm, petiolate (proximal leaves )or sessile;</text>
+      <structure id="o227" name="leaf">
+        <character name="fusion" value="connate" modifier="usually;basally" />
+        <character name="architecture" value="petiolate" modifier="proximal leaves" />
+        <character name="architecture" value="sessile" />
+      </structure>
+      <structure id="o228" name="sheath">
+        <character name="width" value="narrow" />
+        <character name="external_texture" value="scarious" />
+        <character char_type="range_value" name="size" from="0.2" from_unit="mm" to="0.5" to_unit="mm" />
+      </structure>
+      <relation id="r21" name="with" from="o227" to="o228" negation="false" />
+    </statement>
+    <statement id="108.txt-5">
+      <text>petiole 2–4 mm;</text>
+      <structure id="o229" name="petiole">
+        <character char_type="range_value" name="size" from="2" from_unit="mm" to="4" to_unit="mm" />
+      </structure>
+    </statement>
+    <statement id="108.txt-6">
+      <text>blade 1-veined, vein prominent abaxially, usually narrowly lanceolate, elliptic, or oblanceolate, 10–17 × 2–4 mm, herbaceous, margins ± flat, herbaceous, dull, ciliate in proximal 1/2, apex acute to acuminate, not pustulate, glabrous;</text>
+      <structure id="o230" name="blade">
+        <character name="architecture" value="1-veined" />
+      </structure>
+      <structure id="o231" name="vein">
+        <character name="prominence" value="prominent" modifier="abaxially" />
+        <character name="shape" value="lanceolate" modifier="usually narrowly" />
+        <character name="shape" value="elliptic" />
+        <character name="shape" value="oblanceolate" />
+        <character char_type="range_value" name="length" from="10" from_unit="mm" to="17" to_unit="mm" />
+        <character char_type="range_value" name="width" from="2" from_unit="mm" to="4" to_unit="mm" />
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+      </structure>
+      <structure id="o232" name="margin">
+        <character name="prominence_or_shape" value="flat" modifier="more or less" />
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="reflectance" value="dull" />
+        <character name="architecture_or_shape" value="ciliate" modifier="in proximal 1/2" />
+      </structure>
+      <structure id="o233" name="apex">
+        <character char_type="range_value" name="shape" from="acute" to="acuminate" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="acuminate" />
+        <character name="relief" value="pustulate" modifier="not" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+    </statement>
+    <statement id="108.txt-7">
+      <text>axillary leaf clusters absent.</text>
+      <structure id="o234" name="leaf" constraint="axillary">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="108.txt-8">
+      <text>Inflorescences terminal, open, minutely bracteate, 3–45+-flowered cymes.</text>
+      <structure id="o235" name="inflorescence">
+        <character name="position" value="terminal" />
+        <character name="architecture" value="open" />
+        <character name="architecture" value="bracteate" modifier="minutely" />
+        <character name="architecture" value="3-45+-flowered" />
+      </structure>
+      <structure id="o236" name="cyme" />
+    </statement>
+    <statement id="108.txt-9">
+      <text>Pedicels erect or ascending in fruit, 3–20 mm, retrorsely pubescent in 2 lines.</text>
+      <structure id="o237" name="pedicel">
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" constraint="in fruit" constraintid="o238" />
+        <character char_type="range_value" name="size" from="3" from_unit="mm" to="20" to_unit="mm" />
+      </structure>
+      <structure id="o238" name="fruit" />
+      <structure id="o239" name="line">
+        <character name="count" value="2" />
+      </structure>
+      <relation id="r22" name="in" from="o237" to="o239" negation="false" />
+    </statement>
+    <statement id="108.txt-10">
+      <text>Flowers:</text>
+      <structure id="o240" name="flower" />
+    </statement>
+    <statement id="108.txt-11">
+      <text>sepals green or often purple, 1-veined, strongly keeled proximally, ovate-lanceolate to narrowly lanceolate (herbaceous portion pale, narrowly lanceolate to linear ), 3–4 mm, not enlarging in fruit, apex acuminate, not pustulate, glabrous;</text>
+      <structure id="o241" name="sepal">
+        <character name="coloration" value="green" />
+        <character name="coloration" value="purple" modifier="often" />
+        <character name="architecture" value="1-veined" />
+        <character name="shape" value="keeled" modifier="strongly;proximally" />
+        <character char_type="range_value" name="shape" from="ovate-lanceolate" to="narrowly lanceolate" />
+        <character name="shape" value="ovate-lanceolate" />
+        <character name="shape" value="lanceolate" modifier="narrowly" />
+        <character char_type="range_value" name="size" from="3" from_unit="mm" to="4" to_unit="mm" />
+        <character name="size" value="enlarging" modifier="not" constraint="in fruit" constraintid="o243" />
+      </structure>
+      <structure id="o242" name="portion">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="coloration" value="pale" />
+        <character char_type="range_value" name="shape" from="narrowly lanceolate" to="linear" />
+        <character name="shape" value="lanceolate" modifier="narrowly" />
+        <character name="shape" value="linear" />
+      </structure>
+      <structure id="o243" name="fruit" />
+      <structure id="o244" name="apex">
+        <character name="shape" value="acuminate" />
+        <character name="relief" value="pustulate" modifier="not" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+    </statement>
+    <statement id="108.txt-12">
+      <text>petals oblong to broadly elliptic, 2.8–4 mm, 1–11/3 times as long as sepals, apex rounded.</text>
+      <structure id="o245" name="petal">
+        <character char_type="range_value" name="shape" from="oblong" to="broadly elliptic" />
+        <character name="shape" value="oblong" />
+        <character name="shape" value="elliptic" modifier="broadly" />
+        <character char_type="range_value" name="size" from="2.8" from_unit="mm" to="4" to_unit="mm" />
+        <character char_type="range_value" name="size" from="1" to="11/3" constraint="times as-long-as sepals" constraintid="o246" />
+      </structure>
+      <structure id="o246" name="sepal" />
+      <structure id="o247" name="apex">
+        <character name="shape" value="rounded" />
+      </structure>
+    </statement>
+    <statement id="108.txt-13">
+      <text>Capsules loosely enclosed by calyx, ovoid, 3–3.5 mm, 4/5–1 times as long as sepals.</text>
+      <structure id="o248" name="capsule">
+        <character name="position" value="enclosed" modifier="loosely" constraint="by calyx" constraintid="o249" />
+        <character name="shape" value="ovoid" />
+        <character char_type="range_value" name="size" from="3" from_unit="mm" to="3.5" to_unit="mm" />
+        <character char_type="range_value" name="size" from="4/5" to="1" constraint="times as-long-as sepals" constraintid="o250" />
+      </structure>
+      <structure id="o249" name="calyx" />
+      <structure id="o250" name="sepal" />
+    </statement>
+    <statement id="108.txt-14">
+      <text>Seeds 7–15, dark brown to black, suborbicular, slightly compressed, 0.6–0.7 mm, shiny, obscurely tuberculate (20× ).</text>
+      <structure id="o251" name="seed">
+        <character char_type="range_value" name="count" from="7" to="15" />
+        <character char_type="range_value" name="coloration" from="dark brown" to="black" />
+        <character name="coloration" value="brown" modifier="dark" />
+        <character name="coloration" value="black" />
+        <character name="shape" value="suborbicular" />
+        <character name="shape" value="compressed" modifier="slightly" />
+        <character char_type="range_value" name="size" from="0.6" from_unit="mm" to="0.7" to_unit="mm" />
+        <character name="reflectance" value="shiny" />
+        <character name="relief" value="tuberculate" modifier="obscurely" />
+        <character name="count" value="[20" unit="×]" />
+      </structure>
+    </statement>
+  </description>
+  <habitat>igneous soil on cliffs and ledges</habitat>
+  <elevation>1000–2000 m;</elevation>
+  <us_distribution>Tex.</us_distribution>
+  <global_distribution>n Mexico (Coahuila).</global_distribution>
+  <discussion>Arenaria ludens may be more closely related to A. lanuginosa than to A. benthamii, the taxon with which it is often confused, if seed morphology is any indication.</discussion>
+</treatment>

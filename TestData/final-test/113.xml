@@ -1,0 +1,93 @@
+<treatment>
+  <number>9b.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>serpyllifolia</species_name>
+    <species_authority>Linnaeus</species_authority>
+    <variety_name>tenuior</variety_name>
+    <variety_authority>Mertens &amp; W. D. J. Koch</variety_authority>
+    <place_of_publication>
+      <publication_title>in J. C. Röhling et al., Deutschl. Fl. ed.</publication_title>
+      <place_in_publication>3, 3: 266. 1831</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>leptoclados</species_name>
+    <species_authority>(Reichenbach) Gussone</species_authority>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>serpyllifolia</species_name>
+    <subspecies_name>leptoclados</subspecies_name>
+    <subspecies_authority>(Reichenbach) Nyman</subspecies_authority>
+  </TaxonIdentification>
+  <TaxonIdentification Status="SYNONYM">
+    <genus_name>Arenaria</genus_name>
+    <species_name>serpyllifolia</species_name>
+    <variety_name>leptoclados</variety_name>
+    <variety_authority>Reichenbach</variety_authority>
+  </TaxonIdentification>
+  <description>
+    <statement id="113.txt-0">
+      <text>Sepals 2–3 mm, not enlarging in fruit.</text>
+      <structure id="o353" name="sepal">
+        <character char_type="range_value" name="size" from="2" from_unit="mm" to="3" to_unit="mm" />
+        <character name="size" value="enlarging" modifier="not" constraint="in fruit" constraintid="o354" />
+      </structure>
+      <structure id="o354" name="fruit" />
+    </statement>
+    <statement id="113.txt-1">
+      <text>Capsules cylindric to cylindric-ovoid, not significantly broader at base (walls nearly straight ).</text>
+      <structure id="o355" name="capsule">
+        <character char_type="range_value" name="shape" from="cylindric" to="cylindric-ovoid" />
+        <character name="shape" value="cylindric" />
+        <character name="shape" value="cylindric-ovoid" />
+        <character name="width" value="broader" modifier="not significantly" constraint="at base" constraintid="o356" />
+      </structure>
+      <structure id="o356" name="base" />
+      <structure id="o357" name="wall">
+        <character name="course" value="straight" modifier="nearly" />
+      </structure>
+    </statement>
+    <statement id="113.txt-2">
+      <text>Seeds ca. 0.4 mm. 2n = 20 (Europe ).</text>
+      <structure id="o358" name="seed">
+        <character name="size" value="0.4" unit="mm" />
+      </structure>
+      <structure name="chromosome" id="o359">
+        <character name="count" value="20" constraint="GEO:europe" />
+      </structure>
+    </statement>
+  </description>
+  <phenology>spring</phenology>
+  <phenology>mar</phenology>
+  <phenology>apr</phenology>
+  <phenology>may</phenology>
+  <phenology>summer</phenology>
+  <phenology>jun</phenology>
+  <phenology>jul</phenology>
+  <phenology>aug</phenology>
+  <habitat>roadsides</habitat>
+  <habitat>open, sandy or rocky, disturbed sites</habitat>
+  <elevation>0–400 m;</elevation>
+  <introduced>introduced;</introduced>
+  <us_distribution>Ark.</us_distribution>
+  <us_distribution>D.C.</us_distribution>
+  <us_distribution>Fla.</us_distribution>
+  <us_distribution>Ga.</us_distribution>
+  <us_distribution>Ky.</us_distribution>
+  <us_distribution>La.</us_distribution>
+  <us_distribution>Miss.</us_distribution>
+  <us_distribution>Mo.</us_distribution>
+  <us_distribution>N.C.</us_distribution>
+  <us_distribution>Pa.</us_distribution>
+  <us_distribution>S.C.</us_distribution>
+  <us_distribution>Tenn.</us_distribution>
+  <us_distribution>Va.</us_distribution>
+  <global_distribution>Europe</global_distribution>
+  <global_distribution>w Asia</global_distribution>
+  <global_distribution>n Africa</global_distribution>
+  <global_distribution>introduced in Australia.</global_distribution>
+  <discussion>Variety tenuior is to be expected elsewhere.</discussion>
+</treatment>

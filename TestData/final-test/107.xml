@@ -1,0 +1,208 @@
+<treatment>
+  <number>5.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>longipedunculata</species_name>
+    <species_authority>Hultén</species_authority>
+    <place_of_publication>
+      <publication_title>Bot. Not.</publication_title>
+      <place_in_publication>119: 313, fig. 1. 1966</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <common_name>Longstem sandwort</common_name>
+  <description>
+    <statement id="107.txt-0">
+      <text>Plants perennial, tufted to mat-forming.</text>
+      <structure id="o192" name="whole_organism">
+        <character name="life_style" value="perennial" />
+        <character name="external_texture_or_habit" value="tufted" />
+        <character name="life_style" value="plant" />
+      </structure>
+    </statement>
+    <statement id="107.txt-1">
+      <text>Taproots filiform;</text>
+      <structure id="o193" name="taproot">
+        <character name="shape" value="filiform" />
+      </structure>
+    </statement>
+    <statement id="107.txt-2">
+      <text>rhizomes slender, 0.5–3 cm.</text>
+      <structure id="o194" name="rhizome">
+        <character name="size" value="slender" />
+        <character char_type="range_value" name="size" from="0.5" from_unit="cm" to="3" to_unit="cm" />
+      </structure>
+    </statement>
+    <statement id="107.txt-3">
+      <text>Stems 25–60+, erect to ascending, green, 2–4 cm;</text>
+      <structure id="o195" name="stem">
+        <character char_type="range_value" name="count" from="25" to="60" upper_restricted="false" />
+        <character char_type="range_value" name="orientation" from="erect" to="ascending" />
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" />
+        <character name="coloration" value="green" />
+        <character char_type="range_value" name="size" from="2" from_unit="cm" to="4" to_unit="cm" />
+      </structure>
+    </statement>
+    <statement id="107.txt-4">
+      <text>internodes terete, 1–4 times as long as leaves, shiny, minutely glandular-villous.</text>
+      <structure id="o196" name="internode">
+        <character name="shape" value="terete" />
+        <character char_type="range_value" name="size" from="1" to="4" constraint="times as-long-as leaves" constraintid="o197" />
+        <character name="reflectance" value="shiny" />
+        <character name="external_texture" value="glandular-villous" modifier="minutely" />
+      </structure>
+      <structure id="o197" name="leaf" />
+    </statement>
+    <statement id="107.txt-5">
+      <text>Leaves briefly connate basally, with herbaceous sheath 0.1–0.3 mm, sessile;</text>
+      <structure id="o198" name="leaf">
+        <character name="fusion" value="connate" modifier="briefly;basally" />
+        <character name="architecture" value="sessile" />
+      </structure>
+      <structure id="o199" name="sheath">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character char_type="range_value" name="size" from="0.1" from_unit="mm" to="0.3" to_unit="mm" />
+      </structure>
+      <relation id="r19" name="with" from="o198" to="o199" negation="false" />
+    </statement>
+    <statement id="107.txt-6">
+      <text>blade obscurely 1-veined, narrowly elliptic to lanceolate or ovate, 2–6 × 1–1.5 mm, subsucculent, margins thickened, herbaceous, shiny, ciliate proximally, apex acute to apiculate, pustulate, glabrous;</text>
+      <structure id="o200" name="blade">
+        <character name="architecture" value="1-veined" modifier="obscurely" />
+        <character char_type="range_value" name="shape" from="narrowly elliptic" to="lanceolate" />
+        <character char_type="range_value" name="shape" from="narrowly elliptic" to="ovate" />
+        <character name="shape" value="elliptic" modifier="narrowly" />
+        <character name="shape" value="lanceolate" />
+        <character name="shape" value="ovate" />
+        <character char_type="range_value" name="length" from="2" from_unit="mm" to="6" to_unit="mm" />
+        <character char_type="range_value" name="width" from="1" from_unit="mm" to="1.5" to_unit="mm" />
+        <character name="internal_texture" value="subsucculent" />
+      </structure>
+      <structure id="o201" name="margin">
+        <character name="width" value="thickened" />
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="reflectance" value="shiny" />
+        <character name="architecture_or_shape" value="ciliate" modifier="proximally" />
+      </structure>
+      <structure id="o202" name="apex">
+        <character char_type="range_value" name="shape" from="acute" to="apiculate" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="apiculate" />
+        <character name="relief" value="pustulate" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+    </statement>
+    <statement id="107.txt-7">
+      <text>axillary leaf clusters absent.</text>
+      <structure id="o203" name="leaf" constraint="axillary">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="107.txt-8">
+      <text>Inflorescences terminal, solitary flowers.</text>
+      <structure id="o204" name="inflorescence">
+        <character name="position" value="terminal" />
+      </structure>
+      <structure id="o205" name="flower">
+        <character name="arrangement_or_habit" value="solitary" />
+      </structure>
+    </statement>
+    <statement id="107.txt-9">
+      <text>Pedicels erect in fruit, 10–20 mm, densely glandular-villous.</text>
+      <structure id="o206" name="pedicel">
+        <character name="orientation" value="erect" constraint="in fruit" constraintid="o207" />
+        <character char_type="range_value" name="size" from="10" from_unit="mm" to="20" to_unit="mm" />
+        <character name="external_texture" value="glandular-villous" modifier="densely" />
+      </structure>
+      <structure id="o207" name="fruit" />
+    </statement>
+    <statement id="107.txt-10">
+      <text>Flowers:</text>
+      <structure id="o208" name="flower" />
+    </statement>
+    <statement id="107.txt-11">
+      <text>sepals green, obscurely veined, not keeled, ovate (herbaceous portion ovate ), 3.5–4 mm, not enlarging in fruit, apex acute to acuminate, not pustulate, minutely stipitate-glandular proximally;</text>
+      <structure id="o209" name="sepal">
+        <character name="coloration" value="green" />
+        <character name="architecture" value="veined" modifier="obscurely" />
+        <character name="shape" value="keeled" modifier="not" />
+        <character name="shape" value="ovate" />
+        <character char_type="range_value" name="size" from="3.5" from_unit="mm" to="4" to_unit="mm" />
+        <character name="size" value="enlarging" modifier="not" constraint="in fruit" constraintid="o211" />
+      </structure>
+      <structure id="o210" name="portion">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="shape" value="ovate" />
+      </structure>
+      <structure id="o211" name="fruit" />
+      <structure id="o212" name="apex">
+        <character char_type="range_value" name="shape" from="acute" to="acuminate" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="acuminate" />
+        <character name="relief" value="pustulate" modifier="not" />
+        <character name="architecture_or_exudation" value="stipitate-glandular" modifier="minutely;proximally" />
+      </structure>
+    </statement>
+    <statement id="107.txt-12">
+      <text>petals broadly elliptic, 2.5–3.5 mm, 11/4–11/2 times as long as sepals, apex rounded.</text>
+      <structure id="o213" name="petal">
+        <character name="arrangement_or_shape" value="elliptic" modifier="broadly" />
+        <character char_type="range_value" name="size" from="2.5" from_unit="mm" to="3.5" to_unit="mm" />
+        <character char_type="range_value" name="size" from="11/4" to="11/2" constraint="times as-long-as sepals" constraintid="o214" />
+      </structure>
+      <structure id="o214" name="sepal" />
+      <structure id="o215" name="apex">
+        <character name="shape" value="rounded" />
+      </structure>
+    </statement>
+    <statement id="107.txt-13">
+      <text>Capsules tightly enclosed by calyx, ellipsoid, 4–5 mm, 1–11/5 times as long as sepals.</text>
+      <structure id="o216" name="capsule">
+        <character name="position" value="enclosed" modifier="tightly" constraint="by calyx" constraintid="o217" />
+        <character name="shape" value="ellipsoid" />
+        <character char_type="range_value" name="size" from="4" from_unit="mm" to="5" to_unit="mm" />
+        <character char_type="range_value" name="size" from="1" to="11/5" constraint="times as-long-as sepals" constraintid="o218" />
+      </structure>
+      <structure id="o217" name="calyx" />
+      <structure id="o218" name="sepal" />
+    </statement>
+    <statement id="107.txt-14">
+      <text>Seeds 13–20, brown, reniform, compressed, 0.7–0.9 mm, shiny, rugulose (30× ).</text>
+    </statement>
+    <statement id="107.txt-15">
+      <text>2n = 40, 80.</text>
+      <structure id="o219" name="seed">
+        <character char_type="range_value" name="count" from="13" to="20" />
+        <character name="coloration" value="brown" />
+        <character name="shape" value="reniform" />
+        <character name="shape" value="compressed" />
+        <character char_type="range_value" name="size" from="0.7" from_unit="mm" to="0.9" to_unit="mm" />
+        <character name="reflectance" value="shiny" />
+        <character name="relief" value="rugulose" />
+        <character name="count" value="[30" unit="×]" />
+      </structure>
+      <structure name="chromosome" id="o220">
+        <character name="count" value="40" />
+        <character name="count" value="80" />
+      </structure>
+    </statement>
+  </description>
+  <phenology>spring</phenology>
+  <phenology>mar</phenology>
+  <phenology>apr</phenology>
+  <phenology>may</phenology>
+  <phenology>summer</phenology>
+  <phenology>jun</phenology>
+  <phenology>jul</phenology>
+  <phenology>aug</phenology>
+  <habitat>gravelly, moist, montane areas</habitat>
+  <habitat>open alpine woods</habitat>
+  <elevation>50–1000 m;</elevation>
+  <ca_distribution>Alta.</ca_distribution>
+  <ca_distribution>B.C.</ca_distribution>
+  <ca_distribution>N.W.T.</ca_distribution>
+  <ca_distribution>Yukon</ca_distribution>
+  <us_distribution>Alaska</us_distribution>
+  <global_distribution>Asia.</global_distribution>
+  <discussion>Arenaria longipedunculata was for many years included in A. humifusa.</discussion>
+</treatment>

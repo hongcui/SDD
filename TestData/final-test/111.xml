@@ -1,0 +1,226 @@
+<treatment>
+  <number>9.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>serpyllifolia</species_name>
+    <species_authority>Linnaeus</species_authority>
+    <place_of_publication>
+      <publication_title>Sp. Pl.</publication_title>
+      <place_in_publication>1: 423. 1753</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <common_name>Thymeleaf sandwort</common_name>
+  <common_name>sabline á feuilles de serpolet</common_name>
+  <description>
+    <statement id="111.txt-0">
+      <text>Plants annual.</text>
+      <structure id="o318" name="whole_organism">
+        <character name="duration_or_life_style" value="annual" />
+        <character name="life_style" value="plant" />
+      </structure>
+    </statement>
+    <statement id="111.txt-1">
+      <text>Taproots filiform.</text>
+      <structure id="o319" name="taproot">
+        <character name="shape" value="filiform" />
+      </structure>
+    </statement>
+    <statement id="111.txt-2">
+      <text>Stems 1–100+, erect to ascending or sprawling, green, 3–40+ cm;</text>
+      <structure id="o320" name="stem">
+        <character char_type="range_value" name="count" from="1" to="100" upper_restricted="false" />
+        <character char_type="range_value" name="orientation" from="erect" to="ascending" />
+        <character char_type="range_value" name="orientation" from="erect" to="sprawling" />
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" />
+        <character name="orientation" value="sprawling" />
+        <character name="coloration" value="green" />
+        <character char_type="range_value" name="size" from="3" from_unit="cm" to="40" to_unit="cm" upper_restricted="false" />
+      </structure>
+    </statement>
+    <statement id="111.txt-3">
+      <text>internodes terete to ellipsoid, 2–8 times as long as leaves, dull, retrorsely pubescent throughout, sometimes also stipitate-glandular.</text>
+      <structure id="o321" name="internode">
+        <character char_type="range_value" name="shape" from="terete" to="ellipsoid" />
+        <character name="shape" value="terete" />
+        <character name="shape" value="ellipsoid" />
+        <character char_type="range_value" name="size" from="2" to="8" constraint="times as-long-as leaves" constraintid="o322" />
+        <character name="reflectance" value="dull" />
+        <character name="architecture_or_exudation" value="stipitate-glandular" modifier="sometimes" />
+      </structure>
+      <structure id="o322" name="leaf" />
+    </statement>
+    <statement id="111.txt-4">
+      <text>Leaves often connate basally, with scarious or mostly herbaceous sheath 0.2–0.3 mm, petiolate (proximal leaves )or usually sessile;</text>
+      <structure id="o323" name="leaf">
+        <character name="fusion" value="connate" modifier="often;basally" />
+        <character name="architecture" value="petiolate" modifier="proximal leaves" />
+        <character name="architecture" value="sessile" modifier="usually" />
+      </structure>
+      <structure id="o324" name="sheath">
+        <character name="external_texture" value="scarious" />
+        <character name="external_texture" value="herbaceous" modifier="mostly" />
+        <character char_type="range_value" name="size" from="0.2" from_unit="mm" to="0.3" to_unit="mm" />
+      </structure>
+      <relation id="r31" name="with" from="o323" to="o324" negation="false" />
+    </statement>
+    <statement id="111.txt-5">
+      <text>petiole 1–4 mm;</text>
+      <structure id="o325" name="petiole">
+        <character char_type="range_value" name="size" from="1" from_unit="mm" to="4" to_unit="mm" />
+      </structure>
+    </statement>
+    <statement id="111.txt-6">
+      <text>blade 3–5 veined, elliptic to broadly ovate or rarely orbiculate, 2–7 × 1–4 mm, herbaceous, margins flat, herbaceous, dull, ciliate especially proximally, apex acute to acuminate, pustulate, sparsely minutely pubescent or glabrous;</text>
+      <structure id="o326" name="blade">
+        <character char_type="range_value" name="count" from="3" to="5" />
+        <character name="architecture" value="veined" />
+        <character char_type="range_value" name="shape" from="elliptic" to="broadly ovate" />
+        <character char_type="range_value" name="shape" from="elliptic" to="rarely orbiculate" />
+        <character name="shape" value="elliptic" />
+        <character name="shape" value="ovate" modifier="broadly" />
+        <character name="shape" value="orbiculate" modifier="rarely" />
+        <character char_type="range_value" name="length" from="2" from_unit="mm" to="7" to_unit="mm" />
+        <character char_type="range_value" name="width" from="1" from_unit="mm" to="4" to_unit="mm" />
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+      </structure>
+      <structure id="o327" name="margin">
+        <character name="prominence_or_shape" value="flat" />
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="reflectance" value="dull" />
+        <character name="architecture_or_shape" value="ciliate" modifier="especially proximally" />
+      </structure>
+      <structure id="o328" name="apex">
+        <character char_type="range_value" name="shape" from="acute" to="acuminate" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="acuminate" />
+        <character name="relief" value="pustulate" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+    </statement>
+    <statement id="111.txt-7">
+      <text>axillary leaf clusters absent.</text>
+      <structure id="o329" name="leaf" constraint="axillary">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="111.txt-8">
+      <text>Inflorescences terminal, open, leafy, 3–50+-flowered cymes.</text>
+      <structure id="o330" name="inflorescence">
+        <character name="position" value="terminal" />
+        <character name="architecture" value="open" />
+        <character name="architecture" value="leafy" />
+        <character name="architecture" value="3-50+-flowered" />
+      </structure>
+      <structure id="o331" name="cyme" />
+    </statement>
+    <statement id="111.txt-9">
+      <text>Pedicels erect or ascending in fruit, 1–12 mm, retrorsely pubescent.</text>
+      <structure id="o332" name="pedicel">
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" constraint="in fruit" constraintid="o333" />
+        <character char_type="range_value" name="size" from="1" from_unit="mm" to="12" to_unit="mm" />
+      </structure>
+      <structure id="o333" name="fruit" />
+    </statement>
+    <statement id="111.txt-10">
+      <text>Flowers:</text>
+      <structure id="o334" name="flower" />
+    </statement>
+    <statement id="111.txt-11">
+      <text>sepals green, often prominently 3-veined, not keeled, lanceolate to ovate-lanceolate (herbaceous portion narrowly elliptic to broadly lanceolate ), 2–3 mm, to 4 mm in fruit, apex narrowly acute to acuminate, ± minutely pustulate, stipitate-glandular;</text>
+      <structure id="o335" name="sepal">
+        <character name="coloration" value="green" />
+        <character name="architecture" value="3-veined" modifier="often prominently" />
+        <character name="shape" value="keeled" modifier="not" />
+        <character char_type="range_value" name="shape" from="lanceolate" to="ovate-lanceolate" />
+        <character name="shape" value="lanceolate" />
+        <character name="shape" value="ovate-lanceolate" />
+        <character char_type="range_value" name="size" from="2" from_unit="mm" to="3" to_unit="mm" />
+        <character char_type="range_value" name="size" from="0" from_unit="mm" to="4" to_unit="mm" constraint="in fruit" constraintid="o337" />
+      </structure>
+      <structure id="o336" name="portion">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character char_type="range_value" name="shape" from="narrowly elliptic" to="broadly lanceolate" />
+        <character name="shape" value="elliptic" modifier="narrowly" />
+        <character name="shape" value="lanceolate" modifier="broadly" />
+      </structure>
+      <structure id="o337" name="fruit" />
+      <structure id="o338" name="apex">
+        <character char_type="range_value" name="shape" from="narrowly acute" to="acuminate" />
+        <character name="shape" value="acute" modifier="narrowly" />
+        <character name="shape" value="acuminate" />
+        <character name="relief" value="pustulate" modifier="more or less minutely" />
+        <character name="architecture_or_exudation" value="stipitate-glandular" />
+      </structure>
+    </statement>
+    <statement id="111.txt-12">
+      <text>petals oblong, 0.6–2.7 mm, 1/5–3/4 times as long as sepals, apex obtuse to rounded.</text>
+      <structure id="o339" name="petal">
+        <character name="shape" value="oblong" />
+        <character char_type="range_value" name="size" from="0.6" from_unit="mm" to="2.7" to_unit="mm" />
+        <character char_type="range_value" name="size" from="1/5" to="3/4" constraint="times as-long-as sepals" constraintid="o340" />
+      </structure>
+      <structure id="o340" name="sepal" />
+      <structure id="o341" name="apex">
+        <character char_type="range_value" name="shape" from="obtuse" to="rounded" />
+        <character name="shape" value="obtuse" />
+        <character name="shape" value="rounded" />
+      </structure>
+    </statement>
+    <statement id="111.txt-13">
+      <text>Capsules loosely enclosed by calyx, ovoid to cylindric-ovoid, 3–3.5 mm, 4/5–11/5 times as long as sepals.</text>
+      <structure id="o342" name="capsule">
+        <character name="position" value="enclosed" modifier="loosely" constraint="by calyx" constraintid="o343" />
+        <character char_type="range_value" name="shape" from="ovoid" to="cylindric-ovoid" />
+        <character name="shape" value="ovoid" />
+        <character name="shape" value="cylindric-ovoid" />
+        <character char_type="range_value" name="size" from="3" from_unit="mm" to="3.5" to_unit="mm" />
+        <character char_type="range_value" name="size" from="4/5" to="11/5" constraint="times as-long-as sepals" constraintid="o344" />
+      </structure>
+      <structure id="o343" name="calyx" />
+      <structure id="o344" name="sepal" />
+    </statement>
+    <statement id="111.txt-14">
+      <text>Seeds 10–15, ashy black, reniform, plump, 0.4–0.6 mm, not shiny, with low-elongate, prominent tubercules.</text>
+      <structure id="o345" name="seed">
+        <character char_type="range_value" name="count" from="10" to="15" />
+        <character name="coloration" value="black" modifier="ashy" />
+        <character name="shape" value="reniform" />
+        <character name="size" value="plump" />
+        <character char_type="range_value" name="size" from="0.4" from_unit="mm" to="0.6" to_unit="mm" />
+        <character name="reflectance" value="shiny" modifier="not" />
+      </structure>
+      <structure id="o346" name="tubercule">
+        <character name="shape" value="low-elongate" />
+        <character name="prominence" value="prominent" />
+      </structure>
+      <relation id="r32" name="with" from="o345" to="o346" negation="false" />
+    </statement>
+  </description>
+  <number_of_infrataxa>Varieties 3+ (2 in the flora):</number_of_infrataxa>
+  <introduced>introduced</introduced>
+  <global_distribution>North America</global_distribution>
+  <global_distribution>Eurasia</global_distribution>
+  <global_distribution>Africa</global_distribution>
+  <global_distribution>introduced in Australia.</global_distribution>
+  <discussion>Variation in Arenaria serpyllifolia in the broad sense is treated in various ways. The
+    two varieties recognized here have been treated also as subspecies (e.g., A. O. Chater and G.
+    Halliday 1993) or species (e.g., M. N. Abuhadra 2000; B. Jonsell 2001). Jonsell admitted that
+    accepting them as species is questionable; while the morphological differences are slight (see
+    esp. Abuhadra), the ploidy-level difference (2n = 40 in var. serpyllifolia vs. 2n = 20 in var.
+    tenuior) is important.</discussion>
+  <key>
+    <key_statement>
+      <statement_id>1.</statement_id>
+      <statement>Capsules ovoid to ovoid-conic, broader at base; seeds 0.5–0.6 mm</statement>
+      <determination>9a. Arenaria serpyllifolia var. serpyllifolia</determination>
+    </key_statement>
+    <key_statement>
+      <statement_id>1.</statement_id>
+      <statement>Capsules cylindric to cylindric-ovoid, not significantly broader at base (walls
+        nearly straight); seeds ca. 0.4 mm</statement>
+      <determination>9b. Arenaria serpyllifolia var. tenuior</determination>
+    </key_statement>
+  </key>
+</treatment>

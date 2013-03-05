@@ -1,0 +1,203 @@
+<treatment>
+  <number>4.</number>
+  <TaxonIdentification Status="ACCEPTED">
+    <genus_name>Arenaria</genus_name>
+    <species_name>livermorensis</species_name>
+    <species_authority>Correll</species_authority>
+    <place_of_publication>
+      <publication_title>Brittonia</publication_title>
+      <place_in_publication>18: 308. 1967</place_in_publication>
+    </place_of_publication>
+  </TaxonIdentification>
+  <common_name>Livermore sandwort</common_name>
+  <description>
+    <statement id="106.txt-0">
+      <text>Plants perennial, matted, moss-like.</text>
+      <structure id="o161" name="whole_organism">
+        <character name="life_style" value="perennial" />
+        <character name="habit" value="matted" />
+        <character name="life_style" value="plant" />
+      </structure>
+    </statement>
+    <statement id="106.txt-1">
+      <text>Taproots filiform.</text>
+      <structure id="o162" name="taproot">
+        <character name="shape" value="filiform" />
+      </structure>
+    </statement>
+    <statement id="106.txt-2">
+      <text>Stems 15–25, decumbent, trailing, green, 1–4 cm;</text>
+      <structure id="o163" name="stem">
+        <character char_type="range_value" name="count" from="15" to="25" />
+        <character name="habit" value="decumbent" />
+        <character name="habit" value="trailing" />
+        <character name="coloration" value="green" />
+        <character char_type="range_value" name="size" from="1" from_unit="cm" to="4" to_unit="cm" />
+      </structure>
+    </statement>
+    <statement id="106.txt-3">
+      <text>internodes angular to grooved, 1–11/2 times as long as leaves, minute, shiny, pubescence of widely spreading to slightly retrorse hairs in 2 lines.</text>
+      <structure id="o164" name="internode">
+        <character name="arrangement_or_shape" value="angular" />
+        <character name="architecture" value="grooved" />
+        <character char_type="range_value" name="size" from="1" to="11/2" constraint="times as-long-as leaves" constraintid="o165" />
+        <character name="size" value="minute" />
+        <character name="reflectance" value="shiny" />
+      </structure>
+      <structure id="o165" name="leaf" />
+      <structure id="o166" name="hair">
+        <character char_type="range_value" name="orientation" from="widely spreading" to="slightly retrorse" />
+        <character name="orientation" value="spreading" modifier="widely" />
+        <character name="orientation" value="retrorse" modifier="slightly" />
+      </structure>
+      <relation id="r14" name="part_of" from="o164" to="o166" negation="false" />
+      <structure id="o167" name="line">
+        <character name="count" value="2" />
+      </structure>
+      <relation id="r15" name="in" from="o164" to="o167" negation="false" />
+    </statement>
+    <statement id="106.txt-4">
+      <text>Leaves connate basally, with herbaceous sheath 0.1–0.2 mm, sessile;</text>
+      <structure id="o168" name="leaf">
+        <character name="fusion" value="connate" modifier="basally" />
+        <character name="architecture" value="sessile" />
+      </structure>
+      <structure id="o169" name="sheath">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character char_type="range_value" name="size" from="0.1" from_unit="mm" to="0.2" to_unit="mm" />
+      </structure>
+      <relation id="r16" name="with" from="o168" to="o169" negation="false" />
+    </statement>
+    <statement id="106.txt-5">
+      <text>blade 1-veined, vein prominent abaxially, linear, 4–6 × 1 mm, herbaceous, rigid, margins thickened, herbaceous, shiny, lined with peglike cilia, apex acute, pungent-tipped, not pustulate, glabrous;</text>
+      <structure id="o170" name="blade">
+        <character name="architecture" value="1-veined" />
+      </structure>
+      <structure id="o171" name="vein">
+        <character name="prominence" value="prominent" modifier="abaxially" />
+        <character name="arrangement_or_shape" value="linear" />
+        <character char_type="range_value" name="length" from="4" from_unit="mm" to="6" to_unit="mm" />
+        <character name="width" value="1" unit="mm" />
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="internal_texture" value="rigid" />
+      </structure>
+      <structure id="o172" name="margin">
+        <character name="width" value="thickened" />
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="reflectance" value="shiny" />
+      </structure>
+      <structure id="o173" name="cilium">
+        <character name="architecture_or_shape" value="peglike" />
+      </structure>
+      <relation id="r17" name="lined with" from="o172" to="o173" negation="false" />
+      <structure id="o174" name="apex">
+        <character name="shape" value="acute" />
+        <character name="relief" value="pustulate" modifier="not" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+    </statement>
+    <statement id="106.txt-6">
+      <text>axillary leaf clusters present.</text>
+      <structure id="o175" name="leaf" constraint="axillary">
+        <character name="count" value="present" />
+      </structure>
+    </statement>
+    <statement id="106.txt-7">
+      <text>Inflorescences solitary flowers in distal leaf axils.</text>
+      <structure id="o176" name="inflorescence">
+        <character name="type" value="solitary flowers" />
+      </structure>
+      <structure id="o177" name="flower">
+        <character name="arrangement_or_habit" value="solitary" />
+      </structure>
+      <structure id="o178" name="axil" constraint="distal leaf" />
+      <relation id="r18" name="in" from="o176" to="o178" negation="false" />
+    </statement>
+    <statement id="106.txt-8">
+      <text>Pedicels erect or ascending in fruit, 6–10 mm, minutely pubescent.</text>
+      <structure id="o179" name="pedicel">
+        <character name="orientation" value="erect" />
+        <character name="orientation" value="ascending" constraint="in fruit" constraintid="o180" />
+        <character char_type="range_value" name="size" from="6" from_unit="mm" to="10" to_unit="mm" />
+      </structure>
+      <structure id="o180" name="fruit" />
+    </statement>
+    <statement id="106.txt-9">
+      <text>Flowers:</text>
+      <structure id="o181" name="flower" />
+    </statement>
+    <statement id="106.txt-10">
+      <text>sepals green, 1-veined, slightly keeled proximally, broadly lanceolate (herbaceous portion narrowly lanceolate ), 3–4 mm, not enlarging in fruit, apex acute to acuminate, not pustulate, glabrous;</text>
+      <structure id="o182" name="sepal">
+        <character name="coloration" value="green" />
+        <character name="architecture" value="1-veined" />
+        <character name="shape" value="keeled" modifier="slightly;proximally" />
+        <character name="shape" value="lanceolate" modifier="broadly" />
+        <character char_type="range_value" name="size" from="3" from_unit="mm" to="4" to_unit="mm" />
+        <character name="size" value="enlarging" modifier="not" constraint="in fruit" constraintid="o184" />
+      </structure>
+      <structure id="o183" name="portion">
+        <character name="external_texture_or_internal_texture" value="herbaceous" />
+        <character name="shape" value="lanceolate" modifier="narrowly" />
+      </structure>
+      <structure id="o184" name="fruit" />
+      <structure id="o185" name="apex">
+        <character char_type="range_value" name="shape" from="acute" to="acuminate" />
+        <character name="shape" value="acute" />
+        <character name="shape" value="acuminate" />
+        <character name="relief" value="pustulate" modifier="not" />
+        <character name="external_texture" value="glabrous" />
+      </structure>
+    </statement>
+    <statement id="106.txt-11">
+      <text>petals absent;</text>
+      <structure id="o186" name="petal">
+        <character name="count" value="absent" />
+      </structure>
+    </statement>
+    <statement id="106.txt-12">
+      <text>stamens ca. 8.</text>
+      <structure id="o187" name="stamen">
+        <character name="count" value="8" />
+      </structure>
+    </statement>
+    <statement id="106.txt-13">
+      <text>Capsules very loosely enclosed by calyx, ovoid, 2–3 mm, 2/3–4/5 times as long as sepals.</text>
+      <structure id="o188" name="capsule">
+        <character name="position" value="enclosed" modifier="very loosely" constraint="by calyx" constraintid="o189" />
+        <character name="shape" value="ovoid" />
+        <character char_type="range_value" name="size" from="2" from_unit="mm" to="3" to_unit="mm" />
+        <character char_type="range_value" name="size" from="2/3" to="4/5" constraint="times as-long-as sepals" constraintid="o190" />
+      </structure>
+      <structure id="o189" name="calyx" />
+      <structure id="o190" name="sepal" />
+    </statement>
+    <statement id="106.txt-14">
+      <text>Seeds 5–7, dark brown to black, subglobose, slightly compressed, ca. 1 mm, shiny, smooth.</text>
+      <structure id="o191" name="seed">
+        <character char_type="range_value" name="count" from="5" to="7" />
+        <character char_type="range_value" name="coloration" from="dark brown" to="black" />
+        <character name="coloration" value="brown" modifier="dark" />
+        <character name="coloration" value="black" />
+        <character name="shape" value="subglobose" />
+        <character name="shape" value="compressed" modifier="slightly" />
+        <character name="size" value="1" unit="mm" />
+        <character name="reflectance" value="shiny" />
+        <character name="architecture_or_external_texture_or_relief" value="smooth" />
+      </structure>
+    </statement>
+  </description>
+  <phenology>spring</phenology>
+  <phenology>mar</phenology>
+  <phenology>apr</phenology>
+  <phenology>may</phenology>
+  <phenology>summer</phenology>
+  <phenology>jun</phenology>
+  <phenology>jul</phenology>
+  <phenology>aug</phenology>
+  <habitat>crevices of cliffs and bare walls</habitat>
+  <conservation>of conservation concern;</conservation>
+  <elevation>2100–2500 m;</elevation>
+  <us_distribution>Tex.</us_distribution>
+  <discussion>Arenaria livermorensis is known only from the Davis Mountains in the Trans-Pecos region of western Texas. It may be related to A. lycopodioides Willdenow ex Schlechtendal, a species found in the mountains of central Mexico.</discussion>
+</treatment>
