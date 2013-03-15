@@ -179,8 +179,7 @@ public class Structure {
      * 
      * @return
      *     possible object is
-     *     {@link String }
-     *     
+     *     {@link String }    
      */
     public String getConstraint() {
         return constraint;

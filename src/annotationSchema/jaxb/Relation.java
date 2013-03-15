@@ -6,8 +6,6 @@
 //
 
 
-
-
 package annotationSchema.jaxb;
 
 import java.util.ArrayList;
@@ -48,7 +46,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;/complexType>
  * </pre>
  * 
- * 
+ 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
@@ -351,3 +349,4 @@ public class Relation {
 	}
 
 }
+
