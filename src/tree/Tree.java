@@ -66,13 +66,17 @@ public class Tree<T> {
 		List<TreeNode<T>> list = new ArrayList<TreeNode<T>>();
 		Deque<TreeNode<T>> queue = new LinkedList<TreeNode<T>>();
 		queue.add(root);
-		while(!queue.isEmpty()) {
-			TreeNode<T> node = queue.poll();
-			list.add(node);
-			for(TreeNode<T> child : node.getChildren())
-				queue.add(child);
-		}
-		return list.iterator();
+		if (root != null) {
+			while (!queue.isEmpty()) {
+				TreeNode<T> node = queue.poll();
+				list.add(node);
+				for (TreeNode<T> child : node.getChildren())
+					queue.add(child);
+			}
+			return list.iterator();
+		}else{
+			return null;
+		} 
 	}
 	
 	/**

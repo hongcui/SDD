@@ -55,21 +55,28 @@ public class TaxonCharacterMatrix {
 			TreeNode<ITaxon> taxonNode = iter.next();
 			ITaxon taxon = taxonNode.getElement();
 			allTaxa.add(taxon);
-			Iterator<TreeNode<Structure>> structIter = taxon.getStructureTree().iterator();
-			while(structIter.hasNext()) {
-				TreeNode<Structure> structNode = structIter.next();
-				Structure structure = structNode.getElement();
-				Map<String, List<IState>> charStateMap = structure.getCharStateMap();
-				for(String charName : charStateMap.keySet()) {
-					String fullName = resolveFullCharacterName(charName, structNode);
-					List<IState> states = charStateMap.get(charName);
-					if(map.containsKey(fullName)) {
-						map.get(fullName).put(taxon, states);
-					}
-					else {
-						Map<ITaxon, List<IState>> subMap = new HashMap<ITaxon, List<IState>>();
-						subMap.put(taxon, states);
-						map.put(fullName, subMap);
+			System.out.print(taxon.getName()+"\r\n");
+			if (!taxon.getName().equals("PseudoROOT")) {
+				Iterator<TreeNode<Structure>> structIter = taxon
+						.getStructureTree().iterator();
+				if (structIter != null) {
+					while (structIter.hasNext()) {
+						TreeNode<Structure> structNode = structIter.next();
+						Structure structure = structNode.getElement();
+						Map<String, List<IState>> charStateMap = structure
+								.getCharStateMap();
+						for (String charName : charStateMap.keySet()) {
+							String fullName = resolveFullCharacterName(
+									charName, structNode);
+							List<IState> states = charStateMap.get(charName);
+							if (map.containsKey(fullName)) {
+								map.get(fullName).put(taxon, states);
+							} else {
+								Map<ITaxon, List<IState>> subMap = new HashMap<ITaxon, List<IState>>();
+								subMap.put(taxon, states);
+								map.put(fullName, subMap);
+							}
+						}
 					}
 				}
 			}
@@ -189,6 +196,7 @@ public class TaxonCharacterMatrix {
 	public void generateMatrixFile(File outputFile) {
 		FileWriter fstream = null;
 		try {
+			if(!outputFile.exists()) outputFile.createNewFile();
 			fstream = new FileWriter(outputFile);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -222,8 +230,17 @@ public class TaxonCharacterMatrix {
 							String value = "";
 							if(charName.endsWith(FROM_SUFFIX))
 								value = state.getMap().get(RangeState.KEY_FROM).toString();
-							else
+							else{
+							//	try{
 								value = state.getMap().get(RangeState.KEY_TO).toString();
+							//	}catch(NullPointerException e){
+							//		value = (String)state.getMap().get(RangeState.KEY_TO);
+							//	}
+								if (value.equals("1/2")){
+									int i=0;
+									i++;
+								}
+							}
 							stateStrings.add(value);
 						}
 					}

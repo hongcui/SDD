@@ -3,6 +3,7 @@
  */
 package taxonomy;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public interface ITaxon {
 	 * Normalize the names of all the structures, relations and characters
 	 * of this taxon.
 	 */
-	public void normalizeAllNames();
+	public void normalizeAllNames(HashMap sigPluMap);
 	
 	/**
 	 * Returns a map from statement ids to the text contained therein.

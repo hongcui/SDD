@@ -2,6 +2,7 @@ package conversion;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -32,15 +33,37 @@ public class DescriptionParser {
 	private TaxonRank taxonRank;
 	private FilenameTaxonDao filenameTaxonDao;
 	private String filename;
+	private HashMap sigPluMap;
 	
 	/**
 	 * Creates a new DescriptionParser object (loads a jaxb context
 	 */
-	public DescriptionParser(String taxonName, TaxonRank taxonRank) {
+	public DescriptionParser(String taxonName, TaxonRank taxonRank, FilenameTaxonDao dao,HashMap sigPluMap) {
 		setTaxonName(taxonName);
 		setTaxonRank(taxonRank);
 		this.props = new DescriptionProperties();
-		filenameTaxonDao = new FilenameTaxonDao();
+	//	filenameTaxonDao = new FilenameTaxonDao();
+		this.filenameTaxonDao = dao;
+		this.sigPluMap = sigPluMap;
+		try {
+			annotationContext = JAXBContext.newInstance(annotationSchema.jaxb.ObjectFactory.class);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**added by Jing Liu
+	 * Creates a new DescriptionParser object (loads a jaxb context
+	 */
+	public DescriptionParser(String taxonName, TaxonRank taxonRank, String filename, FilenameTaxonDao dao,HashMap sigPluMap) {
+		setTaxonName(taxonName);
+		setTaxonRank(taxonRank);
+		setFilename(filename);
+		this.props = new DescriptionProperties();
+	//	filenameTaxonDao = new FilenameTaxonDao();
+		filenameTaxonDao = dao;
+		this.filenameTaxonDao = dao;
+		this.sigPluMap = sigPluMap;
 		try {
 			annotationContext = JAXBContext.newInstance(annotationSchema.jaxb.ObjectFactory.class);
 		} catch (JAXBException e) {
@@ -56,18 +79,72 @@ public class DescriptionParser {
 		try {
 			Unmarshaller unmarshaller = annotationContext.createUnmarshaller();
 			this.filename = filenameTaxonDao.getFilenameForDescription(taxonRank, taxonName);
-			String path = props.getProperty("input.path") + filename;
-			Treatment treatment = (Treatment) unmarshaller.unmarshal(new File(path));
-			Description description = treatment.getDescription();
-			List<Statement> statementList = description.getStatement();
-			buildStructureTree(taxon, statementList);
-			for(Statement statement : statementList) {
-				taxon.addStatementTextEntry(statement.getId(), statement.getText());
+			if (filename != "") {   //added by Jing Liu
+				String path = props.getProperty("input.path") + filename;
+				Treatment treatment = (Treatment) unmarshaller
+						.unmarshal(new File(path));
+				Description description = treatment.getDescription();
+				if (description != null) {
+					List<Statement> statementList = description.getStatement();
+					buildStructureTree(taxon, statementList);
+					for (Statement statement : statementList) {
+						taxon.addStatementTextEntry(statement.getId(),
+								statement.getText());
+					}
+					taxon.normalizeAllNames(sigPluMap);
+				}else{
+					return null;
+				}
+
 			}
 		} catch(JAXBException e) {
 			e.printStackTrace();
 		}
-		taxon.normalizeAllNames();
+		return taxon;
+	}
+	
+	/** added by Jing Liu
+	 * Parses the file of the taxon.
+	 */
+	public ITaxon parseTaxon(String filename) {
+		ITaxon taxon = TaxonFactory.getTaxonObject(taxonRank, taxonName);
+		try {
+			Unmarshaller unmarshaller = annotationContext.createUnmarshaller();
+			//this.filename = filenameTaxonDao.getFilenameForDescription(taxonRank, taxonName);
+			if (filename != "") {   //added by Jing Liu
+				String path = props.getProperty("input.path") + filename;
+				Treatment treatment = (Treatment) unmarshaller
+						.unmarshal(new File(path));
+				Description description = treatment.getDescription();
+				if (description != null) {
+					List<Statement> statementList = description.getStatement();
+					if (statementList.size() != 0) {
+						buildStructureTree(taxon, statementList);
+						for (Statement statement : statementList) {
+							taxon.addStatementTextEntry(statement.getId(),
+									statement.getText());
+						}
+						taxon.normalizeAllNames(sigPluMap);
+					} //else {
+					//	return null;
+				//	}
+			//	}else{
+			//		return null;
+				}
+
+			}
+		} catch(JAXBException e) {
+			e.printStackTrace();
+		}
+		return taxon;
+	}
+	
+	
+	/**added by Jing Liu
+	 * Parses the file of the taxon.
+	 */
+	public ITaxon parsePeudoTaxon() {
+		ITaxon taxon = TaxonFactory.getTaxonObject(taxonRank, taxonName);
 		return taxon;
 	}
 	
@@ -244,5 +321,9 @@ public class DescriptionParser {
 	 */
 	public String getFilename() {
 		return filename;
+	}
+	
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 }

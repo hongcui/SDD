@@ -48,6 +48,62 @@ public class TaxonHierarchy {
 			
 	}
 	
+	/**added by Jing Liu
+	 * Add a sub-taxon as one of the children of the root of this hierarchy.
+	 * If the root is null, sub becomes the root.
+	 * @param sub
+	 * @throws SubTaxonException 
+	 */
+	public void addSubTaxon(List<TaxonRank> ranklist,
+			List<String> ranknamelist, ITaxon sub) throws SubTaxonException {
+		if(this.hierarchy.isEmpty())
+			this.hierarchy.setRoot(new TreeNode<ITaxon>(sub));
+		else {
+			TreeNode<ITaxon> parent = getTaxonParentInTree(ranklist,ranknamelist,sub);		
+			if (parent!=null)
+				parent.addChild(new TreeNode<ITaxon>(sub));
+		//	else
+		//		throw new SubTaxonException(sub, parent.getElement());
+		}
+			
+	}
+	
+	
+	/**added by Jing Liu
+	 * Add a sub-taxon as one of the children of the root of this hierarchy.
+	 * If the root is null, sub becomes the root.
+	 * @param sub
+	 * @throws SubTaxonException 
+	 */
+	public TreeNode getTaxonParentInTree(List<TaxonRank> ranklist,
+			List<String> ranknamelist, ITaxon sub) throws SubTaxonException {
+		TreeNode<ITaxon> taxonNode = this.hierarchy.getRoot();
+		int j=0;
+		for (TaxonRank rank:ranklist){
+			if (j==0){
+				if (taxonNode.getElement().getTaxonRank().compareTo(rank) != 0 || ! taxonNode.getElement().getName().equals(ranknamelist.get(j))){
+					return null;
+				}else {
+					j++;
+				}		
+			} else {
+				List<TreeNode<ITaxon>> children = taxonNode.getChildren();
+				for (TreeNode<ITaxon> node : children) {
+					if (node.getElement().getTaxonRank().compareTo(rank) == 0
+							&& node.getElement().getName()
+									.equals(ranknamelist.get(j))) {
+						taxonNode = node;
+						break;
+					}
+				}
+				j++;
+			}
+		}
+		return taxonNode;			
+	}
+	
+	
+	
 	/**
 	 * Add a sub-taxon as one of the children of the parent taxon specified.
 	 * @param parentName The name of the parent taxon to add sub as a child of.

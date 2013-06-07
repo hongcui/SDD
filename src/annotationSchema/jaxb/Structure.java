@@ -38,12 +38,20 @@ import states.IState;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element ref="{}character" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{}text" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *       &lt;attribute name="constraint_type" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="constraint_parent_organ" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="alter_name" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="constraintid" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="geographical_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="in_bracket" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="in_brackets" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="parallelism_constraint" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="taxon_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="ontologyid" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="provenance" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="notes" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -51,6 +59,7 @@ import states.IState;
  * 
  * 
  */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "character",
@@ -59,23 +68,51 @@ import states.IState;
 @XmlRootElement(name = "structure")
 public class Structure {
 
+    
     protected List<Character> character;
     protected String text;
+    @XmlAttribute(name = "alter_name")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String alterName;
+    @XmlAttribute(name = "constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String constraint;
+    @XmlAttribute(name = "constraintid")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String constraintid;
+    @XmlAttribute(name = "geographical_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String geographicalConstraint;
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")
     protected String id;
-    //Hong added to include constraint attribute in structure element
-    @XmlAttribute(name = "constraint")
-    protected String constraint;
-    //end Hong addition
+    @XmlAttribute(name = "in_bracket")
+    protected Boolean inBracket;
+    @XmlAttribute(name = "in_brackets")
+    protected Boolean inBrackets;
+    @XmlAttribute(required = true)
+    protected String name;
+    @XmlAttribute(name = "parallelism_constraint")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String parallelismConstraint;
+    @XmlAttribute(name = "taxon_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String taxonConstraint;
+    @XmlAttribute(name = "ontologyid")
+    protected String ontologyid;
+    @XmlAttribute(name = "provenance")
+    protected String provenance;
+    @XmlAttribute(name = "notes")
+    protected String notes;
+    
     @XmlAttribute(name = "constraint_type")
     protected String constraintType;
     @XmlAttribute(name = "constraint_parent_organ")
     protected String constraintParentOrgan;
-    @XmlAttribute(required = true)
-    protected String name;
     
     @SuppressWarnings("rawtypes")
     @XmlTransient
@@ -146,33 +183,31 @@ public class Structure {
      *     {@link String }
      *     
      */
-    public String getId() {
-        return id;
-    }
-
+    
     /**
-     * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setId(String value) {
-        this.id = value;
-    }
-
-    /**
-     * Gets the value of the constraintType property.
+     * Gets the value of the alterName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getConstraintType() {
-        return constraintType;
+    public String getAlterName() {
+        return alterName;
     }
+
+    /**
+     * Sets the value of the alterName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAlterName(String value) {
+        this.alterName = value;
+    }
+
 
     /**
      * Gets the value of the constraint property.
@@ -197,39 +232,123 @@ public class Structure {
     }
     
     /**
-     * Sets the value of the constraintType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setConstraintType(String value) {
-        this.constraintType = value;
-    }
-
-    /**
-     * Gets the value of the constraintParentOrgan property.
+     * Gets the value of the constraintid property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getConstraintParentOrgan() {
-        return constraintParentOrgan;
+    public String getConstraintid() {
+        return constraintid;
     }
 
     /**
-     * Sets the value of the constraintParentOrgan property.
+     * Sets the value of the constraintid property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setConstraintParentOrgan(String value) {
-        this.constraintParentOrgan = value;
+    public void setConstraintid(String value) {
+        this.constraintid = value;
+    }
+
+    /**
+     * Gets the value of the geographicalConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getGeographicalConstraint() {
+        return geographicalConstraint;
+    }
+
+    /**
+     * Sets the value of the geographicalConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setGeographicalConstraint(String value) {
+        this.geographicalConstraint = value;
+    }
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setId(String value) {
+        this.id = value;
+    }
+
+    /**
+     * Gets the value of the inBracket property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isInBracket() {
+        return inBracket;
+    }
+
+    /**
+     * Sets the value of the inBracket property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setInBracket(Boolean value) {
+        this.inBracket = value;
+    }
+
+    /**
+     * Gets the value of the inBrackets property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isInBrackets() {
+        return inBrackets;
+    }
+
+    /**
+     * Sets the value of the inBrackets property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setInBrackets(Boolean value) {
+        this.inBrackets = value;
     }
 
     /**
@@ -256,6 +375,166 @@ public class Structure {
         this.name = value;
     }
 
+    /**
+     * Gets the value of the parallelismConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getParallelismConstraint() {
+        return parallelismConstraint;
+    }
+
+    /**
+     * Sets the value of the parallelismConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setParallelismConstraint(String value) {
+        this.parallelismConstraint = value;
+    }
+
+    /**
+     * Gets the value of the taxonConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTaxonConstraint() {
+        return taxonConstraint;
+    }
+
+    /**
+     * Sets the value of the taxonConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTaxonConstraint(String value) {
+        this.taxonConstraint = value;
+    }
+
+    /**
+     * Gets the value of the ontologyid property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOntologyid() {
+        return ontologyid;
+    }
+
+    /**
+     * Sets the value of the ontologyid property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOntologyid(String value) {
+        this.ontologyid = value;
+    }
+
+    /**
+     * Gets the value of the provenance property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getProvenance() {
+        return provenance;
+    }
+
+    /**
+     * Sets the value of the provenance property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setProvenance(String value) {
+        this.provenance = value;
+    }
+
+    /**
+     * Gets the value of the notes property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNotes() {
+        return notes;
+    }
+
+    /**
+     * Sets the value of the notes property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNotes(String value) {
+        this.notes = value;
+    }
+    
+    
+    /**
+     * Gets the value of the constraintType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getConstraintType() {
+        return constraintType;
+    }
+    
+    /**
+     * Sets the value of the constraintType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setConstraintType(String value) {
+        this.constraintType = value;
+    }
+
+    /**
+     * Gets the value of the constraintParentOrgan property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getConstraintParentOrgan() {
+        return constraintParentOrgan;
+    }
+
+    
+    
+    
 	/**
 	 * @return the stateMap
 	 */
@@ -322,24 +601,40 @@ public class Structure {
 		this.statementId = statementId;
 	}
 
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Structure [");
-		if (name != null)
-			builder.append("name=").append(name);
-		//Hong added three constraints
+		if (alterName != null)
+			builder.append(",alterName=").append(alterName);
 		if (constraint != null)
 			builder.append(",constraint=").append(constraint);
-		if (constraintType != null)
-			builder.append(",constraintType=").append(constraintType);
-		if (constraintParentOrgan != null)
-			builder.append(",constraintParentOrgan=").append(constraintParentOrgan);
-		//end hong's addition
-		if(id != null)
-			builder.append(",id=").append(id);
+		if (constraintid != null)
+			builder.append(",constraintid=").append(constraintid);
+		if (geographicalConstraint != null)
+			builder.append("geographicalConstraint=").append(geographicalConstraint);
+		if (id != null)
+			builder.append("id=").append(id);
+		if (inBracket != null)
+			builder.append("inBracket=").append(inBracket);
+		if (inBrackets != null)
+			builder.append("inBrackets=").append(inBrackets);
+		if (name != null)
+			builder.append("name=").append(name);
+		if (parallelismConstraint != null)
+			builder.append(",parallelismConstraint=").append(parallelismConstraint);
+		if (taxonConstraint != null)
+			builder.append(",taxonConstraint=").append(taxonConstraint);
+		if (ontologyid != null)
+			builder.append(",ontologyid=").append(ontologyid);
+		if (provenance != null)
+			builder.append(",provenance=").append(provenance);
+		if(notes != null)
+			builder.append(",notes=").append(notes);		
 		builder.append("]");
 		return builder.toString();
+
 	}
 
 }

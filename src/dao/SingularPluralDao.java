@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SingularPluralDao extends BaseDao {
@@ -30,15 +31,46 @@ public class SingularPluralDao extends BaseDao {
 			while(rs.next()) {
 				result.add(rs.getString("singular"));
 			}
+			rs.close();
+			s.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				conn.close();
+			try {				
+				if (conn!=null) 
+					conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
 		return result;
 	}
+	
+	public HashMap getAllSingularForPlural() {
+		HashMap result = new HashMap();
+		ResultSet rs = null;
+		Connection conn = null;
+		try {
+			conn = getConnection(database);
+			Statement s = conn.createStatement();
+			rs = s.executeQuery("SELECT * FROM " + this.tablename +	";");
+			while(rs.next()) {
+				result.put(rs.getString("plural"),rs.getString("singular"));
+			}
+			rs.close();
+			s.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {				
+				if (conn!=null) 
+					conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+	
+	
 }
