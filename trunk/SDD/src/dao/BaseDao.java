@@ -23,7 +23,8 @@ public class BaseDao {
 		Connection con = null;
 		try {
 			Class.forName(DRIVER);
-			con = DriverManager.getConnection(URL + database, USER, PASSWORD);
+			while (con==null) 
+				con = DriverManager.getConnection(URL + database, USER, PASSWORD);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			System.exit(-1);

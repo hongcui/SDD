@@ -1,10 +1,12 @@
 package taxonomy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 
 import states.IState;
 import tree.Tree;
@@ -29,7 +31,8 @@ public class TaxonBase implements ITaxon {
 	protected Tree<Structure> structureTree;
 	protected List<Relation> relations;
 	protected Map<String, String> statementTextMap;
-	protected SingularPluralDao singularPluralDao;
+//	protected SingularPluralDao singularPluralDao;
+	protected HashMap sigPluMap;
 	
 	/**
 	 * Create a new Taxon with a given rank.
@@ -40,7 +43,7 @@ public class TaxonBase implements ITaxon {
 		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
 		this.relations = new ArrayList<Relation>();
-		this.singularPluralDao = new SingularPluralDao();
+		//this.singularPluralDao = new SingularPluralDao();
 		this.statementTextMap = new TreeMap<String, String>();
 	}
 	
@@ -55,7 +58,7 @@ public class TaxonBase implements ITaxon {
 		this.charMap = new TreeMap<Structure, Map<Character, IState>>();
 		this.structureTree = new Tree<Structure>();
 		this.relations = new ArrayList<Relation>();
-		this.singularPluralDao = new SingularPluralDao();
+		//this.singularPluralDao = new SingularPluralDao();
 		this.statementTextMap = new TreeMap<String, String>();
 	}
 	
@@ -115,7 +118,8 @@ public class TaxonBase implements ITaxon {
 	 * @see taxonomy.ITaxon#normalizeAllNames()
 	 */
 	@Override
-	public void normalizeAllNames() {
+	public void normalizeAllNames(HashMap sigPluMap) {
+		this.sigPluMap = sigPluMap;
 		normalizeRelationNames();
 		normalizeStructureNames();
 	}
@@ -141,9 +145,13 @@ public class TaxonBase implements ITaxon {
 	private void normalizeCharacterNames(List<annotationSchema.jaxb.Character> chars) {
 		for(Character c : chars) {
 			String normalized = normalizeString(c.getName());
-			List<String> singular = singularPluralDao.getSingularForPlural(normalized);
-			if(!singular.isEmpty())
-				normalized = singular.get(0);
+			//List<String> singular = singularPluralDao.getSingularForPlural(normalized);
+			//	if(!singular.isEmpty())
+			//		normalized = singular.get(0);
+			String singular=(String)sigPluMap.get(normalized);
+			if (singular!=null)
+				normalized = singular;
+		
 			c.setName(normalized);
 		}
 	}
@@ -157,12 +165,15 @@ public class TaxonBase implements ITaxon {
 	
 	private void normalizeStructureNames() {
 		Iterator<TreeNode<Structure>> iter = this.structureTree.iterator();
-		while(iter.hasNext()) {
-			Structure s = iter.next().getElement();
-			String normalized = normalizeString(s.getName());
-			s.setName(normalized);
-			normalizeCharacterNames(s.getCharacter());
-			normalizeCharacterNameMaps(s.getCharStateMap(), s.getModifierMap());
+		if (iter != null) {
+			while (iter.hasNext()) {
+				Structure s = iter.next().getElement();
+				String normalized = normalizeString(s.getName());
+				s.setName(normalized);
+				normalizeCharacterNames(s.getCharacter());
+				normalizeCharacterNameMaps(s.getCharStateMap(),
+						s.getModifierMap());
+			}
 		}
 	}
 
@@ -170,17 +181,25 @@ public class TaxonBase implements ITaxon {
 	private void normalizeCharacterNameMaps(Map<String, List<IState>> charStateMap,
 			Map<String, String> modifierMap) {
 		for(String s : charStateMap.keySet()) {
-			String normalized = normalizeString(s);
-			List<String> singular = singularPluralDao.getSingularForPlural(normalized);
-			if(!singular.isEmpty())
-				normalized = singular.get(0);
+			String normalized = normalizeString(s);			
+			//List<String> singular = singularPluralDao.getSingularForPlural(normalized);
+			//	if(!singular.isEmpty())
+			//		normalized = singular.get(0);
+			String singular=(String)sigPluMap.get(normalized);
+			if (singular!=null)
+				normalized = singular;
+			
 			s = normalized;
 		}
 		for(String s : modifierMap.keySet()) {
 			String normalized = normalizeString(s);
-			List<String> singular = singularPluralDao.getSingularForPlural(normalized);
-			if(!singular.isEmpty())
-				normalized = singular.get(0);
+			//List<String> singular = singularPluralDao.getSingularForPlural(normalized);
+			//	if(!singular.isEmpty())
+			//		normalized = singular.get(0);
+			String singular=(String)sigPluMap.get(normalized);
+			if (singular!=null)
+				normalized = singular;
+		
 			s = normalized;
 		}
 		

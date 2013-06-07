@@ -31,37 +31,50 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *       &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}IDREFS" />
- *       &lt;attribute name="modifier" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="alter_name" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="geographical_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="in_brackets" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="modifier" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="negation" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}IDREFS" />
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="constraint" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="symmetric" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="inference_method" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="organ_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="parallelism_constraint" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="taxon_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="ontologyid" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="provenance" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="notes" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
  * 
- 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "relation")
 public class Relation {
 
+    @XmlAttribute(name = "alter_name")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String alterName;
+    @XmlAttribute(required = true)
+    @XmlIDREF
+    @XmlSchemaType(name = "IDREFS")
+    protected List<Object> from;
+    @XmlAttribute(name = "geographical_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String geographicalConstraint;
     @XmlAttribute(required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlID
     @XmlSchemaType(name = "ID")
     protected String id;
-    @XmlAttribute(required = true)
-    @XmlIDREF
-    @XmlSchemaType(name = "IDREFS")
-    protected List<Object> from;
+    @XmlAttribute(name = "in_brackets")
+    protected Boolean inBrackets;
     @XmlAttribute
     protected String modifier;
     @XmlAttribute(required = true)
@@ -69,43 +82,51 @@ public class Relation {
     protected String name;
     @XmlAttribute(required = true)
     protected boolean negation;
+    @XmlAttribute(name = "organ_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String organConstraint;
+    @XmlAttribute(name = "parallelism_constraint")
+    @XmlSchemaType(name = "NCName")
+    protected String parallelismConstraint;
+    @XmlAttribute(name = "taxon_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String taxonConstraint;
     @XmlAttribute(required = true)
     @XmlIDREF
     @XmlSchemaType(name = "IDREFS")
     protected List<Object> to;
-    @XmlAttribute
-    protected String value;
-    @XmlAttribute
-    protected String constraint;
-    @XmlAttribute
-    protected Boolean symmetric;
-    @XmlAttribute(name = "inference_method")
-    @XmlSchemaType(name = "anySimpleType")
-    protected String inferenceMethod;
+    @XmlAttribute(name = "ontologyid")
+    protected String ontologyid;
+    @XmlAttribute(name = "provenance")
+    protected String provenance;
+    @XmlAttribute(name = "notes")
+    protected String notes;
+
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the alterName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getId() {
-        return id;
+    public String getAlterName() {
+        return alterName;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the alterName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setId(String value) {
-        this.id = value;
+    public void setAlterName(String value) {
+        this.alterName = value;
     }
+
 
     /**
      * Gets the value of the from property.
@@ -134,6 +155,90 @@ public class Relation {
             from = new ArrayList<Object>();
         }
         return this.from;
+    }
+    
+    /**
+     * Sets the value of the from property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+  /*  public void setFrom(String value) {
+        this.from = value;
+    }*/
+
+    /**
+     * Gets the value of the geographicalConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getGeographicalConstraint() {
+        return geographicalConstraint;
+    }
+
+    /**
+     * Sets the value of the geographicalConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setGeographicalConstraint(String value) {
+        this.geographicalConstraint = value;
+    }
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setId(String value) {
+        this.id = value;
+    }
+
+    /**
+     * Gets the value of the inBrackets property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isInBrackets() {
+        return inBrackets;
+    }
+
+    /**
+     * Sets the value of the inBrackets property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setInBrackets(Boolean value) {
+        this.inBrackets = value;
     }
 
     /**
@@ -201,6 +306,78 @@ public class Relation {
     }
 
     /**
+     * Gets the value of the organConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOrganConstraint() {
+        return organConstraint;
+    }
+
+    /**
+     * Sets the value of the organConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOrganConstraint(String value) {
+        this.organConstraint = value;
+    }
+
+    /**
+     * Gets the value of the parallelismConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getParallelismConstraint() {
+        return parallelismConstraint;
+    }
+
+    /**
+     * Sets the value of the parallelismConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setParallelismConstraint(String value) {
+        this.parallelismConstraint = value;
+    }
+
+    /**
+     * Gets the value of the taxonConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTaxonConstraint() {
+        return taxonConstraint;
+    }
+
+    /**
+     * Sets the value of the taxonConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTaxonConstraint(String value) {
+        this.taxonConstraint = value;
+    }
+
+    /**
      * Gets the value of the to property.
      * 
      * <p>
@@ -230,120 +407,122 @@ public class Relation {
     }
 
     /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value of the value property.
+     * Sets the value of the to property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
-    }
+ /*   public void setTo(String value) {
+        this.to = value;
+    }*/
 
     /**
-     * Gets the value of the constraint property.
+     * Gets the value of the ontologyid property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getConstraint() {
-        return constraint;
+    public String getOntologyid() {
+        return ontologyid;
     }
 
     /**
-     * Sets the value of the constraint property.
+     * Sets the value of the ontologyid property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setConstraint(String value) {
-        this.constraint = value;
+    public void setOntologyid(String value) {
+        this.ontologyid = value;
     }
 
     /**
-     * Gets the value of the symmetric property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isSymmetric() {
-        return symmetric;
-    }
-
-    /**
-     * Sets the value of the symmetric property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setSymmetric(Boolean value) {
-        this.symmetric = value;
-    }
-
-    /**
-     * Gets the value of the inferenceMethod property.
+     * Gets the value of the provenance property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getInferenceMethod() {
-        return inferenceMethod;
+    public String getProvenance() {
+        return provenance;
     }
 
     /**
-     * Sets the value of the inferenceMethod property.
+     * Sets the value of the provenance property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setInferenceMethod(String value) {
-        this.inferenceMethod = value;
+    public void setProvenance(String value) {
+        this.provenance = value;
+    }
+
+    /**
+     * Gets the value of the notes property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNotes() {
+        return notes;
+    }
+
+    /**
+     * Sets the value of the notes property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNotes(String value) {
+        this.notes = value;
     }
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Relation [");
+		if (alterName != null)
+			builder.append("alterName=").append(alterName).append(", ");
 		if (from != null)
 			builder.append("from=").append(from).append(", ");
+		if (geographicalConstraint != null)
+			builder.append("geographicalConstraint=").append(geographicalConstraint).append(", ");
+		if (id != null)
+			builder.append("id=").append(id).append(", ");
+		if (inBrackets != null)
+			builder.append("inBrackets=").append(inBrackets).append(", ");
 		if (modifier != null)
 			builder.append("modifier=").append(modifier).append(", ");
 		if (name != null)
 			builder.append("name=").append(name).append(", ");
 		builder.append("negation=").append(negation).append(", ");
-		if (symmetric != null)
-			builder.append("symmetric=").append(symmetric).append(", ");
+		if (organConstraint != null)
+			builder.append("organConstraint=").append(organConstraint).append(", ");
+		if (parallelismConstraint != null)
+			builder.append("parallelismConstraint=").append(parallelismConstraint).append(", ");
+		if (taxonConstraint != null)
+			builder.append("taxonConstraint=").append(taxonConstraint).append(", ");
 		if (to != null)
 			builder.append("to=").append(to).append(", ");
-		if (value != null)
-			builder.append("value=").append(value);
-		if (id != null)
-			builder.append("id=").append(id);
+		if (ontologyid != null)
+			builder.append("ontologyid=").append(ontologyid);
+		if (provenance != null)
+			builder.append("provenance=").append(provenance);
+		if (notes != null)
+			builder.append("notes=").append(notes);
 		builder.append("]");
 		return builder.toString();
 	}

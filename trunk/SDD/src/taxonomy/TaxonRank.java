@@ -33,7 +33,7 @@ public enum TaxonRank {
 	DIVISION,
 	SUPERDIVISION,
 	SUBPHYLUM,
-	PHYLLUM,
+	PHYLUM,
 	KINGDOM,
 	DOMAIN
 }

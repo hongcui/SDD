@@ -38,12 +38,20 @@ public class StateFactory {
 				IState rangeState = null;
 				try {
 					from = Double.parseDouble(c.getFrom());
-					to = Double.parseDouble(c.getTo());
+					if (c.getTo()!=null)
+						to = Double.parseDouble(c.getTo());
+					else 
+						to = 9999.00;
 					rangeState = new RangeState<Double>(from, to);
 //					System.out.println("<Debug-StateFactory> Parsed as a quantitative count: "+c.toString());
 				}
 				catch (NumberFormatException e) {
-					rangeState = new RangeState<String>(c.getFrom(), c.getTo());
+					String sto;
+					if (c.getTo()!=null)
+						sto = c.getTo();
+					else 
+						sto = "9999.00";
+					rangeState = new RangeState<String>(c.getFrom(), sto);
 				}
 				rangeState.addModifier(c.getModifier());
 				rangeState.addConstraint(c.getConstraint());

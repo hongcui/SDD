@@ -32,30 +32,35 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="char_type" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="modifier" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="color_modifier" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="degree_modifier" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="frequency_modifier" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="from" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="from_inclusive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="quality_modifier" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="to" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="to_inclusive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="from_unit" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="to_unit" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="unit" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="upper_restricted" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="negation" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="constraint" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="char_type" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *       &lt;attribute name="constraintid" type="{http://www.w3.org/2001/XMLSchema}IDREFS" />
- *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *       &lt;attribute name="from" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="from_inclusive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="from_unit" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="geographical_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="in_brackets" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="modifier" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="organ_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="other_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="parallelism_constraint" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="taxon_constraint" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="to" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="to_inclusive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="to_unit" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="unit" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="upper_restricted" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
+ *       &lt;attribute name="ontologyid" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="provenance" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="notes" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+ * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -63,51 +68,76 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "character")
 public class Character {
 
-	@XmlAttribute(name = "char_type")
+    @XmlAttribute(name = "char_type")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
     protected String charType;
-    @XmlAttribute
-    protected String modifier;
-    @XmlAttribute(name = "color_modifier")
-    protected String colorModifier;
-    @XmlAttribute(name = "degree_modifier")
-    protected String degreeModifier;
-    @XmlAttribute(name = "frequency_modifier")
-    protected String frequencyModifier;
-    @XmlAttribute
-    protected String from;
-    @XmlAttribute(name = "from_inclusive")
-    protected Boolean fromInclusive;
-    @XmlAttribute(required = true)
-    protected String name;
-    @XmlAttribute(name = "quality_modifier")
-    protected String qualityModifier;
-    @XmlAttribute
-    protected String to;
-    @XmlAttribute(name = "to_inclusive")
-    protected Boolean toInclusive;
-    @XmlAttribute(name = "from_unit")
-    protected String fromUnit;
-    @XmlAttribute(name = "to_unit")
-    protected String toUnit;
-    @XmlAttribute
-    protected String unit;
-    @XmlAttribute(name = "upper_restricted")
-    protected Boolean upperRestricted;
-    @XmlAttribute
-    protected String value;
-    @XmlAttribute
-    protected Boolean negation;
-    @XmlAttribute
+    @XmlAttribute(name = "constraint")
+    @XmlSchemaType(name = "anySimpleType")
     protected String constraint;
     @XmlAttribute
     @XmlIDREF
     @XmlSchemaType(name = "IDREFS")
     protected List<Object> constraintid;
-    @XmlAttribute
+    @XmlAttribute(name = "from")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String from;
+    @XmlAttribute(name = "from_inclusive")
+    protected Boolean fromInclusive;
+    @XmlAttribute(name = "from_unit")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlID
-    @XmlSchemaType(name = "ID")
-    protected String id;
+    @XmlSchemaType(name = "NCName")
+    protected String fromUnit;
+    @XmlAttribute(name = "geographical_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String geographicalConstraint;
+    @XmlAttribute(name = "in_brackets")
+    protected Boolean inBrackets;
+    @XmlAttribute(name = "modifier")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String modifier;
+    @XmlAttribute(name = "name")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String name;
+    @XmlAttribute(name = "organ_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String organConstraint;
+    @XmlAttribute(name = "other_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String otherConstraint;
+    @XmlAttribute(name = "parallelism_constraint")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String parallelismConstraint;
+    @XmlAttribute(name = "taxon_constraint")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String taxonConstraint;
+    @XmlAttribute(name = "to")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String to;
+    @XmlAttribute(name = "to_inclusive")
+    protected Boolean toInclusive;
+    @XmlAttribute(name = "to_unit")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String toUnit;
+    @XmlAttribute(name = "type")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String type;
+    @XmlAttribute(name = "unit")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String unit;
+    @XmlAttribute(name = "upper_restricted")
+    protected Boolean upperRestricted;
+    @XmlAttribute(name = "value")
+    @XmlSchemaType(name = "anySimpleType")
+    protected String value;
+    @XmlAttribute(name = "ontologyid")
+    protected String ontologyid;
+    @XmlAttribute(name = "provenance")
+    protected String provenance;
+    @XmlAttribute(name = "notes")
+    protected String notes;
 
     /**
      * Gets the value of the charType property.
@@ -134,100 +164,69 @@ public class Character {
     }
 
     /**
-     * Gets the value of the modifier property.
+     * Gets the value of the constraint property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getModifier() {
-        return modifier;
+    public String getConstraint() {
+        return constraint;
     }
 
     /**
-     * Sets the value of the modifier property.
+     * Sets the value of the constraint property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setModifier(String value) {
-        this.modifier = value;
+    public void setConstraint(String value) {
+        this.constraint = value;
     }
 
     /**
-     * Gets the value of the colorModifier property.
+     * Gets the value of the constraintid property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getColorModifier() {
-        return colorModifier;
-    }
-
-    /**
-     * Sets the value of the colorModifier property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the constraintid property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setColorModifier(String value) {
-        this.colorModifier = value;
-    }
-
-    /**
-     * Gets the value of the degreeModifier property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getConstraintid().add(newItem);
+     * </pre>
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Object }
+     * 
+     * 
      */
-    public String getDegreeModifier() {
-        return degreeModifier;
+    public List<Object> getConstraintid() {
+        if (constraintid == null) {
+            constraintid = new ArrayList<Object>();
+        }
+        return this.constraintid;
     }
 
     /**
-     * Sets the value of the degreeModifier property.
+     * Sets the value of the constraintid property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDegreeModifier(String value) {
-        this.degreeModifier = value;
-    }
-
-    /**
-     * Gets the value of the frequencyModifier property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFrequencyModifier() {
-        return frequencyModifier;
-    }
-
-    /**
-     * Sets the value of the frequencyModifier property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFrequencyModifier(String value) {
-        this.frequencyModifier = value;
-    }
+  //  public void setConstraintid(String value) {
+ //       this.constraintid = value;
+  //  }
 
     /**
      * Gets the value of the from property.
@@ -278,6 +277,102 @@ public class Character {
     }
 
     /**
+     * Gets the value of the fromUnit property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getFromUnit() {
+        return fromUnit;
+    }
+
+    /**
+     * Sets the value of the fromUnit property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setFromUnit(String value) {
+        this.fromUnit = value;
+    }
+
+    /**
+     * Gets the value of the geographicalConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getGeographicalConstraint() {
+        return geographicalConstraint;
+    }
+
+    /**
+     * Sets the value of the geographicalConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setGeographicalConstraint(String value) {
+        this.geographicalConstraint = value;
+    }
+
+    /**
+     * Gets the value of the inBrackets property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isInBrackets() {
+        return inBrackets;
+    }
+
+    /**
+     * Sets the value of the inBrackets property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setInBrackets(Boolean value) {
+        this.inBrackets = value;
+    }
+
+    /**
+     * Gets the value of the modifier property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getModifier() {
+        return modifier;
+    }
+
+    /**
+     * Sets the value of the modifier property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setModifier(String value) {
+        this.modifier = value;
+    }
+
+    /**
      * Gets the value of the name property.
      * 
      * @return
@@ -302,27 +397,99 @@ public class Character {
     }
 
     /**
-     * Gets the value of the qualityModifier property.
+     * Gets the value of the organConstraint property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getQualityModifier() {
-        return qualityModifier;
+    public String getOrganConstraint() {
+        return organConstraint;
     }
 
     /**
-     * Sets the value of the qualityModifier property.
+     * Sets the value of the organConstraint property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setQualityModifier(String value) {
-        this.qualityModifier = value;
+    public void setOrganConstraint(String value) {
+        this.organConstraint = value;
+    }
+
+    /**
+     * Gets the value of the otherConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOtherConstraint() {
+        return otherConstraint;
+    }
+
+    /**
+     * Sets the value of the otherConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOtherConstraint(String value) {
+        this.otherConstraint = value;
+    }
+
+    /**
+     * Gets the value of the parallelismConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getParallelismConstraint() {
+        return parallelismConstraint;
+    }
+
+    /**
+     * Sets the value of the parallelismConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setParallelismConstraint(String value) {
+        this.parallelismConstraint = value;
+    }
+
+    /**
+     * Gets the value of the taxonConstraint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTaxonConstraint() {
+        return taxonConstraint;
+    }
+
+    /**
+     * Sets the value of the taxonConstraint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTaxonConstraint(String value) {
+        this.taxonConstraint = value;
     }
 
     /**
@@ -374,30 +541,6 @@ public class Character {
     }
 
     /**
-     * Gets the value of the fromUnit property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFromUnit() {
-        return fromUnit;
-    }
-
-    /**
-     * Sets the value of the fromUnit property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFromUnit(String value) {
-        this.fromUnit = value;
-    }
-
-    /**
      * Gets the value of the toUnit property.
      * 
      * @return
@@ -419,6 +562,30 @@ public class Character {
      */
     public void setToUnit(String value) {
         this.toUnit = value;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setType(String value) {
+        this.type = value;
     }
 
     /**
@@ -494,104 +661,75 @@ public class Character {
     }
 
     /**
-     * Gets the value of the negation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isNegation() {
-        return negation;
-    }
-
-    /**
-     * Sets the value of the negation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setNegation(Boolean value) {
-        this.negation = value;
-    }
-
-    /**
-     * Gets the value of the constraint property.
+     * Gets the value of the ontologyid property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getConstraint() {
-        return constraint;
+    public String getOntologyid() {
+        return ontologyid;
     }
 
     /**
-     * Sets the value of the constraint property.
+     * Sets the value of the ontologyid property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setConstraint(String value) {
-        this.constraint = value;
+    public void setOntologyid(String value) {
+        this.ontologyid = value;
     }
 
     /**
-     * Gets the value of the constraintid property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the constraintid property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getConstraintid().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Object }
-     * 
-     * 
-     */
-    public List<Object> getConstraintid() {
-        if (constraintid == null) {
-            constraintid = new ArrayList<Object>();
-        }
-        return this.constraintid;
-    }
-
-    /**
-     * Gets the value of the id property.
+     * Gets the value of the provenance property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getId() {
-        return id;
+    public String getProvenance() {
+        return provenance;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the provenance property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setId(String value) {
-        this.id = value;
+    public void setProvenance(String value) {
+        this.provenance = value;
+    }
+
+    /**
+     * Gets the value of the notes property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNotes() {
+        return notes;
+    }
+
+    /**
+     * Sets the value of the notes property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNotes(String value) {
+        this.notes = value;
     }
     
     /* (non-Javadoc)
@@ -601,50 +739,54 @@ public class Character {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Character [");
-		if (charType != null)
-			builder.append("charType=").append(charType).append(", ");
-		if (modifier != null)
-			builder.append("modifier=").append(modifier).append(", ");
-		if (colorModifier != null)
-			builder.append("colorModifier=").append(colorModifier).append(", ");
-		if (degreeModifier != null)
-			builder.append("degreeModifier=").append(degreeModifier)
-					.append(", ");
-		if (frequencyModifier != null)
-			builder.append("frequencyModifier=").append(frequencyModifier)
-					.append(", ");
-		if (from != null)
-			builder.append("from=").append(from).append(", ");
-		if (fromInclusive != null)
-			builder.append("fromInclusive=").append(fromInclusive).append(", ");
-		if (name != null)
-			builder.append("name=").append(name).append(", ");
-		if (qualityModifier != null)
-			builder.append("qualityModifier=").append(qualityModifier)
-					.append(", ");
-		if (to != null)
-			builder.append("to=").append(to).append(", ");
-		if (toInclusive != null)
+	    if (charType != null)
+			builder.append("charType=").append(charType).append(", ");	   
+	    if (constraint != null)
+			builder.append("constraint=").append(constraint).append(", ");	   
+	    if (constraintid != null)
+			builder.append("constraintid=").append(constraintid).append(", ");	   
+	    if (from != null)
+			builder.append("from=").append(from).append(", ");	   
+	    if (fromInclusive != null)
+			builder.append("fromInclusive=").append(fromInclusive).append(", ");	   
+	    if (fromUnit != null)
+			builder.append("fromUnit=").append(fromUnit).append(", ");	   
+	    if (geographicalConstraint != null)
+			builder.append("geographicalConstraint=").append(geographicalConstraint).append(", ");	    
+	    if (inBrackets != null)
+			builder.append("inBrackets=").append(inBrackets).append(", ");	    
+	    if (modifier != null)
+			builder.append("modifier=").append(modifier).append(", ");	    
+	    if (name != null)
+			builder.append("name=").append(name).append(", ");	    
+	    if (organConstraint != null)
+			builder.append("organConstraint=").append(organConstraint).append(", ");
+	    if (otherConstraint != null)
+			builder.append("otherConstraint=").append(otherConstraint).append(", ");
+	    if (parallelismConstraint != null)
+			builder.append("parallelismConstraint=").append(parallelismConstraint).append(", ");
+	    if (taxonConstraint != null)
+			builder.append("taxonConstraint=").append(taxonConstraint).append(", ");
+	    if (to != null)
+			builder.append("to=").append(to).append(", ");	    
+	    if (toInclusive != null)
 			builder.append("toInclusive=").append(toInclusive).append(", ");
-		if (fromUnit != null)
-			builder.append("fromUnit=").append(fromUnit).append(", ");
-		if (toUnit != null)
+	    if (toUnit != null)
 			builder.append("toUnit=").append(toUnit).append(", ");
+		if (type != null)
+			builder.append("type=").append(type).append(", ");
 		if (unit != null)
 			builder.append("unit=").append(unit).append(", ");
 		if (upperRestricted != null)
-			builder.append("upperRestricted=").append(upperRestricted)
-					.append(", ");
+			builder.append("upperRestricted=").append(upperRestricted).append(", ");
 		if (value != null)
 			builder.append("value=").append(value).append(", ");
-		if (negation != null)
-			builder.append("negation=").append(negation).append(", ");
-		if (constraint != null)
-			builder.append("constraint=").append(constraint).append(", ");
-		if (constraintid != null)
-			builder.append("constraintid=").append(constraintid).append(", ");
-		if (id != null)
-			builder.append("id=").append(id);
+		if (ontologyid != null)
+			builder.append("ontologyid=").append(ontologyid).append(", ");
+		if (provenance != null)
+			builder.append("provenance=").append(provenance).append(", ");
+		if (notes != null)
+			builder.append("notes=").append(notes);		
 		builder.append("]");
 		return builder.toString();
 	}
