@@ -1,5 +1,7 @@
 package conversion;
 
+import generateFileToTaxonMap.FilenameTaxon;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,20 +33,22 @@ public class DescriptionParser {
 	private JAXBContext annotationContext;
 	private String taxonName;
 	private TaxonRank taxonRank;
-	private FilenameTaxonDao filenameTaxonDao;
+	private FilenameTaxon filenameTaxonDao;
 	private String filename;
 	private HashMap sigPluMap;
+	private String inputPath;
 	
 	/**
 	 * Creates a new DescriptionParser object (loads a jaxb context
 	 */
-	public DescriptionParser(String taxonName, TaxonRank taxonRank, FilenameTaxonDao dao,HashMap sigPluMap) {
+	public DescriptionParser(String taxonName, TaxonRank taxonRank, FilenameTaxon dao,HashMap sigPluMap, String inputPath) {
 		setTaxonName(taxonName);
 		setTaxonRank(taxonRank);
 		this.props = new DescriptionProperties();
 	//	filenameTaxonDao = new FilenameTaxonDao();
 		this.filenameTaxonDao = dao;
 		this.sigPluMap = sigPluMap;
+		this.inputPath = inputPath;
 		try {
 			annotationContext = JAXBContext.newInstance(annotationSchema.jaxb.ObjectFactory.class);
 		} catch (JAXBException e) {
@@ -55,7 +59,7 @@ public class DescriptionParser {
 	/**added by Jing Liu
 	 * Creates a new DescriptionParser object (loads a jaxb context
 	 */
-	public DescriptionParser(String taxonName, TaxonRank taxonRank, String filename, FilenameTaxonDao dao,HashMap sigPluMap) {
+	public DescriptionParser(String taxonName, TaxonRank taxonRank, String filename, FilenameTaxon dao,HashMap sigPluMap) {
 		setTaxonName(taxonName);
 		setTaxonRank(taxonRank);
 		setFilename(filename);
@@ -80,7 +84,7 @@ public class DescriptionParser {
 			Unmarshaller unmarshaller = annotationContext.createUnmarshaller();
 			this.filename = filenameTaxonDao.getFilenameForDescription(taxonRank, taxonName);
 			if (filename != "") {   //added by Jing Liu
-				String path = props.getProperty("input.path") + filename;
+				String path = inputPath+filename;//props.getProperty("input.path") + filename;
 				Treatment treatment = (Treatment) unmarshaller
 						.unmarshal(new File(path));
 				Description description = treatment.getDescription();
@@ -112,7 +116,7 @@ public class DescriptionParser {
 			Unmarshaller unmarshaller = annotationContext.createUnmarshaller();
 			//this.filename = filenameTaxonDao.getFilenameForDescription(taxonRank, taxonName);
 			if (filename != "") {   //added by Jing Liu
-				String path = props.getProperty("input.path") + filename;
+				String path = inputPath + filename;// props.getProperty("input.path") + filename;
 				Treatment treatment = (Treatment) unmarshaller
 						.unmarshal(new File(path));
 				Description description = treatment.getDescription();

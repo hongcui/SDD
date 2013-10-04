@@ -79,9 +79,13 @@ public class TaxonHierarchy {
 			List<String> ranknamelist, ITaxon sub) throws SubTaxonException {
 		TreeNode<ITaxon> taxonNode = this.hierarchy.getRoot();
 		int j=0;
-		for (TaxonRank rank:ranklist){
+		for (int i = 0;i<ranklist.size();i++){
 			if (j==0){
-				if (taxonNode.getElement().getTaxonRank().compareTo(rank) != 0 || ! taxonNode.getElement().getName().equals(ranknamelist.get(j))){
+				while ((i<ranklist.size())&&(taxonNode.getElement().getTaxonRank().compareTo(ranklist.get(i)) < 0))
+					i++;
+				if (i==ranklist.size())
+					return null;
+				if (taxonNode.getElement().getTaxonRank().compareTo(ranklist.get(i)) != 0 || ! taxonNode.getElement().getName().equals(ranknamelist.get(i))){
 					return null;
 				}else {
 					j++;
@@ -89,9 +93,9 @@ public class TaxonHierarchy {
 			} else {
 				List<TreeNode<ITaxon>> children = taxonNode.getChildren();
 				for (TreeNode<ITaxon> node : children) {
-					if (node.getElement().getTaxonRank().compareTo(rank) == 0
+					if (node.getElement().getTaxonRank().compareTo(ranklist.get(i)) == 0
 							&& node.getElement().getName()
-									.equals(ranknamelist.get(j))) {
+									.equals(ranknamelist.get(i))) {
 						taxonNode = node;
 						break;
 					}
