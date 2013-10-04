@@ -51,7 +51,8 @@ public class TaxonCharacterMatrixTest {
 	//	TaxonHierarchy th = makeHierarchyTwoLevel("nyctaginaceae", TaxonRank.FAMILY, TaxonRank.SPECIES);
 
 //		TaxonHierarchy th = makeHierarchyMultipleLevels("porifera", TaxonRank.PHYLUM, TaxonRank.GENUS);
-		TaxonHierarchy th = makeHierarchyMultipleLevelsLoop("porifera", TaxonRank.PHYLUM);
+		//TaxonHierarchy th = makeHierarchyMultipleLevelsLoop("porifera", TaxonRank.PHYLUM);
+		TaxonHierarchy th = makeHierarchyMultipleLevelsLoop("ARENARIA", TaxonRank.GENUS);	
 	//	outputAllTaxons("porifera", TaxonRank.PHYLUM);
 	//	TaxonHierarchy th = makeHierarchyMultipleLevelsCascade("porifera", TaxonRank.PHYLUM);
 	//	TaxonHierarchy th = makeHierarchyFromPseudoRootMultipleLevels(TaxonRank.PHYLUM, TaxonRank.SUBGENUS);
@@ -59,9 +60,11 @@ public class TaxonCharacterMatrixTest {
 		TaxonCharacterMatrix matrix = new TaxonCharacterMatrix(th);
 //		Map<String, Map<ITaxon, List<IState>>> map = matrix.getTable();
 //		matrix.printSimple();
-		File outputdir = new File("C:\\Users\\jingliu5\\UFLwork\\SDD\\Spongesmatrices\\");		
+		//File outputdir = new File("C:\\Users\\jingliu5\\UFLwork\\SDD\\Spongesmatrices\\");	
+		File outputdir = new File("C:\\Users\\updates\\workspace-CharaParser\\matrix-generator\\TestData\\matrices\\");		
 		if(!outputdir.exists()) outputdir.mkdir();
-		matrix.generateMatrixFile(new File(outputdir,"Spongesmatrices.txt"));
+		//matrix.generateMatrixFile(new File(outputdir,"Spongesmatrices.txt"));
+		matrix.generateMatrixFile(new File(outputdir,"test.txt"));
 		dao.closeDBConnection();
 	}
 	
