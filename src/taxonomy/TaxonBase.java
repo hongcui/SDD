@@ -14,7 +14,6 @@ import tree.TreeNode;
 import annotationSchema.jaxb.Character;
 import annotationSchema.jaxb.Relation;
 import annotationSchema.jaxb.Structure;
-import dao.SingularPluralDao;
 
 /**
  * Base class for all Taxa.  Every taxa has a scientific name, a rank (Family, Genus, species etc.), 
